@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  site: "https://wezel-dev.github.io",
+  site: "https://wezel-build.github.io",
 
   integrations: [
     starlight({
@@ -14,7 +14,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/wezel-dev/wezel",
+          href: "https://github.com/wezel-build/wezel",
         },
       ],
       sidebar: [
