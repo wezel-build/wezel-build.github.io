@@ -49,54 +49,40 @@ import Base from '../layouts/Base.astro';
   <!-- ── How it works ──────────────────────────────────── -->
   <section class="how">
     <div class="how-inner">
-      <p class="section-label">Architecture</p>
-      <h2 class="section-title">Four components, one mission</h2>
+      <p class="section-label">How it works</p>
+      <h2 class="section-title">Find it. Track it. Prevent it.</h2>
       <p class="section-sub">
-        Wezel is a suite of tools that fit into your existing workflow with zero friction.
+        Wezel zeroes in on the build scenarios that hurt your team most, then makes sure they never quietly get worse.
       </p>
 
-      <div class="how-grid">
+      <div class="how-grid how-grid-3">
         <div class="how-card">
           <div class="how-card-icon" style="background: var(--green-dim); color: var(--green);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
-          <h3>Pheromone</h3>
-          <p class="how-card-role">Local agent</p>
+          <h3>Find the pain</h3>
           <p class="how-card-desc">
-            Hooks into your shell. Captures every build invocation automatically. Zero config, near-zero overhead.
+            Wezel observes real builds across your whole team — no manual instrumentation needed. It surfaces which scenarios eat the most time, for the most people, most often.
           </p>
         </div>
 
         <div class="how-card">
           <div class="how-card-icon" style="background: var(--accent-glow); color: var(--accent);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <h3>Anthill</h3>
-          <p class="how-card-role">Dashboard</p>
+          <h3>Track it continuously</h3>
           <p class="how-card-desc">
-            Visualize build performance across your team. Spot trends, compare scenarios, drill into the details.
-          </p>
-        </div>
-
-        <div class="how-card">
-          <div class="how-card-icon" style="background: var(--cyan-dim); color: var(--cyan);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          </div>
-          <h3>Burrow</h3>
-          <p class="how-card-role">Backend</p>
-          <p class="how-card-desc">
-            Ingests events, stores history, serves data. Self-host it or let us run it — your data, your rules.
+            Your most critical scenarios are benchmarked on every commit in CI. A full history lets you see exactly when things changed and how the trend is moving.
           </p>
         </div>
 
         <div class="how-card">
           <div class="how-card-icon" style="background: rgba(184, 152, 96, 0.12); color: var(--amber);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
-          <h3>Forager</h3>
-          <p class="how-card-role">Scenario runner</p>
+          <h3>Prevent regressions</h3>
           <p class="how-card-desc">
-            Runs repeatable build scenarios in CI so you can benchmark what actually matters — deterministically.
+            The moment a commit adds meaningful build time, Wezel tells you — which commit, how much time, what it affected. Catch it while it's still fresh and easy to revisit, not months later when it's your new normal.
           </p>
         </div>
       </div>
@@ -107,28 +93,28 @@ import Base from '../layouts/Base.astro';
   <section class="why">
     <div class="why-inner">
       <p class="section-label">Why Wezel</p>
-      <h2 class="section-title">Builds rot. Wezel fights entropy.</h2>
+      <h2 class="section-title">Slow builds don't announce themselves.</h2>
 
       <div class="why-grid">
         <div class="why-card">
           <div class="why-marker" style="background: var(--red);"></div>
-          <h3>Catch regressions early</h3>
+          <h3>Pain you didn't know you had</h3>
           <p>
-            Get alerted the moment a change makes your most-used build scenario slower.
-            Know exactly which commit, which crate, how much time.
+            Build time creep is invisible until it's unbearable. Wezel quantifies the real cost —
+            aggregate wait time across your whole team — so you can prioritize what's actually worth fixing.
           </p>
         </div>
         <div class="why-card">
           <div class="why-marker" style="background: var(--accent);"></div>
-          <h3>Understand your build</h3>
+          <h3>Regressions that hide in plain sight</h3>
           <p>
-            See which scenarios your team runs the most. Focus optimization effort on what matters,
-            not on guesswork.
+            A change that adds 15 seconds to your most common build scenario is death by a thousand cuts.
+            Wezel catches it while it's still a single commit, not after it's baked into your baseline.
           </p>
         </div>
         <div class="why-card">
           <div class="why-marker" style="background: var(--green);"></div>
-          <h3>Open source, no lock-in</h3>
+          <h3>Open source, your data</h3>
           <p>
             Self-host the entire stack for free, forever. No telemetry, no vendor lock-in.
             MIT-licensed and community-driven.
@@ -142,8 +128,8 @@ import Base from '../layouts/Base.astro';
   <section class="bottom-cta">
     <div class="bottom-cta-glow"></div>
     <div class="bottom-cta-inner">
-      <h2>Ready to keep your builds fast?</h2>
-      <p>Install Pheromone, point it at Anthill, and never be surprised by a slow build again.</p>
+      <h2>Stop accepting slow builds as normal.</h2>
+      <p>Find your most painful scenarios, track them on every commit, and get alerted before regressions reach your team.</p>
       <div class="bottom-cta-buttons">
         <a href="https://github.com/wezel-dev/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
           Get Started on GitHub
@@ -319,6 +305,10 @@ import Base from '../layouts/Base.astro';
     margin-top: 2.5rem;
   }
 
+  .how-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .how-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -472,6 +462,10 @@ import Base from '../layouts/Base.astro';
   @media (max-width: 900px) {
     .how-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .how-grid-3 {
+      grid-template-columns: 1fr;
     }
   }
 
