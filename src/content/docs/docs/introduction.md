@@ -17,7 +17,7 @@ Build time creep is invisible. No single commit feels catastrophic — a few sec
 
 ## How Wezel helps
 
-Wezel observes real builds as they happen (locally and in CI), groups them into named **scenarios**, and tracks their performance over time. When a scenario gets meaningfully slower, it tells you — which commit, how much time was added, and what was affected — while the change is still fresh.
+Wezel observes real builds as they happen (locally and in CI), groups them into named **observations**, and tracks their performance over time. When an observation gets meaningfully slower, it tells you — which commit, how much time was added, and what was affected — while the change is still fresh.
 
 ## What it is not
 

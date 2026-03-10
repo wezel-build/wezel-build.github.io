@@ -18,11 +18,21 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        { label: "Getting Started", autogenerate: { directory: "docs" } },
+        {
+          label: "Getting Started",
+          items: [
+            { label: "Introduction", link: "/docs/introduction" },
+            { label: "Quick Start", link: "/docs/quickstart" },
+          ],
+        },
         { label: "Concepts", autogenerate: { directory: "docs/concepts" } },
         {
           label: "Self-Hosting",
           autogenerate: { directory: "docs/self-hosting" },
+        },
+        {
+          label: "Forager",
+          autogenerate: { directory: "docs/forager" },
         },
       ],
       customCss: [],
