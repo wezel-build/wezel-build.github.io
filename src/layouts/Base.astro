@@ -8,7 +8,6 @@ interface Props {
 const { title = "Wezel — Your build, always at its best." } = Astro.props;
 
 const navLinks = [
-  { label: "Pricing", href: "/pricing" },
   { label: "Docs", href: "/docs" },
 ];
 
@@ -81,7 +80,6 @@ const themes = ["warm", "slate", "light"] as const;
           <span class="footer-tagline">Your build, always at its best.</span>
         </div>
         <div class="footer-right">
-          <a href="/pricing" class="footer-link">Pricing</a>
           <a href="/docs" class="footer-link">Docs</a>
           <a href="https://github.com/wezel-build/wezel" class="footer-link" target="_blank" rel="noopener">GitHub</a>
         </div>
