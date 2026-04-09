@@ -2,7 +2,8 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  site: "https://wezel-build.github.io",
+  site: process.env.SITE_URL ?? "https://wezel-build.github.io",
+  base: process.env.SITE_BASE ?? "/",
 
   integrations: [
     starlight({
