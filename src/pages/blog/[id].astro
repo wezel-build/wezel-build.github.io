@@ -1,13 +1,19 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import { fetchAuthors } from '../../lib/authors';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  return Promise.all(
+    posts.map(async (post) => ({
+      params: { id: post.id },
+      props: { post, authors: await fetchAuthors(post.data.author) },
+    })),
+  );
 }
 
-const { post } = Astro.props;
+const { post, authors } = Astro.props;
 const { Content } = await render(post);
 ---
 
@@ -20,6 +26,17 @@ const { Content } = await render(post);
       </time>
       <h1 class="blog-post-title">{post.data.title}</h1>
       <p class="blog-post-desc">{post.data.description}</p>
+      <ul class="blog-post-authors">
+        {authors.map((author) => (
+          <li>
+            <a class="blog-post-author" href={author.htmlUrl} target="_blank" rel="noopener">
+              <img class="blog-post-author-avatar" src={author.avatar} alt="" width="32" height="32" loading="lazy" />
+              <span class="blog-post-author-name">{author.name}</span>
+              <span class="blog-post-author-handle">@{author.login}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </header>
     <div class="blog-post-body">
       <Content />
@@ -77,6 +94,48 @@ const { Content } = await render(post);
     font-size: 1.05rem;
     color: var(--text-mid);
     line-height: 1.6;
+  }
+
+  .blog-post-authors {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+  }
+
+  .blog-post-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--text-mid);
+    transition: color 0.15s;
+  }
+
+  .blog-post-author:hover {
+    color: var(--accent);
+  }
+
+  .blog-post-author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .blog-post-author-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .blog-post-author-handle {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-dim);
   }
 
   /* ── Post body prose ── */
