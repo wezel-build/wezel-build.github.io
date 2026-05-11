@@ -15,6 +15,9 @@ export const collections = {
       description: z.string(),
       date: z.coerce.date(),
       draft: z.boolean().default(false),
+      author: z
+        .union([z.string(), z.array(z.string()).min(1)])
+        .transform((v) => (Array.isArray(v) ? v : [v])),
     }),
   }),
 };

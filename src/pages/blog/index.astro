@@ -1,9 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { fetchAuthors, type Author } from '../../lib/authors';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const authorsByPost = new Map<string, Author[]>(
+  await Promise.all(
+    posts.map(
+      async (post) => [post.id, await fetchAuthors(post.data.author)] as const,
+    ),
+  ),
+);
 ---
 
 <Base title="Blog — Wezel">
@@ -22,15 +31,37 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
       {posts.length === 0 && (
         <p class="blog-empty">No posts yet. Check back soon.</p>
       )}
-      {posts.map((post) => (
-        <a href={`/blog/${post.id}`} class="blog-card">
-          <time class="blog-card-date" datetime={post.data.date.toISOString()}>
-            {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </time>
-          <h2 class="blog-card-title">{post.data.title}</h2>
-          <p class="blog-card-desc">{post.data.description}</p>
-        </a>
-      ))}
+      {posts.map((post) => {
+        const authors = authorsByPost.get(post.id) ?? [];
+        return (
+          <a href={`/blog/${post.id}`} class="blog-card">
+            <time class="blog-card-date" datetime={post.data.date.toISOString()}>
+              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </time>
+            <h2 class="blog-card-title">{post.data.title}</h2>
+            <p class="blog-card-desc">{post.data.description}</p>
+            {authors.length > 0 && (
+              <div class="blog-card-authors">
+                <div class="blog-card-avatars" style={`--count: ${authors.length}`}>
+                  {authors.map((author) => (
+                    <img
+                      class="blog-card-avatar"
+                      src={author.avatar}
+                      alt={author.name}
+                      width="24"
+                      height="24"
+                      loading="lazy"
+                    />
+                  ))}
+                </div>
+                <span class="blog-card-authors-names">
+                  {authors.map((a) => a.name).join(', ')}
+                </span>
+              </div>
+            )}
+          </a>
+        );
+      })}
     </div>
   </section>
 </Base>
@@ -116,6 +147,38 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
     font-size: 0.88rem;
     color: var(--text-dim);
     line-height: 1.55;
+  }
+
+  .blog-card-authors {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+  }
+
+  .blog-card-avatars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    padding-left: calc((var(--count) - 1) * 0.55rem);
+  }
+
+  .blog-card-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--surface);
+    background: var(--surface);
+    display: block;
+    margin-left: -0.55rem;
+  }
+
+  .blog-card-avatars .blog-card-avatar:last-child {
+    margin-left: 0;
+  }
+
+  .blog-card-authors-names {
+    font-size: 0.78rem;
+    color: var(--text-dim);
   }
 
   [data-theme="light"] .blog-card:hover {
