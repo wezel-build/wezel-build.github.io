@@ -66,20 +66,15 @@ const regressionIdx = 25;
           </a>
         </div>
 
-        <dl class="hero-meta hero-anim" style="--d:520ms">
-          <div>
-            <dt>scenario</dt>
-            <dd>cargo&nbsp;build · dev</dd>
-          </div>
-          <div>
-            <dt>window</dt>
-            <dd>last 32 commits</dd>
-          </div>
-          <div>
-            <dt>regression</dt>
-            <dd class="meta-warn">+12.4s · +26%</dd>
-          </div>
-        </dl>
+        <figure class="install-snippet hero-install hero-anim" style="--d:520ms">
+          <figcaption>
+            <span class="install-shell">shell</span>
+            <button class="install-copy" type="button" data-copy={installCmd} aria-label="Copy install command">
+              <span class="install-copy-text">copy</span>
+            </button>
+          </figcaption>
+          <pre><code><span class="t-prompt">$</span> <span class="t-cmd">curl</span> <span class="t-flag">-fsSL</span> <span class="t-url">{installUrl}</span> <span class="t-pipe">|</span> <span class="t-cmd">sh</span></code></pre>
+        </figure>
       </div>
 
       <figure class="hero-chart hero-anim" style="--d:480ms">
@@ -172,6 +167,16 @@ const regressionIdx = 25;
     <div class="hero-rule hero-rule-bot"></div>
   </section>
 
+  <!-- ── Stats strip ───────────────────────────────────── -->
+  <aside class="stats-strip" aria-label="Project facts">
+    <div class="stats-inner">
+      <span class="stat"><span class="stat-key">license</span> MIT</span>
+      <span class="stat"><span class="stat-key">runtime</span> Rust · single binary</span>
+      <span class="stat"><span class="stat-key">deployment</span> self-host · zero cloud dependency</span>
+      <span class="stat"><span class="stat-key">status</span> <span class="stat-active">v0.1 · active development</span></span>
+    </div>
+  </aside>
+
   <!-- ── Example experiment ───────────────────────────── -->
   <section class="example">
     <div class="example-inner">
@@ -219,33 +224,6 @@ const regressionIdx = 25;
     </div>
   </section>
 
-  <!-- ── Install ──────────────────────────────────────── -->
-  <section class="bottom-cta">
-    <div class="bottom-cta-glow"></div>
-    <div class="bottom-cta-inner">
-      <p class="section-label">Install</p>
-
-      <figure class="install-snippet">
-        <figcaption>
-          <span class="install-shell">shell</span>
-          <button class="install-copy" type="button" data-copy={installCmd} aria-label="Copy install command">
-            <span class="install-copy-text">copy</span>
-          </button>
-        </figcaption>
-        <pre><code><span class="t-prompt">$</span> <span class="t-cmd">curl</span> <span class="t-flag">-fsSL</span> <span class="t-url">{installUrl}</span> <span class="t-pipe">|</span> <span class="t-cmd">sh</span></code></pre>
-      </figure>
-
-      <div class="bottom-cta-buttons">
-        <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-secondary" target="_blank" rel="noopener">
-          Star on GitHub
-        </a>
-        <a href="/docs/quickstart" class="btn btn-lg btn-ghost-line">
-          Read the quickstart <span aria-hidden="true">→</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
   <!-- ── How it works ──────────────────────────────────── -->
   <section class="how">
     <div class="how-inner">
@@ -288,7 +266,7 @@ const regressionIdx = 25;
   </section>
 
   <!-- ── Why Wezel ─────────────────────────────────────── -->
-  <section class="why">
+  <section class="why" id="why">
     <div class="why-inner">
       <p class="section-label">Why Wezel</p>
 
@@ -328,6 +306,23 @@ const regressionIdx = 25;
             Built in the open with the community, not behind a feature gate.
           </p>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Closing CTA ──────────────────────────────────── -->
+  <section class="bottom-cta">
+    <div class="bottom-cta-glow"></div>
+    <div class="bottom-cta-inner">
+      <p class="section-label">Get started</p>
+      <h2 class="bottom-cta-title">Run it <em>locally.</em></h2>
+      <div class="bottom-cta-buttons">
+        <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
+          Star on GitHub
+        </a>
+        <a href="/docs/quickstart" class="btn btn-lg btn-ghost-line">
+          Read the quickstart <span aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
@@ -466,32 +461,68 @@ const regressionIdx = 25;
     background: var(--accent);
   }
 
-  /* Hero meta strip */
-  .hero-meta {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 2rem;
-    padding: 1rem 0 0;
-    border-top: 1px solid var(--border);
-    max-width: 36rem;
+  /* Hero install snippet (lighter than the bottom version) */
+  .hero-install {
     margin: 0;
+    max-width: 100%;
+    box-shadow:
+      0 6px 24px rgba(0, 0, 0, 0.28),
+      0 0 30px var(--accent-glow);
   }
-  .hero-meta dt {
+  .hero-install pre {
+    font-size: 0.82rem;
+    padding: 0.95rem 1.1rem;
+  }
+  .hero-install figcaption {
+    padding: 0.45rem 0.9rem;
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-deep);
+    overflow-x: auto;
+  }
+  .stats-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0.75rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2.25rem;
     font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text);
+  }
+  .stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    white-space: nowrap;
+  }
+  .stat-key {
     font-size: 0.66rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin-bottom: 0.25rem;
   }
-  .hero-meta dd {
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    color: var(--text);
-    letter-spacing: -0.01em;
-    margin: 0;
+  .stat-active {
+    color: var(--green);
   }
-  .hero-meta .meta-warn { color: var(--red); }
+  .stat-active::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    vertical-align: 1px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
 
   /* ── Chart ────────────────────────────────────────── */
   .hero-chart {
