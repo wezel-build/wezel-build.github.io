@@ -2,6 +2,9 @@
 import Base from '../layouts/Base.astro';
 import { Code } from 'astro:components';
 
+const installUrl = new URL('install.sh', Astro.site ?? 'https://wezel-build.github.io/').toString();
+const installCmd = `curl -fsSL ${installUrl} | sh`;
+
 const experimentToml = `description = "Tracks compile time of the wezel workspace"
 
 # Steps are keyed [step.<tool>.<step_name>].
@@ -169,47 +172,6 @@ const regressionIdx = 25;
     <div class="hero-rule hero-rule-bot"></div>
   </section>
 
-  <!-- ── How it works ──────────────────────────────────── -->
-  <section class="how">
-    <div class="how-inner">
-      <p class="section-label">The loop</p>
-      <h2 class="section-title">Find it. Track it. Catch it.</h2>
-
-      <ol class="how-steps">
-        <li class="how-step">
-          <span class="how-num">01</span>
-          <div class="how-body">
-            <h3>Find the scenarios that cost your team the most time.</h3>
-            <p>
-              Wezel observes real builds across your whole team — no manual instrumentation needed —
-              and surfaces which scenarios eat the most time, for the most people, most often.
-            </p>
-          </div>
-        </li>
-        <li class="how-step">
-          <span class="how-num">02</span>
-          <div class="how-body">
-            <h3>Track them on every commit.</h3>
-            <p>
-              Once you know what matters, Wezel benchmarks those scenarios on every commit in CI and
-              keeps the full history, so you can see exactly when things changed and how the trend is moving.
-            </p>
-          </div>
-        </li>
-        <li class="how-step">
-          <span class="how-num">03</span>
-          <div class="how-body">
-            <h3>Catch each regression at the commit that caused it.</h3>
-            <p>
-              The moment a commit adds meaningful build time, Wezel tells you — which commit, how much,
-              what it affected — while it's still a single change to revisit, not after it's already baked into your baseline.
-            </p>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </section>
-
   <!-- ── Example experiment ───────────────────────────── -->
   <section class="example">
     <div class="example-inner">
@@ -254,6 +216,74 @@ const regressionIdx = 25;
         stores every summary the experiment defines, and flags the bisected commit the moment any
         of them drifts past your tolerance.
       </p>
+    </div>
+  </section>
+
+  <!-- ── Install ──────────────────────────────────────── -->
+  <section class="bottom-cta">
+    <div class="bottom-cta-glow"></div>
+    <div class="bottom-cta-inner">
+      <p class="section-label">Install</p>
+
+      <figure class="install-snippet">
+        <figcaption>
+          <span class="install-shell">shell</span>
+          <button class="install-copy" type="button" data-copy={installCmd} aria-label="Copy install command">
+            <span class="install-copy-text">copy</span>
+          </button>
+        </figcaption>
+        <pre><code><span class="t-prompt">$</span> <span class="t-cmd">curl</span> <span class="t-flag">-fsSL</span> <span class="t-url">{installUrl}</span> <span class="t-pipe">|</span> <span class="t-cmd">sh</span></code></pre>
+      </figure>
+
+      <div class="bottom-cta-buttons">
+        <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-secondary" target="_blank" rel="noopener">
+          Star on GitHub
+        </a>
+        <a href="/docs/quickstart" class="btn btn-lg btn-ghost-line">
+          Read the quickstart <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it works ──────────────────────────────────── -->
+  <section class="how">
+    <div class="how-inner">
+      <p class="section-label">The loop</p>
+      <h2 class="section-title">Find it. Track it. Catch it.</h2>
+
+      <ol class="how-steps">
+        <li class="how-step">
+          <span class="how-num">01</span>
+          <div class="how-body">
+            <h3>Find the scenarios that cost your team the most time.</h3>
+            <p>
+              Wezel observes real builds across your whole team — no manual instrumentation needed —
+              and surfaces which scenarios eat the most time, for the most people, most often.
+            </p>
+          </div>
+        </li>
+        <li class="how-step">
+          <span class="how-num">02</span>
+          <div class="how-body">
+            <h3>Track them on every commit.</h3>
+            <p>
+              Once you know what matters, Wezel benchmarks those scenarios on every commit in CI and
+              keeps the full history, so you can see exactly when things changed and how the trend is moving.
+            </p>
+          </div>
+        </li>
+        <li class="how-step">
+          <span class="how-num">03</span>
+          <div class="how-body">
+            <h3>Catch each regression at the commit that caused it.</h3>
+            <p>
+              The moment a commit adds meaningful build time, Wezel tells you — which commit, how much,
+              what it affected — while it's still a single change to revisit, not after it's already baked into your baseline.
+            </p>
+          </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -302,33 +332,32 @@ const regressionIdx = 25;
     </div>
   </section>
 
-  <!-- ── Bottom CTA ────────────────────────────────────── -->
-  <section class="bottom-cta">
-    <div class="bottom-cta-glow"></div>
-    <div class="bottom-cta-inner">
-      <div class="bottom-cta-text">
-        <p class="section-label">Start the loop</p>
-        <h2>
-          Make build speed<br />
-          a <em>priority.</em>
-        </h2>
-      </div>
-      <div class="bottom-cta-aside">
-        <p>
-          Wezel surfaces your slowest scenarios, benchmarks them on every commit,
-          and tells you when a change adds time.
-        </p>
-        <div class="bottom-cta-buttons">
-          <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
-            Get started on GitHub
-          </a>
-          <a href="/docs" class="btn btn-lg btn-ghost-line">
-            Read the docs <span aria-hidden="true">→</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <script is:inline>
+    (function () {
+      document.querySelectorAll('.install-copy').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          var txt = btn.getAttribute('data-copy') || '';
+          var label = btn.querySelector('.install-copy-text');
+          try { await navigator.clipboard.writeText(txt); }
+          catch (e) {
+            var ta = document.createElement('textarea');
+            ta.value = txt; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (_) {}
+            document.body.removeChild(ta);
+          }
+          if (label) {
+            var orig = label.textContent;
+            label.textContent = 'copied';
+            btn.classList.add('install-copy-done');
+            setTimeout(function () {
+              label.textContent = orig;
+              btn.classList.remove('install-copy-done');
+            }, 1400);
+          }
+        });
+      });
+    })();
+  </script>
 </Base>
 
 <style is:global>
@@ -956,17 +985,17 @@ const regressionIdx = 25;
   /* ── Bottom CTA ────────────────────────────────────── */
   .bottom-cta {
     position: relative;
-    padding: 6rem 2rem 5rem;
+    padding: 6rem 2rem 5.5rem;
     border-top: 1px solid var(--border);
     overflow: hidden;
   }
 
   .bottom-cta-glow {
     position: absolute;
-    bottom: -160px;
+    bottom: -180px;
     left: 50%;
     transform: translateX(-50%);
-    width: 800px;
+    width: 820px;
     height: 460px;
     background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
     pointer-events: none;
@@ -975,35 +1004,128 @@ const regressionIdx = 25;
   .bottom-cta-inner {
     position: relative;
     text-align: center;
-    max-width: 640px;
+    max-width: 720px;
     margin: 0 auto;
     z-index: 1;
   }
 
-  .bottom-cta-inner h2 {
-    font-family: var(--font-display);
-    font-variation-settings: "opsz" 144, "SOFT" 60;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 460;
-    color: var(--text);
-    letter-spacing: -0.025em;
-    margin-bottom: 1.25rem;
-    line-height: 1.04;
-  }
-  .bottom-cta-inner h2 em {
-    font-style: italic;
-    color: var(--accent);
-    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  .bottom-cta-inner .section-label {
+    justify-content: center;
+    display: inline-flex;
   }
 
-  .bottom-cta-inner p {
+  .bottom-cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.6vw, 2.8rem);
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.045em;
+    margin: 0 0 1.25rem;
+    line-height: 1.06;
+  }
+  .bottom-cta-title em {
+    font-style: normal;
+    color: var(--accent);
+    background-image: linear-gradient(
+      0deg,
+      var(--accent-glow-strong) 0%,
+      var(--accent-glow-strong) 28%,
+      transparent 28%
+    );
+    padding: 0 0.12em;
+    margin: 0 -0.04em;
+  }
+
+  .bottom-cta-desc {
     font-size: 1rem;
     color: var(--text-mid);
-    line-height: 1.65;
-    margin-bottom: 2rem;
-    max-width: 46ch;
-    margin-inline: auto;
+    line-height: 1.7;
+    margin: 0 auto 2.25rem;
+    max-width: 54ch;
   }
+  .bottom-cta-desc code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.05em 0.4em;
+    border-radius: 4px;
+  }
+
+  /* ── Install snippet ───────────────────────────────── */
+  .install-snippet {
+    margin: 1.75rem auto 2rem;
+    max-width: 640px;
+    text-align: left;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      0 0 60px var(--accent-glow);
+  }
+
+  .install-snippet figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px dashed var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .install-shell {
+    color: var(--text-dim);
+  }
+
+  .install-copy {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.15rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .install-copy:hover {
+    color: var(--text);
+    border-color: var(--text-dim);
+  }
+  .install-copy-done {
+    color: var(--green) !important;
+    border-color: var(--green) !important;
+    background: var(--green-dim) !important;
+  }
+
+  .install-snippet pre {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+    background: transparent;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .install-snippet .t-prompt { color: var(--green); font-weight: 600; margin-right: 0.5em; }
+  .install-snippet .t-cmd { color: var(--accent); font-weight: 500; }
+  .install-snippet .t-flag { color: var(--text-mid); }
+  .install-snippet .t-url { color: var(--cyan); }
+  .install-snippet .t-pipe { color: var(--text-mid); margin: 0 0.15em; }
 
   .bottom-cta-buttons {
     display: flex;
