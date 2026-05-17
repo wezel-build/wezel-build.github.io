@@ -1,88 +1,259 @@
 ---
 import Base from '../layouts/Base.astro';
+import { Code } from 'astro:components';
+
+const experimentToml = `description = "Tracks compile time of the wezel workspace"
+
+# Steps are keyed [step.<tool>.<step_name>].
+# The cargo tool builds your target and emits per-crate timing outcomes.
+[step.cargo.build]
+build_target = "workspace"
+
+# A single outcome can feed multiple summaries — Wezel tracks each independently.
+summary.workspace-build-time = { outcome = "duration.total" }
+summary.slowest-crate-time   = { outcome = "duration.max" }
+`;
+
+// Build-time samples (seconds), last 32 commits, dev build of a Rust workspace.
+// Bars 0..24 are baseline (~47s), bars 25..31 show the +12.4s regression.
+const samples = [
+  47.1, 47.8, 47.4, 46.9, 47.2, 47.6, 47.5, 47.0,
+  47.3, 47.9, 47.2, 46.8, 47.7, 47.4, 47.1, 47.5,
+  47.8, 47.3, 47.0, 47.6, 47.4, 46.9, 47.5, 48.0,
+  47.2,
+  59.7, 59.3, 58.9, 59.5, 59.8, 59.4, 59.1,
+];
+
+const W = 480;
+const H = 200;
+const PAD_X = 4;
+const N = samples.length;
+const slot = (W - PAD_X * 2) / N;
+const barW = slot * 0.62;
+const baseY = 165;             // y position of build = 0
+const scale = 2.1;             // px per second above 0
+const regressionIdx = 25;
 ---
 
 <Base>
   <!-- ── Hero ──────────────────────────────────────────── -->
   <section class="hero">
+    <div class="hero-rule hero-rule-top"></div>
     <div class="hero-glow"></div>
-    <div class="hero-content">
-      <p class="section-label">Open-source build observability</p>
-      <h1 class="hero-title">
-        Your build,<br />
-        <span class="hero-accent">always at its best.</span>
-      </h1>
-      <p class="hero-sub">
-        Wezel catches build regressions before they slow your team down.
-        Know what changed, what broke, and how much time it costs — automatically.
-      </p>
-      <div class="hero-ctas">
-        <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
-          Get Started
-        </a>
+
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="section-label hero-anim" style="--d:0ms">
+          Build-time observability · open source
+        </p>
+        <h1 class="hero-title hero-anim" style="--d:120ms">
+          Get <em>intentional</em><br />
+          about build speed.
+        </h1>
+        <p class="hero-sub hero-anim" style="--d:240ms">
+          Wezel benchmarks the build scenarios your team runs most, on every commit.
+          The moment something gets slower, you know which change, how much, and what it touched.
+        </p>
+        <div class="hero-ctas hero-anim" style="--d:360ms">
+          <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
+            Get started
+          </a>
+          <a href="/docs" class="btn btn-lg btn-ghost-line">
+            Read the docs <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <dl class="hero-meta hero-anim" style="--d:520ms">
+          <div>
+            <dt>scenario</dt>
+            <dd>cargo&nbsp;build · dev</dd>
+          </div>
+          <div>
+            <dt>window</dt>
+            <dd>last 32 commits</dd>
+          </div>
+          <div>
+            <dt>regression</dt>
+            <dd class="meta-warn">+12.4s · +26%</dd>
+          </div>
+        </dl>
       </div>
 
-      <div class="hero-terminal">
-        <div class="terminal-bar">
-          <span class="terminal-dot" style="background: var(--red)"></span>
-          <span class="terminal-dot" style="background: var(--amber)"></span>
-          <span class="terminal-dot" style="background: var(--green)"></span>
-          <span class="terminal-title">terminal</span>
-        </div>
-        <div class="terminal-body">
-          <span class="t-prompt">$</span> <span class="t-cmd">cargo build</span><br />
-          <span class="t-dim">   Compiling 142 crates...</span><br />
-          <span class="t-dim">   Finished in 47.3s</span><br /><br />
-          <span class="t-prompt">$</span> <span class="t-cmd">wezel status</span><br />
-          <span class="t-accent">⚠ regression detected</span> <span class="t-dim">on scenario</span> <span class="t-text">dev-build</span><br />
-          <span class="t-dim">  commit</span> <span class="t-cyan">a3f8c1d</span> <span class="t-dim">added</span> <span class="t-warn">+12.4s</span> <span class="t-dim">(+26%)</span><br />
-          <span class="t-dim">  cause:</span> <span class="t-text">new generic impl in <span class="t-cyan">core::parser</span></span><br />
-          <span class="t-dim">  affected crates:</span> <span class="t-text">38 downstream rebuilds</span>
-        </div>
-      </div>
+      <figure class="hero-chart hero-anim" style="--d:480ms">
+        <header class="chart-head">
+          <span class="chart-head-key">build duration · seconds</span>
+          <span class="chart-head-dot" aria-hidden="true"></span>
+          <span class="chart-head-key chart-head-key-right">live</span>
+        </header>
+
+        <svg
+          class="chart-svg"
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          role="img"
+          aria-label="Build durations over the last 32 commits, with a regression on commit a3f8c1d adding 12.4 seconds."
+        >
+          <defs>
+            <linearGradient id="bar-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--text-mid)" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="var(--text-mid)" stop-opacity="0.55" />
+            </linearGradient>
+            <linearGradient id="bar-grad-warn" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--red)" stop-opacity="1" />
+              <stop offset="100%" stop-color="var(--red)" stop-opacity="0.6" />
+            </linearGradient>
+          </defs>
+
+          <!-- horizontal hairlines -->
+          {[20, 40, 60].map((s) => (
+            <line
+              x1={PAD_X} y1={baseY - s * scale}
+              x2={W - PAD_X} y2={baseY - s * scale}
+              class="grid-line"
+            />
+          ))}
+
+          <!-- baseline of 47.3s -->
+          <line
+            x1={PAD_X} y1={baseY - 47.3 * scale}
+            x2={W - PAD_X} y2={baseY - 47.3 * scale}
+            class="baseline-line"
+            stroke-dasharray="2 4"
+          />
+          <text
+            x={W - PAD_X} y={baseY - 47.3 * scale - 6}
+            class="axis-label axis-label-right"
+          >baseline 47.3s</text>
+
+          <!-- bars -->
+          {samples.map((s, i) => {
+            const x = PAD_X + i * slot + (slot - barW) / 2;
+            const h = s * scale;
+            const y = baseY - h;
+            const isWarn = i >= regressionIdx;
+            return (
+              <rect
+                class={`bar${isWarn ? ' bar-warn' : ''}`}
+                x={x} y={y} width={barW} height={h}
+                rx={1}
+                style={`--d:${600 + i * 28}ms`}
+                fill={isWarn ? 'url(#bar-grad-warn)' : 'url(#bar-grad)'}
+              />
+            );
+          })}
+
+          <!-- regression marker line -->
+          <line
+            x1={PAD_X + regressionIdx * slot - 1}
+            y1={20}
+            x2={PAD_X + regressionIdx * slot - 1}
+            y2={baseY + 6}
+            class="marker-line"
+          />
+
+          <!-- regression annotation -->
+          <g class="marker-label" transform={`translate(${PAD_X + regressionIdx * slot + 8}, 28)`}>
+            <text class="marker-hash">a3f8c1d</text>
+            <text class="marker-delta" y="13">+12.4s · +26%</text>
+            <text class="marker-cause" y="26">core::parser · new generic impl</text>
+          </g>
+
+          <!-- ticks under axis -->
+          <line x1={PAD_X} y1={baseY + 1} x2={W - PAD_X} y2={baseY + 1} class="axis-line" />
+          <text x={PAD_X} y={baseY + 16} class="axis-label">32 commits ago</text>
+          <text x={W - PAD_X} y={baseY + 16} class="axis-label axis-label-right">now</text>
+        </svg>
+      </figure>
     </div>
+
+    <div class="hero-rule hero-rule-bot"></div>
   </section>
 
   <!-- ── How it works ──────────────────────────────────── -->
   <section class="how">
     <div class="how-inner">
-      <p class="section-label">How it works</p>
-      <h2 class="section-title">Find it. Track it. Prevent it.</h2>
-      <p class="section-sub">
-        Wezel zeroes in on the build scenarios that hurt your team most, then makes sure they never quietly get worse.
+      <p class="section-label">The loop</p>
+      <h2 class="section-title">Find it. Track it. Catch it.</h2>
+
+      <ol class="how-steps">
+        <li class="how-step">
+          <span class="how-num">01</span>
+          <div class="how-body">
+            <h3>Find the scenarios that cost your team the most time.</h3>
+            <p>
+              Wezel observes real builds across your whole team — no manual instrumentation needed —
+              and surfaces which scenarios eat the most time, for the most people, most often.
+            </p>
+          </div>
+        </li>
+        <li class="how-step">
+          <span class="how-num">02</span>
+          <div class="how-body">
+            <h3>Track them on every commit.</h3>
+            <p>
+              Once you know what matters, Wezel benchmarks those scenarios on every commit in CI and
+              keeps the full history, so you can see exactly when things changed and how the trend is moving.
+            </p>
+          </div>
+        </li>
+        <li class="how-step">
+          <span class="how-num">03</span>
+          <div class="how-body">
+            <h3>Catch each regression at the commit that caused it.</h3>
+            <p>
+              The moment a commit adds meaningful build time, Wezel tells you — which commit, how much,
+              what it affected — while it's still a single change to revisit, not after it's already baked into your baseline.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── Example experiment ───────────────────────────── -->
+  <section class="example">
+    <div class="example-inner">
+      <p class="section-label">An example</p>
+      <h2 class="section-title">What you write. What Wezel watches.</h2>
+      <p class="example-sub">
+        A workspace-build experiment for Wezel itself: <code>cargo</code> compiles the workspace
+        and emits per-crate timing outcomes. Experiments are sequences of <em>steps</em> that run
+        <em>tools</em>; each step produces <em>outcomes</em>; and a single outcome can feed
+        <em>multiple summaries</em> — total time, the slowest crate, whatever metric you want
+        tracked separately across commits.
       </p>
 
-      <div class="how-grid how-grid-3">
-        <div class="how-card">
-          <div class="how-card-icon" style="background: var(--green-dim); color: var(--green);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </div>
-          <h3>Find the pain</h3>
-          <p class="how-card-desc">
-            Wezel observes real builds across your whole team — no manual instrumentation needed. It surfaces which scenarios eat the most time, for the most people, most often.
-          </p>
-        </div>
+      <div class="example-grid">
+        <figure class="example-code">
+          <figcaption>
+            <span class="example-path">.wezel/experiments/workspace-build/experiment.toml</span>
+            <span class="example-lang">toml</span>
+          </figcaption>
+          <Code code={experimentToml} lang="toml" theme="vitesse-dark" />
+        </figure>
 
-        <div class="how-card">
-          <div class="how-card-icon" style="background: var(--accent-glow); color: var(--accent);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <h3>Track it continuously</h3>
-          <p class="how-card-desc">
-            Your most critical scenarios are benchmarked on every commit in CI. A full history lets you see exactly when things changed and how the trend is moving.
-          </p>
-        </div>
-
-        <div class="how-card">
-          <div class="how-card-icon" style="background: rgba(184, 152, 96, 0.12); color: var(--amber);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <h3>Prevent regressions</h3>
-          <p class="how-card-desc">
-            The moment a commit adds meaningful build time, Wezel tells you — which commit, how much time, what it affected. Catch it while it's still fresh and easy to revisit, not months later when it's your new normal.
-          </p>
-        </div>
+        <figure class="example-alert">
+          <figcaption>
+            <span class="example-alert-tag">⚠ regression detected</span>
+            <span class="example-alert-ts">2026-05-15</span>
+          </figcaption>
+          <dl class="alert-fields">
+            <div><dt>experiment</dt><dd>workspace-build</dd></div>
+            <div><dt>summary</dt><dd>workspace-build-time</dd></div>
+            <div><dt>commit</dt><dd class="alert-hash">a3f8c1d</dd></div>
+            <div><dt>baseline</dt><dd>47.3s · trailing 30 commits</dd></div>
+            <div><dt>current</dt><dd class="alert-warn">59.7s · +12.4s · +26%</dd></div>
+            <div><dt>cause</dt><dd>core::parser — new generic impl, 38 downstream rebuilds</dd></div>
+          </dl>
+          <a class="alert-link" href="#">view in dashboard →</a>
+        </figure>
       </div>
+
+      <p class="example-caption">
+        You commit the <code>experiment.toml</code>. Wezel runs the steps on each commit in CI,
+        stores every summary the experiment defines, and flags the bisected commit the moment any
+        of them drifts past your tolerance.
+      </p>
     </div>
   </section>
 
@@ -90,33 +261,43 @@ import Base from '../layouts/Base.astro';
   <section class="why">
     <div class="why-inner">
       <p class="section-label">Why Wezel</p>
-      <h2 class="section-title">Slow builds don't announce themselves.</h2>
 
       <div class="why-grid">
-        <div class="why-card">
-          <div class="why-marker" style="background: var(--red);"></div>
-          <h3>Pain you didn't know you had</h3>
+        <article class="why-item" data-tone="red">
+          <span class="why-tag">
+            <span class="why-tag-mark"></span>
+            team cost
+          </span>
+          <h3>Build time, <em>totaled</em> across your team.</h3>
           <p>
-            Build time creep is invisible until it's unbearable. Wezel quantifies the real cost —
-            aggregate wait time across your whole team — so you can prioritize what's actually worth fixing.
+            Build time spent by one engineer multiplied by everyone else is the real number.
+            Wezel quantifies aggregate wait time so you can prioritize what's actually worth fixing.
           </p>
-        </div>
-        <div class="why-card">
-          <div class="why-marker" style="background: var(--accent);"></div>
-          <h3>Regressions that hide in plain sight</h3>
+        </article>
+
+        <article class="why-item" data-tone="accent">
+          <span class="why-tag">
+            <span class="why-tag-mark"></span>
+            per-commit signal
+          </span>
+          <h3>Regressions, <em>caught</em> at the commit.</h3>
           <p>
-            A change that adds 15 seconds to your most common build scenario is death by a thousand cuts.
-            Wezel catches it while it's still a single commit, not after it's baked into your baseline.
+            Every commit gets benchmarked against the previous baseline. A change that adds 15 seconds
+            to your most-run scenario gets surfaced immediately — not after it's baked in.
           </p>
-        </div>
-        <div class="why-card">
-          <div class="why-marker" style="background: var(--green);"></div>
-          <h3>Open source, your data</h3>
+        </article>
+
+        <article class="why-item" data-tone="green">
+          <span class="why-tag">
+            <span class="why-tag-mark"></span>
+            open &amp; owned
+          </span>
+          <h3>Open source, <em>your</em> data.</h3>
           <p>
-            Self-host the entire stack for free, forever. No telemetry, no vendor lock-in.
-            MIT-licensed and community-driven.
+            Self-host the entire stack for free, forever — MIT-licensed, no telemetry, no vendor lock-in.
+            Built in the open with the community, not behind a feature gate.
           </p>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -125,12 +306,26 @@ import Base from '../layouts/Base.astro';
   <section class="bottom-cta">
     <div class="bottom-cta-glow"></div>
     <div class="bottom-cta-inner">
-      <h2>Stop accepting slow builds as normal.</h2>
-      <p>Find your most painful scenarios, track them on every commit, and get alerted before regressions reach your team.</p>
-      <div class="bottom-cta-buttons">
-        <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
-          Get Started on GitHub
-        </a>
+      <div class="bottom-cta-text">
+        <p class="section-label">Start the loop</p>
+        <h2>
+          Make build speed<br />
+          a <em>priority.</em>
+        </h2>
+      </div>
+      <div class="bottom-cta-aside">
+        <p>
+          Wezel surfaces your slowest scenarios, benchmarks them on every commit,
+          and tells you when a change adds time.
+        </p>
+        <div class="bottom-cta-buttons">
+          <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
+            Get started on GitHub
+          </a>
+          <a href="/docs" class="btn btn-lg btn-ghost-line">
+            Read the docs <span aria-hidden="true">→</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -141,282 +336,638 @@ import Base from '../layouts/Base.astro';
   .hero {
     position: relative;
     overflow: hidden;
-    padding: 5rem 2rem 4rem;
+    padding: 4.5rem 0 2rem;
   }
+
+  .hero-rule {
+    position: absolute;
+    left: 2rem;
+    right: 2rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-light) 20%, var(--border-light) 80%, transparent);
+    opacity: 0.5;
+  }
+  .hero-rule-top { top: 0; }
+  .hero-rule-bot { bottom: 0; }
 
   .hero-glow {
     position: absolute;
-    top: -180px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-    height: 500px;
-    background: radial-gradient(ellipse at center, var(--accent-glow-strong) 0%, transparent 70%);
+    top: -200px;
+    right: -120px;
+    width: 720px;
+    height: 520px;
+    background: radial-gradient(ellipse at center, var(--accent-glow-strong) 0%, transparent 65%);
     pointer-events: none;
     z-index: 0;
   }
 
-  .hero-content {
+  .hero-inner {
     position: relative;
     z-index: 1;
-    max-width: 680px;
+    max-width: var(--max-width);
     margin: 0 auto;
-    text-align: center;
+    padding: 2rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: center;
   }
 
   .hero-title {
-    font-size: 3.6rem;
-    font-weight: 800;
-    line-height: 1.08;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+    line-height: 1.05;
     letter-spacing: -0.035em;
     color: var(--text);
-    margin-bottom: 1.25rem;
+    margin: 0 0 1.5rem;
   }
 
-  .hero-accent {
-    background: linear-gradient(135deg, var(--accent) 0%, #d4a878 50%, var(--cyan) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .hero-title em,
+  .accent-mark {
+    font-style: normal;
+    color: var(--accent);
+    background-image: linear-gradient(
+      0deg,
+      var(--accent-glow-strong) 0%,
+      var(--accent-glow-strong) 28%,
+      transparent 28%
+    );
+    padding: 0 0.12em;
+    margin: 0 -0.04em;
   }
 
   .hero-sub {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     color: var(--text-mid);
     line-height: 1.65;
-    max-width: 520px;
-    margin: 0 auto 2.25rem;
+    max-width: 38ch;
+    margin: 0 0 2rem;
   }
 
   .hero-ctas {
     display: flex;
-    gap: 0.85rem;
-    justify-content: center;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 3.5rem;
+    align-items: center;
+    margin-bottom: 2.75rem;
   }
 
-  /* ── Terminal mockup ───────────────────────────────── */
-  .hero-terminal {
-    max-width: 560px;
-    margin: 0 auto;
-    border-radius: var(--radius-lg);
+  .btn-ghost-line {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    padding: 0.85rem 0.5rem;
+    position: relative;
+  }
+  .btn-ghost-line::after {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.6rem;
+    height: 1px;
+    background: var(--text-dim);
+    transform-origin: left;
+    transform: scaleX(0.4);
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+  .btn-ghost-line:hover::after {
+    transform: scaleX(1);
+    background: var(--accent);
+  }
+
+  /* Hero meta strip */
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 2rem;
+    padding: 1rem 0 0;
+    border-top: 1px solid var(--border);
+    max-width: 36rem;
+    margin: 0;
+  }
+  .hero-meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.25rem;
+  }
+  .hero-meta dd {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .hero-meta .meta-warn { color: var(--red); }
+
+  /* ── Chart ────────────────────────────────────────── */
+  .hero-chart {
+    position: relative;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg-deep) 100%);
     border: 1px solid var(--border);
-    background: var(--bg-deep);
-    overflow: hidden;
-    text-align: left;
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem 1.1rem;
+    margin: 0;
     box-shadow:
-      0 8px 40px rgba(0, 0, 0, 0.35),
-      0 0 60px var(--accent-glow);
+      0 16px 48px rgba(0, 0, 0, 0.4),
+      0 0 80px var(--accent-glow);
   }
 
-  .terminal-bar {
+  .chart-head {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    gap: 0.6rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 0.85rem;
+  }
+  .chart-head-key {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .chart-head-key-right {
+    margin-left: auto;
+    color: var(--green);
+  }
+  .chart-head-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-left: auto;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
   }
 
-  .terminal-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+  .chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .chart-svg .grid-line {
+    stroke: var(--border);
+    stroke-width: 1;
     opacity: 0.7;
   }
-
-  .terminal-title {
-    margin-left: auto;
+  .chart-svg .baseline-line {
+    stroke: var(--accent);
+    stroke-width: 1;
+    opacity: 0.55;
+  }
+  .chart-svg .axis-line {
+    stroke: var(--border-light);
+    stroke-width: 1;
+  }
+  .chart-svg .axis-label {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--text-dim);
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--text-dim);
+  }
+  .chart-svg .axis-label-right {
+    text-anchor: end;
+  }
+  .chart-svg .bar {
+    transform-origin: center bottom;
+    transform-box: fill-box;
+    animation: bar-grow 700ms cubic-bezier(.16,.7,.27,1) var(--d, 0ms) backwards;
+  }
+  .chart-svg .marker-line {
+    stroke: var(--red);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+    opacity: 0;
+    animation: fade-in 500ms 1450ms forwards;
+  }
+  .chart-svg .marker-label {
+    opacity: 0;
+    animation: rise 600ms 1550ms backwards forwards;
+  }
+  .chart-svg .marker-hash {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    fill: var(--red);
+    letter-spacing: 0.02em;
+  }
+  .chart-svg .marker-delta {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    fill: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .chart-svg .marker-cause {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    fill: var(--text-dim);
     letter-spacing: 0.02em;
   }
 
-  .terminal-body {
-    padding: 1.25rem 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    line-height: 1.75;
-    color: var(--text-dim);
+  @keyframes bar-grow {
+    from { transform: scaleY(0); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translate(var(--rx, 0), 6px); }
+    to { opacity: 1; transform: translate(0, 0); }
   }
 
-  .t-prompt { color: var(--green); font-weight: 600; }
-  .t-cmd { color: var(--text); font-weight: 500; }
-  .t-dim { color: var(--text-dim); }
-  .t-text { color: var(--text-mid); }
-  .t-accent { color: var(--accent); font-weight: 600; }
-  .t-cyan { color: var(--cyan); }
-  .t-warn { color: var(--red); font-weight: 600; }
+  /* Hero copy stagger animation */
+  .hero-anim {
+    opacity: 0;
+    animation: hero-rise 700ms cubic-bezier(.2,.7,.27,1) var(--d, 0ms) forwards;
+  }
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   /* ── Section shared ────────────────────────────────── */
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.75rem;
-    text-align: center;
-  }
-
   .section-title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    font-weight: 600;
     color: var(--text);
-    letter-spacing: -0.02em;
-    text-align: center;
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    margin: 0 0 2.5rem;
+    max-width: 24ch;
   }
 
-  .section-sub {
-    font-size: 1.05rem;
-    color: var(--text-mid);
-    text-align: center;
-    max-width: 480px;
-    margin: 0 auto;
-    line-height: 1.6;
+  .section-title em {
+    font-style: normal;
+    color: var(--accent);
+    background-image: linear-gradient(
+      0deg,
+      var(--accent-glow-strong) 0%,
+      var(--accent-glow-strong) 28%,
+      transparent 28%
+    );
+    padding: 0 0.1em;
+    margin: 0 -0.04em;
   }
 
   /* ── How it works ──────────────────────────────────── */
   .how {
-    padding: 4rem 2rem;
+    padding: 5rem 0;
     border-top: 1px solid var(--border);
   }
 
   .how-inner {
-    max-width: 960px;
+    max-width: var(--max-width);
     margin: 0 auto;
+    padding: 0 2rem;
   }
 
-  .how-grid {
+  .how-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    max-width: 56rem;
+  }
+
+  .how-step {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-top: 2.5rem;
+    grid-template-columns: 7rem 1fr;
+    gap: 2.5rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .how-step:last-child {
+    border-bottom: 1px solid var(--border);
   }
 
-  .how-grid-3 {
-    grid-template-columns: repeat(3, 1fr);
+  .how-num {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.4rem;
+    color: var(--accent);
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+  }
+  .how-num::after {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.6;
+    margin-top: 0.7rem;
   }
 
-  .how-card {
+  .how-body h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--text);
+    letter-spacing: -0.04em;
+    margin: 0 0 0.6rem;
+    line-height: 1.18;
+  }
+
+  .how-body p {
+    font-size: 0.98rem;
+    color: var(--text-mid);
+    line-height: 1.65;
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* ── Example experiment ────────────────────────────── */
+  .example {
+    position: relative;
+    padding: 5.5rem 0 5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .example-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .example-sub {
+    font-size: 1.02rem;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 64ch;
+    margin: -1rem 0 3rem;
+  }
+
+  .example-sub code,
+  .example-caption code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    color: var(--text);
     background: var(--surface);
     border: 1px solid var(--border);
+    padding: 0.05em 0.4em;
+    border-radius: 4px;
+  }
+
+  .example-sub em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .example-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .example-code,
+  .example-alert {
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    margin: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
 
-  .how-card:hover {
-    border-color: var(--border-light);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-  }
-
-  .how-card-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+  .example-code figcaption,
+  .example-alert figcaption {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-
-  .how-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.15rem;
-    letter-spacing: -0.01em;
-  }
-
-  .how-card-role {
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px dashed var(--border);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--cyan);
-    letter-spacing: 0.03em;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
     text-transform: uppercase;
-    margin-bottom: 0.85rem;
   }
 
-  .how-card-desc {
-    font-size: 0.88rem;
+  .example-lang {
+    margin-left: auto;
     color: var(--text-dim);
-    line-height: 1.55;
+  }
+
+  .example-code pre.astro-code,
+  .example-code .astro-code {
+    padding: 1.15rem 1.25rem !important;
+    font-size: 0.8rem !important;
+    line-height: 1.7 !important;
+    background: var(--bg-deep) !important;
+    margin: 0;
+    overflow-x: auto;
+    font-family: var(--font-mono) !important;
+  }
+
+  .example-alert-tag {
+    color: var(--red);
+    letter-spacing: 0.12em;
+  }
+
+  .example-alert-ts {
+    margin-left: auto;
+  }
+
+  .alert-fields {
+    padding: 1.15rem 1.25rem 0.5rem;
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 1.4rem;
+    row-gap: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+
+  .alert-fields > div {
+    display: contents;
+  }
+
+  .alert-fields dt {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    align-self: center;
+  }
+
+  .alert-fields dd {
+    margin: 0;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .alert-warn {
+    color: var(--red);
+  }
+
+  .alert-hash {
+    color: var(--cyan);
+  }
+
+  .alert-link {
+    display: inline-block;
+    margin: 0.4rem 1.25rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .alert-link:hover {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .example-caption {
+    margin: 2.25rem 0 0;
+    font-size: 0.98rem;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 64ch;
   }
 
   /* ── Why Wezel ─────────────────────────────────────── */
   .why {
-    padding: 4rem 2rem;
+    position: relative;
+    padding: 5.5rem 0 5rem;
     border-top: 1px solid var(--border);
+    background: var(--bg-deep);
+    overflow: hidden;
+  }
+
+  .why::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 0%, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
   }
 
   .why-inner {
-    max-width: 960px;
+    position: relative;
+    max-width: var(--max-width);
     margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .why-title {
+    margin-bottom: 3.5rem;
   }
 
   .why-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 2.5rem;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
-  .why-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.75rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  .why-item {
+    padding: 2.25rem 2rem;
+    border-left: 1px solid var(--border);
+    position: relative;
+  }
+  .why-item:first-child {
+    border-left: none;
+    padding-left: 0;
+  }
+  .why-item:last-child {
+    padding-right: 0;
   }
 
-  .why-card:hover {
-    border-color: var(--border-light);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  .why-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 1.5rem;
   }
-
-  .why-marker {
-    width: 4px;
-    height: 28px;
-    border-radius: 2px;
-    margin-bottom: 1rem;
+  .why-tag-mark {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
   }
+  .why-item[data-tone="red"] .why-tag-mark { background: var(--red); color: var(--red); }
+  .why-item[data-tone="accent"] .why-tag-mark { background: var(--accent); color: var(--accent); }
+  .why-item[data-tone="green"] .why-tag-mark { background: var(--green); color: var(--green); }
 
-  .why-card h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
+  .why-item h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
     color: var(--text);
-    margin-bottom: 0.6rem;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.04em;
+    line-height: 1.22;
+    margin: 0 0 0.95rem;
+    max-width: 22ch;
+  }
+  .why-item h3 em {
+    font-style: normal;
+    color: var(--accent);
+    background-image: linear-gradient(
+      0deg,
+      var(--accent-glow-strong) 0%,
+      var(--accent-glow-strong) 28%,
+      transparent 28%
+    );
+    padding: 0 0.1em;
+    margin: 0 -0.04em;
   }
 
-  .why-card p {
-    font-size: 0.9rem;
+  .why-item p {
+    font-size: 0.93rem;
     color: var(--text-dim);
-    line-height: 1.6;
+    line-height: 1.65;
+    max-width: 36ch;
+    margin: 0;
   }
 
   /* ── Bottom CTA ────────────────────────────────────── */
   .bottom-cta {
     position: relative;
-    padding: 5rem 2rem;
+    padding: 6rem 2rem 5rem;
     border-top: 1px solid var(--border);
     overflow: hidden;
   }
 
   .bottom-cta-glow {
     position: absolute;
-    bottom: -120px;
+    bottom: -160px;
     left: 50%;
     transform: translateX(-50%);
-    width: 700px;
-    height: 400px;
+    width: 800px;
+    height: 460px;
     background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
     pointer-events: none;
   }
@@ -424,25 +975,34 @@ import Base from '../layouts/Base.astro';
   .bottom-cta-inner {
     position: relative;
     text-align: center;
-    max-width: 520px;
+    max-width: 640px;
     margin: 0 auto;
     z-index: 1;
   }
 
   .bottom-cta-inner h2 {
-    font-size: 2rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 144, "SOFT" 60;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 460;
     color: var(--text);
-    letter-spacing: -0.02em;
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.25rem;
+    line-height: 1.04;
+  }
+  .bottom-cta-inner h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
   }
 
   .bottom-cta-inner p {
     font-size: 1rem;
     color: var(--text-mid);
-    line-height: 1.6;
+    line-height: 1.65;
     margin-bottom: 2rem;
+    max-width: 46ch;
+    margin-inline: auto;
   }
 
   .bottom-cta-buttons {
@@ -453,62 +1013,86 @@ import Base from '../layouts/Base.astro';
   }
 
   /* ── Responsive ────────────────────────────────────── */
-  @media (max-width: 900px) {
-    .how-grid {
-      grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 960px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      padding-top: 1rem;
     }
-
-    .how-grid-3 {
+    .hero-glow {
+      right: -200px;
+      top: -240px;
+    }
+    .example-grid {
       grid-template-columns: 1fr;
     }
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      padding: 3.5rem 1.25rem 3rem;
-    }
-
-    .hero-title {
-      font-size: 2.4rem;
-    }
-
-    .hero-sub {
-      font-size: 1rem;
-    }
-
-    .hero-terminal {
-      max-width: 100%;
-    }
-
-    .terminal-body {
-      font-size: 0.75rem;
-      padding: 1rem;
-    }
-
-    .section-title {
-      font-size: 1.6rem;
-    }
-
-    .how, .why, .bottom-cta {
-      padding: 3rem 1.25rem;
-    }
-
     .why-grid {
       grid-template-columns: 1fr;
     }
-
-    .bottom-cta-inner h2 {
-      font-size: 1.6rem;
+    .why-item {
+      border-left: none;
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+    }
+    .why-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .why-item:last-child {
+      padding-bottom: 0;
     }
   }
 
-  @media (max-width: 480px) {
-    .hero-title {
-      font-size: 2rem;
+  @media (max-width: 700px) {
+    .hero {
+      padding: 3rem 0 1rem;
     }
-
-    .how-grid {
+    .hero-inner {
+      padding: 1.5rem 1.25rem 2rem;
+    }
+    .hero-rule {
+      left: 1rem; right: 1rem;
+    }
+    .hero-meta {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .how, .why, .example {
+      padding: 3.5rem 0;
+    }
+    .how-inner, .why-inner, .example-inner {
+      padding: 0 1.25rem;
+    }
+    .how-step {
       grid-template-columns: 1fr;
+      gap: 0.75rem;
+      padding: 1.5rem 0;
+    }
+    .how-num {
+      font-size: 2.2rem;
+    }
+    .bottom-cta {
+      padding: 4rem 1.25rem 3.5rem;
+    }
+  }
+
+  /* Light theme: re-tint chart bars for contrast */
+  [data-theme="light"] .hero-chart {
+    box-shadow:
+      0 12px 36px rgba(0, 0, 0, 0.08),
+      0 0 60px var(--accent-glow);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-anim,
+    .chart-svg .bar,
+    .chart-svg .marker-line,
+    .chart-svg .marker-label,
+    .chart-head-dot {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 </style>
