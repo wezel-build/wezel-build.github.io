@@ -23,7 +23,7 @@ summary.slowest-crate-time   = { outcome = "duration.max" }
 const N = 32;
 const BASELINE = 47.3;
 const W = 480;
-const H = 200;
+const H = 210;
 const PAD_X = 4;
 const slot = (W - PAD_X * 2) / N;
 const barW = slot * 0.62;
@@ -46,23 +46,36 @@ const bisectStep3Idx = 22;  // good — narrow further right
 const bisectStep4Idx = 23;  // bad  — confirms 23 is the offender (adjacent to 22-good)
 const regressionIdx  = bisectStep4Idx;
 
-// Timing: the cursor sweeps left-to-right across the chart over SWEEP_MS.
-// Each commit becomes "real" the moment the cursor passes its x position;
-// most commits stay as ticks (unmeasured) but the sampled ones become bars.
-// Bisection bars appear AFTER the cursor reaches the regression, simulating
-// the additional measurements Wezel runs to pinpoint the offender.
-const SWEEP_MS = 5000;
-const STEP_MS  = SWEEP_MS / N;
-const BISECT_SPAN_DELAY    = SWEEP_MS + 200;
-const BISECT_STEP_1_DELAY  = SWEEP_MS + 500;   // measure 24 (bad)
-const BISECT_STEP_2_DELAY  = SWEEP_MS + 1050;  // measure 20 (good)
-const BISECT_STEP_3_DELAY  = SWEEP_MS + 1600;  // measure 22 (good)
-const BISECT_STEP_4_DELAY  = SWEEP_MS + 2150;  // measure 23 (bad — offender)
-const MARKER_LINE_DELAY    = SWEEP_MS + 2600;
-const MARKER_LABEL_DELAY   = SWEEP_MS + 2750;
+// Timing: the cursor sweeps left-to-right across the chart at SWEEP_MOVING_MS
+// of pure motion, but PAUSES for PAUSE_MS at each sample commit (so the viewer
+// sees the cursor visibly stop on every measurement). Total sweep duration
+// extends by the cumulative pause time.
+// Bisection bars appear AFTER the sweep finishes, with the cursor jumping back
+// to track each binary-search step.
+const SWEEP_MOVING_MS = 4000;
+const STEP_MS         = SWEEP_MOVING_MS / N;
+const PAUSE_MS        = 150;
+const TOTAL_PAUSE_MS  = sampleIdxs.length * PAUSE_MS;
+const SWEEP_END_MS    = SWEEP_MOVING_MS + TOTAL_PAUSE_MS;  // 4600ms
+
+// pausesBefore(i): total ms of cursor-pause accumulated by the time the cursor
+// reaches commit i's center (count of sample indices strictly less than i).
+function pausesBefore(i) {
+  let n = 0;
+  for (const s of sampleIdxs) if (s < i) n++;
+  return n * PAUSE_MS;
+}
+
+const BISECT_SPAN_DELAY    = SWEEP_END_MS + 200;   // 4800 — span + range label fade in here
+const BISECT_STEP_1_DELAY  = SWEEP_END_MS + 800;   // 5400 — wait for range label to settle, then bisect
+const BISECT_STEP_2_DELAY  = SWEEP_END_MS + 1225;  // 5825
+const BISECT_STEP_3_DELAY  = SWEEP_END_MS + 1650;  // 6250
+const BISECT_STEP_4_DELAY  = SWEEP_END_MS + 2075;  // 6675
+const MARKER_LINE_DELAY    = SWEEP_END_MS + 2450;  // 7050
+const MARKER_LABEL_DELAY   = SWEEP_END_MS + 2600;  // 7200
 
 const commits = Array.from({ length: N }, (_, i) => {
-  const tBase = Math.round(i * STEP_MS);
+  const tBase = Math.round(i * STEP_MS + pausesBefore(i));
   if (i === bisectStep1Idx)
     return { i, type: 'bisect-bad',  value: 59.5, delay: BISECT_STEP_1_DELAY };
   if (i === bisectStep2Idx)
@@ -96,8 +109,8 @@ const commits = Array.from({ length: N }, (_, i) => {
           Build-time observability · open source
         </p>
         <h1 class="hero-title hero-anim" style="--d:120ms">
-          Build performance drifts.<br />
-          Nudge yours in the right direction.
+          Your build,<br />
+          <em>always</em> at its best.
         </h1>
         <p class="hero-sub hero-anim" style="--d:240ms">
           Wezel benchmarks the build scenarios your team runs most, on every commit.
@@ -184,7 +197,9 @@ const commits = Array.from({ length: N }, (_, i) => {
             const ghostV = BASELINE + Math.sin(c.i * 1.3) * 0.4;
             const h = ghostV * scale;
             const y = baseY - h;
-            const ghostDelay = Math.round(c.i * STEP_MS + STEP_MS / 2);
+            // Synced to the cursor's center crossing this commit, accounting
+            // for any sample-pauses that have already happened earlier in the sweep.
+            const ghostDelay = Math.round(c.i * STEP_MS + STEP_MS / 2 + pausesBefore(c.i));
             return (
               <g class="ghost" style={`--d:${ghostDelay}ms`}>
                 <rect class="ghost-bar" x={x} y={y} width={barW} height={h} rx={1} />
@@ -237,6 +252,36 @@ const commits = Array.from({ length: N }, (_, i) => {
           <line x1={PAD_X} y1={baseY + 1} x2={W - PAD_X} y2={baseY + 1} class="axis-line" />
           <text x={PAD_X} y={baseY + 16} class="axis-label commits-ago">32 commits ago</text>
           <text x={W - PAD_X} y={baseY + 16} class="axis-label axis-label-right">now</text>
+
+          <!-- bisection range bracket + label, below axis labels -->
+          <g class="bisect-range">
+            <line
+              x1={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y1={baseY + 25}
+              x2={PAD_X + detectIdx * slot + slot / 2}
+              y2={baseY + 25}
+              class="bisect-range-line"
+            />
+            <line
+              x1={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y1={baseY + 22}
+              x2={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y2={baseY + 28}
+              class="bisect-range-line"
+            />
+            <line
+              x1={PAD_X + detectIdx * slot + slot / 2}
+              y1={baseY + 22}
+              x2={PAD_X + detectIdx * slot + slot / 2}
+              y2={baseY + 28}
+              class="bisect-range-line"
+            />
+            <text
+              x={(PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2 + PAD_X + detectIdx * slot + slot / 2) / 2}
+              y={baseY + 38}
+              class="bisect-range-text"
+            >bisection range</text>
+          </g>
         </svg>
       </figure>
     </div>
@@ -347,7 +392,7 @@ const commits = Array.from({ length: N }, (_, i) => {
       var counter = document.querySelector('.chart-svg .commits-ago');
       if (!counter) return;
       var TOTAL = 32;
-      var SWEEP = 5000;
+      var SWEEP = 4600;  // sweep duration including 4×150ms sample pauses
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         counter.textContent = TOTAL + ' commits ago';
         return;
@@ -447,7 +492,14 @@ const commits = Array.from({ length: N }, (_, i) => {
     margin: 0 0 1.5rem;
   }
 
-  .hero-title em,
+  .hero-title em {
+    font-style: normal;
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
   .accent-mark {
     font-style: normal;
     color: var(--accent);
@@ -669,27 +721,46 @@ const commits = Array.from({ length: N }, (_, i) => {
   .chart-svg .bisect-span {
     fill: var(--accent);
     opacity: 0;
-    animation: bisect-span-in 600ms ease-out 5200ms forwards;
+    animation: bisect-span-in 600ms ease-out 4800ms forwards;
+  }
+  .chart-svg .bisect-range {
+    opacity: 0;
+    animation: fade-in 600ms ease-out 4800ms forwards;
+  }
+  .chart-svg .bisect-range-line {
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-opacity: 0.55;
+  }
+  .chart-svg .bisect-range-text {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    fill: var(--accent);
+    text-anchor: middle;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
   .chart-svg .marker-line {
     stroke: var(--red);
     stroke-width: 1;
     stroke-dasharray: 2 3;
     opacity: 0;
-    animation: fade-in 500ms 6300ms forwards;
+    animation: fade-in 500ms 7050ms forwards;
   }
   .chart-svg .marker-label {
     opacity: 0;
-    animation: rise 600ms 6450ms backwards forwards;
+    animation: rise 600ms 7200ms backwards forwards;
   }
 
   /* Time cursor — sweeps linearly so the playhead lines up with the commit
      it's passing over. Don't switch to cubic-bezier here; the commit delays
-     are linear and any easing desyncs them. */
+     are linear and any easing desyncs them. The cursor PAUSES briefly at each
+     sample commit during the sweep (150ms each), then jumps back to track
+     each bisection step's commit before fading out as the marker locks in. */
   .chart-svg .time-cursor {
     transform: translate(4px, 0);
     will-change: transform, opacity;
-    animation: cursor-sweep 5000ms linear 0ms forwards;
+    animation: cursor-sweep 7500ms linear 0ms forwards;
   }
   .chart-svg .cursor-line {
     stroke: var(--accent);
@@ -713,11 +784,39 @@ const commits = Array.from({ length: N }, (_, i) => {
     from { opacity: 0; }
     to   { opacity: 0.08; }
   }
+  /* Cursor positions (commit i center ≈ 4 + i·14.75 + 7.375):
+       commit  4 ≈  70.4px   commit 20 ≈ 306.4px
+       commit 11 ≈ 173.6px   commit 22 ≈ 335.9px
+       commit 13 ≈ 203.1px   commit 23 ≈ 350.6px
+       commit 17 ≈ 262.1px   commit 24 ≈ 365.4px
+       sweep-end (right edge) = 476px.
+     Percentages are out of 7500ms total. Sweep phase ends at 4600ms (61.3%);
+     each of the 4 sample-pauses is 150ms inserted into that phase. After
+     the sweep, the cursor holds at the right edge while the bisect-span and
+     range bracket fade in, then jumps back to track each bisection step. */
   @keyframes cursor-sweep {
-    0%    { transform: translate(4px, 0);   opacity: 0; }
-    3%    { opacity: 1; }
-    97%   { opacity: 1; }
-    100%  { transform: translate(476px, 0); opacity: 0; }
+    0%      { transform: translate(4px, 0);       opacity: 0; }
+    1.1%    {                                     opacity: 1; }
+    7.5%    { transform: translate(70.4px, 0);                }  /* 562ms — reach commit 4 */
+    9.5%    { transform: translate(70.4px, 0);                }  /* 712ms — end pause 1 */
+    21.2%   { transform: translate(173.6px, 0);               }  /* 1587ms — reach commit 11 */
+    23.2%   { transform: translate(173.6px, 0);               }  /* 1737ms — end pause 2 */
+    26.5%   { transform: translate(203.1px, 0);               }  /* 1987ms — reach commit 13 */
+    28.5%   { transform: translate(203.1px, 0);               }  /* 2137ms — end pause 3 */
+    35.2%   { transform: translate(262.1px, 0);               }  /* 2637ms — reach commit 17 */
+    37.2%   { transform: translate(262.1px, 0);               }  /* 2787ms — end pause 4 */
+    61.3%   { transform: translate(476px, 0);                 }  /* 4600ms — end of sweep */
+    70.7%   { transform: translate(476px, 0);                 }  /* 5300ms — hold while bisect-span + range label fade in */
+    71.3%   { transform: translate(365.4px, 0);               }  /* 5350ms — jump to commit 24 (bisect step 1) */
+    76.7%   { transform: translate(365.4px, 0);               }  /* 5750ms — hold */
+    77%     { transform: translate(306.4px, 0);               }  /* 5775ms — jump back to commit 20 (step 2) */
+    82.3%   { transform: translate(306.4px, 0);               }  /* 6175ms — hold */
+    82.7%   { transform: translate(335.9px, 0);               }  /* 6200ms — jump right to commit 22 (step 3) */
+    88%     { transform: translate(335.9px, 0);               }  /* 6600ms — hold */
+    88.3%   { transform: translate(350.6px, 0);               }  /* 6625ms — jump to commit 23 (step 4 — offender) */
+    91.3%   { transform: translate(350.6px, 0);   opacity: 1; }  /* 6850ms — hold */
+    94%     { transform: translate(350.6px, 0);   opacity: 0; }  /* 7050ms — fade out as marker takes over */
+    100%    { transform: translate(350.6px, 0);   opacity: 0; }
   }
   .chart-svg .marker-hash {
     font-family: var(--font-mono);
