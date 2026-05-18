@@ -17,25 +17,71 @@ summary.workspace-build-time = { outcome = "duration.total" }
 summary.slowest-crate-time   = { outcome = "duration.max" }
 `;
 
-// Build-time samples (seconds), last 32 commits, dev build of a Rust workspace.
-// Bars 0..24 are baseline (~47s), bars 25..31 show the +12.4s regression.
-const samples = [
-  47.1, 47.8, 47.4, 46.9, 47.2, 47.6, 47.5, 47.0,
-  47.3, 47.9, 47.2, 46.8, 47.7, 47.4, 47.1, 47.5,
-  47.8, 47.3, 47.0, 47.6, 47.4, 46.9, 47.5, 48.0,
-  47.2,
-  59.7, 59.3, 58.9, 59.5, 59.8, 59.4, 59.1,
-];
-
+// Chart data: Wezel samples build durations across recent commits, then bisects
+// when a sample drifts. Most commits are unmeasured (small ticks); a handful are
+// sampled bars; two get measured via bisection to pinpoint the offender.
+const N = 32;
+const BASELINE = 47.3;
 const W = 480;
 const H = 200;
 const PAD_X = 4;
-const N = samples.length;
 const slot = (W - PAD_X * 2) / N;
 const barW = slot * 0.62;
-const baseY = 165;             // y position of build = 0
-const scale = 2.1;             // px per second above 0
-const regressionIdx = 25;
+const baseY = 165;
+const scale = 2.1;
+
+// Samples land at irregular intervals (the schedule isn't uniform in real use).
+const sampleIdxs       = [4, 11, 13, 17];  // gaps of 7, 2, 4 commits
+const detectIdx        = N - 1;             // detect is the latest commit (rightmost slot)
+// Binary search on [18..30] with 31 known bad and 17 known good. The
+// terminating condition is a measured-bad commit adjacent to a measured-good
+// commit — so the offender itself has to be measured, not inferred.
+//   1. mid of [18,30] = 24 → measure (BAD).    Narrow LEFT to [18,23].
+//   2. mid of [18,23] = 20 → measure (good).   Narrow RIGHT to [21,23].
+//   3. mid of [21,23] = 22 → measure (good).   Narrow RIGHT to [23,23].
+//   4. last candidate: 23   → measure (BAD).   22-good and 23-bad adjacent: 23.
+const bisectStep1Idx = 24;  // bad
+const bisectStep2Idx = 20;  // good — jump back-left after step 1 was bad
+const bisectStep3Idx = 22;  // good — narrow further right
+const bisectStep4Idx = 23;  // bad  — confirms 23 is the offender (adjacent to 22-good)
+const regressionIdx  = bisectStep4Idx;
+
+// Timing: the cursor sweeps left-to-right across the chart over SWEEP_MS.
+// Each commit becomes "real" the moment the cursor passes its x position;
+// most commits stay as ticks (unmeasured) but the sampled ones become bars.
+// Bisection bars appear AFTER the cursor reaches the regression, simulating
+// the additional measurements Wezel runs to pinpoint the offender.
+const SWEEP_MS = 5000;
+const STEP_MS  = SWEEP_MS / N;
+const BISECT_SPAN_DELAY    = SWEEP_MS + 200;
+const BISECT_STEP_1_DELAY  = SWEEP_MS + 500;   // measure 24 (bad)
+const BISECT_STEP_2_DELAY  = SWEEP_MS + 1050;  // measure 20 (good)
+const BISECT_STEP_3_DELAY  = SWEEP_MS + 1600;  // measure 22 (good)
+const BISECT_STEP_4_DELAY  = SWEEP_MS + 2150;  // measure 23 (bad — offender)
+const MARKER_LINE_DELAY    = SWEEP_MS + 2600;
+const MARKER_LABEL_DELAY   = SWEEP_MS + 2750;
+
+const commits = Array.from({ length: N }, (_, i) => {
+  const tBase = Math.round(i * STEP_MS);
+  if (i === bisectStep1Idx)
+    return { i, type: 'bisect-bad',  value: 59.5, delay: BISECT_STEP_1_DELAY };
+  if (i === bisectStep2Idx)
+    return { i, type: 'bisect-good', value: 47.1, delay: BISECT_STEP_2_DELAY };
+  if (i === bisectStep3Idx)
+    return { i, type: 'bisect-good', value: 47.0, delay: BISECT_STEP_3_DELAY };
+  if (i === bisectStep4Idx)
+    return { i, type: 'bisect-bad',  value: 59.6, delay: BISECT_STEP_4_DELAY };
+  if (i === detectIdx)
+    return { i, type: 'detect', value: 59.3, delay: tBase + 80 };
+  if (sampleIdxs.includes(i))
+    return {
+      i,
+      type: 'sample',
+      value: BASELINE + Math.sin(i * 1.7) * 0.5,
+      delay: tBase + 80,
+    };
+  return { i, type: 'unmeasured', value: null, delay: tBase };
+});
 ---
 
 <Base>
@@ -112,34 +158,65 @@ const regressionIdx = 25;
             />
           ))}
 
-          <!-- baseline of 47.3s -->
+          <!-- baseline of 47.3s (the dashed line; no text label needed — it's universally read as baseline) -->
           <line
             x1={PAD_X} y1={baseY - 47.3 * scale}
             x2={W - PAD_X} y2={baseY - 47.3 * scale}
             class="baseline-line"
             stroke-dasharray="2 4"
           />
-          <text
-            x={W - PAD_X} y={baseY - 47.3 * scale - 6}
-            class="axis-label axis-label-right"
-          >baseline 47.3s</text>
 
-          <!-- bars -->
-          {samples.map((s, i) => {
-            const x = PAD_X + i * slot + (slot - barW) / 2;
-            const h = s * scale;
+          <!-- bisection-window highlight (between last good sample and the detection) -->
+          <rect
+            class="bisect-span"
+            x={PAD_X + (sampleIdxs[sampleIdxs.length - 1]) * slot}
+            y={baseY - 64}
+            width={(detectIdx - sampleIdxs[sampleIdxs.length - 1]) * slot}
+            height={66}
+          />
+
+          <!-- ghost bars: every commit gets a dim "unknown" placeholder when the cursor passes; measured commits later get a real bar on top -->
+          {commits.map((c) => {
+            const x = PAD_X + c.i * slot + (slot - barW) / 2;
+            const cx = x + barW / 2;
+            // ghost height = baseline ± small per-commit noise; this is "what
+            // we'd guess, but haven't measured" — the question mark says so.
+            const ghostV = BASELINE + Math.sin(c.i * 1.3) * 0.4;
+            const h = ghostV * scale;
             const y = baseY - h;
-            const isWarn = i >= regressionIdx;
+            const ghostDelay = Math.round(c.i * STEP_MS + STEP_MS / 2);
+            return (
+              <g class="ghost" style={`--d:${ghostDelay}ms`}>
+                <rect class="ghost-bar" x={x} y={y} width={barW} height={h} rx={1} />
+                <text class="ghost-mark" x={cx} y={y + 11}>?</text>
+              </g>
+            );
+          })}
+
+          <!-- bars: only measured commits get one; bisect bars grow over a dot that's already on the timeline -->
+          {commits.filter((c) => c.type !== 'unmeasured').map((c) => {
+            const x = PAD_X + c.i * slot + (slot - barW) / 2;
+            const h = c.value * scale;
+            const y = baseY - h;
+            const isWarn = c.type === 'detect' || c.type === 'bisect-bad';
+            const isBisect = c.type.startsWith('bisect-');
+            const cls = `bar bar-${c.type}${isWarn ? ' bar-warn' : ''}${isBisect ? ' bar-bisect' : ''}`;
             return (
               <rect
-                class={`bar${isWarn ? ' bar-warn' : ''}`}
+                class={cls}
                 x={x} y={y} width={barW} height={h}
                 rx={1}
-                style={`--d:${600 + i * 28}ms`}
+                style={`--d:${c.delay}ms`}
                 fill={isWarn ? 'url(#bar-grad-warn)' : 'url(#bar-grad)'}
               />
             );
           })}
+
+          <!-- time cursor: sweeps left-to-right over SWEEP_MS; line crosses the commit-dot row so it visibly "lights up" each commit it passes -->
+          <g class="time-cursor">
+            <circle cx="0" cy="18" r="3.5" class="cursor-head" />
+            <line x1="0" x2="0" y1="24" y2={baseY + 10} class="cursor-line" />
+          </g>
 
           <!-- regression marker line -->
           <line
@@ -158,7 +235,7 @@ const regressionIdx = 25;
 
           <!-- ticks under axis -->
           <line x1={PAD_X} y1={baseY + 1} x2={W - PAD_X} y2={baseY + 1} class="axis-line" />
-          <text x={PAD_X} y={baseY + 16} class="axis-label">32 commits ago</text>
+          <text x={PAD_X} y={baseY + 16} class="axis-label commits-ago">32 commits ago</text>
           <text x={W - PAD_X} y={baseY + 16} class="axis-label axis-label-right">now</text>
         </svg>
       </figure>
@@ -265,6 +342,32 @@ const regressionIdx = 25;
   </section>
 
   <script is:inline>
+    // Hero chart: count "N commits ago" upward as the time cursor sweeps.
+    (function () {
+      var counter = document.querySelector('.chart-svg .commits-ago');
+      if (!counter) return;
+      var TOTAL = 32;
+      var SWEEP = 5000;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        counter.textContent = TOTAL + ' commits ago';
+        return;
+      }
+      counter.textContent = '1 commit ago';
+      var start = null;
+      function update(t) {
+        if (start === null) start = t;
+        var elapsed = t - start;
+        if (elapsed >= SWEEP) {
+          counter.textContent = TOTAL + ' commits ago';
+          return;
+        }
+        var n = Math.max(1, Math.ceil((elapsed / SWEEP) * TOTAL));
+        counter.textContent = n + (n === 1 ? ' commit ago' : ' commits ago');
+        requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    })();
+
     (function () {
       document.querySelectorAll('.install-copy').forEach(function (btn) {
         btn.addEventListener('click', async function () {
@@ -537,21 +640,84 @@ const regressionIdx = 25;
   .chart-svg .axis-label-right {
     text-anchor: end;
   }
+  .chart-svg .ghost {
+    opacity: 0;
+    animation: ghost-in 600ms cubic-bezier(.16,.7,.27,1) var(--d, 0ms) forwards;
+  }
+  .chart-svg .ghost-bar {
+    fill: var(--text-dim);
+    fill-opacity: 0.13;
+  }
+  .chart-svg .ghost-mark {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    fill: var(--text-dim);
+    text-anchor: middle;
+    opacity: 0.55;
+    pointer-events: none;
+  }
   .chart-svg .bar {
     transform-origin: center bottom;
     transform-box: fill-box;
     animation: bar-grow 700ms cubic-bezier(.16,.7,.27,1) var(--d, 0ms) backwards;
+  }
+  .chart-svg .bar-bisect {
+    stroke: var(--accent);
+    stroke-width: 0.75;
+    stroke-opacity: 0.7;
+  }
+  .chart-svg .bisect-span {
+    fill: var(--accent);
+    opacity: 0;
+    animation: bisect-span-in 600ms ease-out 5200ms forwards;
   }
   .chart-svg .marker-line {
     stroke: var(--red);
     stroke-width: 1;
     stroke-dasharray: 2 3;
     opacity: 0;
-    animation: fade-in 500ms 1450ms forwards;
+    animation: fade-in 500ms 6300ms forwards;
   }
   .chart-svg .marker-label {
     opacity: 0;
-    animation: rise 600ms 1550ms backwards forwards;
+    animation: rise 600ms 6450ms backwards forwards;
+  }
+
+  /* Time cursor — sweeps linearly so the playhead lines up with the commit
+     it's passing over. Don't switch to cubic-bezier here; the commit delays
+     are linear and any easing desyncs them. */
+  .chart-svg .time-cursor {
+    transform: translate(4px, 0);
+    will-change: transform, opacity;
+    animation: cursor-sweep 5000ms linear 0ms forwards;
+  }
+  .chart-svg .cursor-line {
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-opacity: 0.55;
+    stroke-dasharray: 2 3;
+  }
+  .chart-svg .cursor-head {
+    fill: var(--accent);
+    opacity: 0.85;
+  }
+  .chart-svg .commits-ago {
+    fill: var(--accent);
+  }
+
+  @keyframes ghost-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes bisect-span-in {
+    from { opacity: 0; }
+    to   { opacity: 0.08; }
+  }
+  @keyframes cursor-sweep {
+    0%    { transform: translate(4px, 0);   opacity: 0; }
+    3%    { opacity: 1; }
+    97%   { opacity: 1; }
+    100%  { transform: translate(476px, 0); opacity: 0; }
   }
   .chart-svg .marker-hash {
     font-family: var(--font-mono);
