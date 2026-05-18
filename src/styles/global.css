@@ -52,8 +52,7 @@ ol {
     /* Typography */
     --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-display:
-        "Iosevka", "JetBrains Mono", ui-monospace, "SFMono-Regular",
-        monospace;
+        "Iosevka Aile", "Iosevka", ui-sans-serif, system-ui, sans-serif;
     --font-mono:
         "Iosevka", "JetBrains Mono", ui-monospace, "SFMono-Regular",
         "Cascadia Code", monospace;

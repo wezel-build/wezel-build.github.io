@@ -66,13 +66,13 @@ function pausesBefore(i) {
   return n * PAUSE_MS;
 }
 
-const BISECT_SPAN_DELAY    = SWEEP_END_MS + 200;   // 4800 — span + range label fade in here
-const BISECT_STEP_1_DELAY  = SWEEP_END_MS + 800;   // 5400 — wait for range label to settle, then bisect
-const BISECT_STEP_2_DELAY  = SWEEP_END_MS + 1225;  // 5825
-const BISECT_STEP_3_DELAY  = SWEEP_END_MS + 1650;  // 6250
-const BISECT_STEP_4_DELAY  = SWEEP_END_MS + 2075;  // 6675
-const MARKER_LINE_DELAY    = SWEEP_END_MS + 2450;  // 7050
-const MARKER_LABEL_DELAY   = SWEEP_END_MS + 2600;  // 7200
+const BISECT_SPAN_DELAY    = SWEEP_END_MS + 200;   // 4800 — bracket starts drawing right-to-left here
+const BISECT_STEP_1_DELAY  = SWEEP_END_MS + 1300;  // 5900 — wait for bracket+label to fully settle (~5700ms), small buffer
+const BISECT_STEP_2_DELAY  = SWEEP_END_MS + 1725;  // 6325
+const BISECT_STEP_3_DELAY  = SWEEP_END_MS + 2150;  // 6750
+const BISECT_STEP_4_DELAY  = SWEEP_END_MS + 2575;  // 7175
+const MARKER_LINE_DELAY    = SWEEP_END_MS + 2950;  // 7550
+const MARKER_LABEL_DELAY   = SWEEP_END_MS + 3100;  // 7700
 
 const commits = Array.from({ length: N }, (_, i) => {
   const tBase = Math.round(i * STEP_MS + pausesBefore(i));
@@ -179,15 +179,6 @@ const commits = Array.from({ length: N }, (_, i) => {
             stroke-dasharray="2 4"
           />
 
-          <!-- bisection-window highlight (between last good sample and the detection) -->
-          <rect
-            class="bisect-span"
-            x={PAD_X + (sampleIdxs[sampleIdxs.length - 1]) * slot}
-            y={baseY - 64}
-            width={(detectIdx - sampleIdxs[sampleIdxs.length - 1]) * slot}
-            height={66}
-          />
-
           <!-- ghost bars: every commit gets a dim "unknown" placeholder when the cursor passes; measured commits later get a real bar on top -->
           {commits.map((c) => {
             const x = PAD_X + c.i * slot + (slot - barW) / 2;
@@ -253,28 +244,33 @@ const commits = Array.from({ length: N }, (_, i) => {
           <text x={PAD_X} y={baseY + 16} class="axis-label commits-ago">32 commits ago</text>
           <text x={W - PAD_X} y={baseY + 16} class="axis-label axis-label-right">now</text>
 
-          <!-- bisection range bracket + label, below axis labels -->
+          <!-- bisection range bracket + label, drawn right-to-left below axis labels -->
           <g class="bisect-range">
-            <line
-              x1={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
-              y1={baseY + 25}
-              x2={PAD_X + detectIdx * slot + slot / 2}
-              y2={baseY + 25}
-              class="bisect-range-line"
-            />
-            <line
-              x1={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
-              y1={baseY + 22}
-              x2={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
-              y2={baseY + 28}
-              class="bisect-range-line"
-            />
+            <!-- right tick (drawn first) -->
             <line
               x1={PAD_X + detectIdx * slot + slot / 2}
               y1={baseY + 22}
               x2={PAD_X + detectIdx * slot + slot / 2}
               y2={baseY + 28}
-              class="bisect-range-line"
+              class="bisect-range-line bisect-range-tick-right"
+            />
+            <!-- horizontal line: animates with stroke-dashoffset right-to-left.
+                 SVG line goes from right to left (x1=rightX, x2=leftX) so the
+                 dash reveal reads as a right-to-left draw. -->
+            <line
+              x1={PAD_X + detectIdx * slot + slot / 2}
+              y1={baseY + 25}
+              x2={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y2={baseY + 25}
+              class="bisect-range-line bisect-range-horizontal"
+            />
+            <!-- left tick (fades in when the horizontal line reaches it) -->
+            <line
+              x1={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y1={baseY + 22}
+              x2={PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2}
+              y2={baseY + 28}
+              class="bisect-range-line bisect-range-tick-left"
             />
             <text
               x={(PAD_X + sampleIdxs[sampleIdxs.length - 1] * slot + slot / 2 + PAD_X + detectIdx * slot + slot / 2) / 2}
@@ -485,9 +481,9 @@ const commits = Array.from({ length: N }, (_, i) => {
   .hero-title {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
-    line-height: 1.05;
-    letter-spacing: -0.035em;
+    font-size: clamp(2rem, 3.4vw, 2.9rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
     color: var(--text);
     margin: 0 0 1.5rem;
   }
@@ -718,19 +714,27 @@ const commits = Array.from({ length: N }, (_, i) => {
     stroke-width: 0.75;
     stroke-opacity: 0.7;
   }
-  .chart-svg .bisect-span {
-    fill: var(--accent);
-    opacity: 0;
-    animation: bisect-span-in 600ms ease-out 4800ms forwards;
-  }
-  .chart-svg .bisect-range {
-    opacity: 0;
-    animation: fade-in 600ms ease-out 4800ms forwards;
-  }
+  /* Bisection range bracket — animates right-to-left:
+       1. right tick fades in at 4800ms
+       2. horizontal line draws right-to-left over 4900–5500ms
+       3. left tick + label fade in as the line reaches them at 5400ms */
   .chart-svg .bisect-range-line {
     stroke: var(--accent);
     stroke-width: 1;
     stroke-opacity: 0.55;
+  }
+  .chart-svg .bisect-range-tick-right {
+    opacity: 0;
+    animation: fade-in 200ms ease-out 4800ms forwards;
+  }
+  .chart-svg .bisect-range-horizontal {
+    stroke-dasharray: 250;
+    stroke-dashoffset: 250;
+    animation: line-draw 600ms ease-out 4900ms forwards;
+  }
+  .chart-svg .bisect-range-tick-left {
+    opacity: 0;
+    animation: fade-in 250ms ease-out 5350ms forwards;
   }
   .chart-svg .bisect-range-text {
     font-family: var(--font-mono);
@@ -739,17 +743,22 @@ const commits = Array.from({ length: N }, (_, i) => {
     text-anchor: middle;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    opacity: 0;
+    animation: fade-in 300ms ease-out 5400ms forwards;
+  }
+  @keyframes line-draw {
+    to { stroke-dashoffset: 0; }
   }
   .chart-svg .marker-line {
     stroke: var(--red);
     stroke-width: 1;
     stroke-dasharray: 2 3;
     opacity: 0;
-    animation: fade-in 500ms 7050ms forwards;
+    animation: fade-in 500ms 7550ms forwards;
   }
   .chart-svg .marker-label {
     opacity: 0;
-    animation: rise 600ms 7200ms backwards forwards;
+    animation: rise 600ms 7700ms backwards forwards;
   }
 
   /* Time cursor — sweeps linearly so the playhead lines up with the commit
@@ -760,7 +769,7 @@ const commits = Array.from({ length: N }, (_, i) => {
   .chart-svg .time-cursor {
     transform: translate(4px, 0);
     will-change: transform, opacity;
-    animation: cursor-sweep 7500ms linear 0ms forwards;
+    animation: cursor-sweep 8000ms linear 0ms forwards;
   }
   .chart-svg .cursor-line {
     stroke: var(--accent);
@@ -790,32 +799,32 @@ const commits = Array.from({ length: N }, (_, i) => {
        commit 13 ≈ 203.1px   commit 23 ≈ 350.6px
        commit 17 ≈ 262.1px   commit 24 ≈ 365.4px
        sweep-end (right edge) = 476px.
-     Percentages are out of 7500ms total. Sweep phase ends at 4600ms (61.3%);
-     each of the 4 sample-pauses is 150ms inserted into that phase. After
-     the sweep, the cursor holds at the right edge while the bisect-span and
-     range bracket fade in, then jumps back to track each bisection step. */
+     Percentages are out of 8000ms total. Sweep phase ends at 4600ms (57.5%);
+     each of the 4 sample-pauses is 150ms inserted into that phase. The cursor
+     then holds at the right edge while the bisection-range bracket draws
+     right-to-left and the label appears, before jumping back to each step. */
   @keyframes cursor-sweep {
     0%      { transform: translate(4px, 0);       opacity: 0; }
-    1.1%    {                                     opacity: 1; }
-    7.5%    { transform: translate(70.4px, 0);                }  /* 562ms — reach commit 4 */
-    9.5%    { transform: translate(70.4px, 0);                }  /* 712ms — end pause 1 */
-    21.2%   { transform: translate(173.6px, 0);               }  /* 1587ms — reach commit 11 */
-    23.2%   { transform: translate(173.6px, 0);               }  /* 1737ms — end pause 2 */
-    26.5%   { transform: translate(203.1px, 0);               }  /* 1987ms — reach commit 13 */
-    28.5%   { transform: translate(203.1px, 0);               }  /* 2137ms — end pause 3 */
-    35.2%   { transform: translate(262.1px, 0);               }  /* 2637ms — reach commit 17 */
-    37.2%   { transform: translate(262.1px, 0);               }  /* 2787ms — end pause 4 */
-    61.3%   { transform: translate(476px, 0);                 }  /* 4600ms — end of sweep */
-    70.7%   { transform: translate(476px, 0);                 }  /* 5300ms — hold while bisect-span + range label fade in */
-    71.3%   { transform: translate(365.4px, 0);               }  /* 5350ms — jump to commit 24 (bisect step 1) */
-    76.7%   { transform: translate(365.4px, 0);               }  /* 5750ms — hold */
-    77%     { transform: translate(306.4px, 0);               }  /* 5775ms — jump back to commit 20 (step 2) */
-    82.3%   { transform: translate(306.4px, 0);               }  /* 6175ms — hold */
-    82.7%   { transform: translate(335.9px, 0);               }  /* 6200ms — jump right to commit 22 (step 3) */
-    88%     { transform: translate(335.9px, 0);               }  /* 6600ms — hold */
-    88.3%   { transform: translate(350.6px, 0);               }  /* 6625ms — jump to commit 23 (step 4 — offender) */
-    91.3%   { transform: translate(350.6px, 0);   opacity: 1; }  /* 6850ms — hold */
-    94%     { transform: translate(350.6px, 0);   opacity: 0; }  /* 7050ms — fade out as marker takes over */
+    1%      {                                     opacity: 1; }
+    7%      { transform: translate(70.4px, 0);                }  /* 562ms — reach commit 4 */
+    8.9%    { transform: translate(70.4px, 0);                }  /* 712ms — end pause 1 */
+    19.8%   { transform: translate(173.6px, 0);               }  /* 1587ms — reach commit 11 */
+    21.7%   { transform: translate(173.6px, 0);               }  /* 1737ms — end pause 2 */
+    24.8%   { transform: translate(203.1px, 0);               }  /* 1987ms — reach commit 13 */
+    26.7%   { transform: translate(203.1px, 0);               }  /* 2137ms — end pause 3 */
+    33%     { transform: translate(262.1px, 0);               }  /* 2637ms — reach commit 17 */
+    34.8%   { transform: translate(262.1px, 0);               }  /* 2787ms — end pause 4 */
+    57.5%   { transform: translate(476px, 0);                 }  /* 4600ms — end of sweep */
+    72.5%   { transform: translate(476px, 0);                 }  /* 5800ms — hold while bisection-range bracket draws RTL + label appears */
+    73.1%   { transform: translate(365.4px, 0);               }  /* 5850ms — jump to commit 24 (bisect step 1) */
+    78.1%   { transform: translate(365.4px, 0);               }  /* 6250ms — hold */
+    78.4%   { transform: translate(306.4px, 0);               }  /* 6275ms — jump back to commit 20 (step 2) */
+    83.4%   { transform: translate(306.4px, 0);               }  /* 6675ms — hold */
+    83.8%   { transform: translate(335.9px, 0);               }  /* 6700ms — jump right to commit 22 (step 3) */
+    88.8%   { transform: translate(335.9px, 0);               }  /* 7100ms — hold */
+    89.1%   { transform: translate(350.6px, 0);               }  /* 7125ms — jump to commit 23 (step 4 — offender) */
+    91.9%   { transform: translate(350.6px, 0);   opacity: 1; }  /* 7350ms — hold */
+    94.4%   { transform: translate(350.6px, 0);   opacity: 0; }  /* 7550ms — fade out as marker takes over */
     100%    { transform: translate(350.6px, 0);   opacity: 0; }
   }
   .chart-svg .marker-hash {
