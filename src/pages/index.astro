@@ -50,12 +50,13 @@ const regressionIdx = 25;
           Build-time observability · open source
         </p>
         <h1 class="hero-title hero-anim" style="--d:120ms">
-          Get <em>intentional</em><br />
-          about build speed.
+          Build performance drifts.<br />
+          Nudge yours in the right direction.
         </h1>
         <p class="hero-sub hero-anim" style="--d:240ms">
           Wezel benchmarks the build scenarios your team runs most, on every commit.
-          The moment something gets slower, you know which change, how much, and what it touched.
+          When something gets slower, the offending change, the delta, and the affected scope
+          surface immediately.
         </p>
         <div class="hero-ctas hero-anim" style="--d:360ms">
           <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
@@ -153,7 +154,6 @@ const regressionIdx = 25;
           <g class="marker-label" transform={`translate(${PAD_X + regressionIdx * slot + 8}, 28)`}>
             <text class="marker-hash">a3f8c1d</text>
             <text class="marker-delta" y="13">+12.4s · +26%</text>
-            <text class="marker-cause" y="26">core::parser · new generic impl</text>
           </g>
 
           <!-- ticks under axis -->
@@ -181,132 +181,69 @@ const regressionIdx = 25;
   <section class="example">
     <div class="example-inner">
       <p class="section-label">An example</p>
-      <h2 class="section-title">What you write. What Wezel watches.</h2>
-      <p class="example-sub">
-        A workspace-build experiment for Wezel itself: <code>cargo</code> compiles the workspace
-        and emits per-crate timing outcomes. Experiments are sequences of <em>steps</em> that run
-        <em>tools</em>; each step produces <em>outcomes</em>; and a single outcome can feed
-        <em>multiple summaries</em> — total time, the slowest crate, whatever metric you want
-        tracked separately across commits.
-      </p>
+      <h2 class="section-title">From TOML to alert.</h2>
 
-      <div class="example-grid">
-        <figure class="example-code">
-          <figcaption>
-            <span class="example-path">.wezel/experiments/workspace-build/experiment.toml</span>
-            <span class="example-lang">toml</span>
-          </figcaption>
-          <Code code={experimentToml} lang="toml" theme="vitesse-dark" />
-        </figure>
-
-        <figure class="example-alert">
-          <figcaption>
-            <span class="example-alert-tag">⚠ regression detected</span>
-            <span class="example-alert-ts">2026-05-15</span>
-          </figcaption>
-          <dl class="alert-fields">
-            <div><dt>experiment</dt><dd>workspace-build</dd></div>
-            <div><dt>summary</dt><dd>workspace-build-time</dd></div>
-            <div><dt>commit</dt><dd class="alert-hash">a3f8c1d</dd></div>
-            <div><dt>baseline</dt><dd>47.3s · trailing 30 commits</dd></div>
-            <div><dt>current</dt><dd class="alert-warn">59.7s · +12.4s · +26%</dd></div>
-            <div><dt>cause</dt><dd>core::parser — new generic impl, 38 downstream rebuilds</dd></div>
-          </dl>
-          <a class="alert-link" href="#">view in dashboard →</a>
-        </figure>
-      </div>
-
-      <p class="example-caption">
-        You commit the <code>experiment.toml</code>. Wezel runs the steps on each commit in CI,
-        stores every summary the experiment defines, and flags the bisected commit the moment any
-        of them drifts past your tolerance.
-      </p>
-    </div>
-  </section>
-
-  <!-- ── How it works ──────────────────────────────────── -->
-  <section class="how">
-    <div class="how-inner">
-      <p class="section-label">The loop</p>
-      <h2 class="section-title">Find it. Track it. Catch it.</h2>
-
-      <ol class="how-steps">
-        <li class="how-step">
-          <span class="how-num">01</span>
-          <div class="how-body">
-            <h3>Find the scenarios that cost your team the most time.</h3>
-            <p>
-              Wezel observes real builds across your whole team — no manual instrumentation needed —
-              and surfaces which scenarios eat the most time, for the most people, most often.
-            </p>
-          </div>
+      <ol class="example-steps">
+        <li class="example-step">
+          <header class="step-head">
+            <span class="step-num">01</span>
+            <div class="step-text">
+              <h3>Define a scenario.</h3>
+              <p>An <code>experiment.toml</code> committed alongside your code declares what Wezel measures.</p>
+            </div>
+          </header>
+          <figure class="example-code">
+            <figcaption>
+              <span class="example-path">.wezel/experiments/workspace-build/experiment.toml</span>
+              <span class="example-lang">toml</span>
+            </figcaption>
+            <Code code={experimentToml} lang="toml" theme="vitesse-dark" />
+          </figure>
         </li>
-        <li class="how-step">
-          <span class="how-num">02</span>
-          <div class="how-body">
-            <h3>Track them on every commit.</h3>
-            <p>
-              Once you know what matters, Wezel benchmarks those scenarios on every commit in CI and
-              keeps the full history, so you can see exactly when things changed and how the trend is moving.
-            </p>
-          </div>
+
+        <li class="example-step">
+          <header class="step-head">
+            <span class="step-num">02</span>
+            <div class="step-text">
+              <h3>Observe a regression.</h3>
+              <p>The CLI walks the steps, captures outcomes, and compares each summary against the trailing baseline.</p>
+            </div>
+          </header>
+          <figure class="example-terminal">
+            <figcaption>
+              <span class="example-shell">shell</span>
+            </figcaption>
+            <pre><code><span class="t-prompt">$</span> <span class="t-cmd">wezel</span> experiment run workspace-build
+<span class="t-dim">→ step.cargo.build  ...........  59.7s</span>
+<span class="t-dim">→ summary.workspace-build-time   59.7s   (baseline 47.3s · </span><span class="t-warn">+12.4s · regression</span><span class="t-dim">)</span>
+<span class="t-dim">→ summary.slowest-crate-time      8.4s   (baseline  8.1s · +0.3s)</span>
+<span class="t-dim">done in 59.9s</span></code></pre>
+          </figure>
         </li>
-        <li class="how-step">
-          <span class="how-num">03</span>
-          <div class="how-body">
-            <h3>Catch each regression at the commit that caused it.</h3>
-            <p>
-              The moment a commit adds meaningful build time, Wezel tells you — which commit, how much,
-              what it affected — while it's still a single change to revisit, not after it's already baked into your baseline.
-            </p>
-          </div>
+
+        <li class="example-step">
+          <header class="step-head">
+            <span class="step-num">03</span>
+            <div class="step-text">
+              <h3>Track it in CI.</h3>
+              <p>Wired into anything that runs per commit — CI, a build server, a cron — Wezel emits the alert the moment a summary drifts past tolerance.</p>
+            </div>
+          </header>
+          <figure class="example-alert">
+            <figcaption>
+              <span class="example-alert-tag">⚠ regression detected</span>
+              <span class="example-alert-ts">2026-05-15</span>
+            </figcaption>
+            <dl class="alert-fields">
+              <div><dt>experiment</dt><dd>workspace-build</dd></div>
+              <div><dt>summary</dt><dd>workspace-build-time</dd></div>
+              <div><dt>commit</dt><dd class="alert-hash">a3f8c1d</dd></div>
+              <div><dt>baseline</dt><dd>47.3s · trailing 30 commits</dd></div>
+              <div><dt>current</dt><dd class="alert-warn">59.7s · +12.4s · +26%</dd></div>
+            </dl>
+          </figure>
         </li>
       </ol>
-    </div>
-  </section>
-
-  <!-- ── Why Wezel ─────────────────────────────────────── -->
-  <section class="why" id="why">
-    <div class="why-inner">
-      <p class="section-label">Why Wezel</p>
-
-      <div class="why-grid">
-        <article class="why-item" data-tone="red">
-          <span class="why-tag">
-            <span class="why-tag-mark"></span>
-            team cost
-          </span>
-          <h3>Build time, <em>totaled</em> across your team.</h3>
-          <p>
-            Build time spent by one engineer multiplied by everyone else is the real number.
-            Wezel quantifies aggregate wait time so you can prioritize what's actually worth fixing.
-          </p>
-        </article>
-
-        <article class="why-item" data-tone="accent">
-          <span class="why-tag">
-            <span class="why-tag-mark"></span>
-            per-commit signal
-          </span>
-          <h3>Regressions, <em>caught</em> at the commit.</h3>
-          <p>
-            Every commit gets benchmarked against the previous baseline. A change that adds 15 seconds
-            to your most-run scenario gets surfaced immediately — not after it's baked in.
-          </p>
-        </article>
-
-        <article class="why-item" data-tone="green">
-          <span class="why-tag">
-            <span class="why-tag-mark"></span>
-            open &amp; owned
-          </span>
-          <h3>Open source, <em>your</em> data.</h3>
-          <p>
-            Self-host the entire stack for free, forever — MIT-licensed, no telemetry, no vendor lock-in.
-            Built in the open with the community, not behind a feature gate.
-          </p>
-        </article>
-      </div>
     </div>
   </section>
 
@@ -684,74 +621,51 @@ const regressionIdx = 25;
     margin: 0 -0.04em;
   }
 
-  /* ── How it works ──────────────────────────────────── */
-  .how {
+  /* ── Scope ────────────────────────────────────────── */
+  .scope {
     padding: 5rem 0;
     border-top: 1px solid var(--border);
   }
 
-  .how-inner {
+  .scope-inner {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 2rem;
   }
 
-  .how-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+  .scope-list {
+    margin: 2.5rem 0 0;
     padding: 0;
-    margin: 0;
     list-style: none;
-    max-width: 56rem;
+    max-width: 60rem;
+    border-top: 1px solid var(--border);
   }
 
-  .how-step {
+  .scope-item {
     display: grid;
-    grid-template-columns: 7rem 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
     gap: 2.5rem;
-    padding: 2rem 0;
-    border-top: 1px solid var(--border);
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
     align-items: baseline;
   }
-  .how-step:last-child {
-    border-bottom: 1px solid var(--border);
-  }
 
-  .how-num {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: 1.4rem;
-    color: var(--accent);
-    line-height: 1.2;
-    letter-spacing: -0.04em;
-  }
-  .how-num::after {
-    content: "";
-    display: block;
-    width: 28px;
-    height: 1px;
-    background: var(--accent);
-    opacity: 0.6;
-    margin-top: 0.7rem;
-  }
-
-  .how-body h3 {
+  .scope-item dt {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--text);
     letter-spacing: -0.04em;
-    margin: 0 0 0.6rem;
-    line-height: 1.18;
+    margin: 0;
+    line-height: 1.2;
   }
 
-  .how-body p {
-    font-size: 0.98rem;
-    color: var(--text-mid);
-    line-height: 1.65;
-    max-width: 56ch;
+  .scope-item dd {
     margin: 0;
+    font-size: 0.96rem;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 60ch;
   }
 
   /* ── Example experiment ────────────────────────────── */
@@ -767,16 +681,66 @@ const regressionIdx = 25;
     padding: 0 2rem;
   }
 
-  .example-sub {
-    font-size: 1.02rem;
-    color: var(--text-mid);
-    line-height: 1.7;
-    max-width: 64ch;
-    margin: -1rem 0 3rem;
+  /* Three-step sequence */
+  .example-steps {
+    list-style: none;
+    padding: 0;
+    margin: 2.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    max-width: 64rem;
   }
 
-  .example-sub code,
-  .example-caption code {
+  .example-step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .step-head {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    padding-top: 0.25rem;
+  }
+  .step-num::after {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.6;
+    margin-top: 0.55rem;
+  }
+
+  .step-text h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text);
+    letter-spacing: -0.04em;
+    margin: 0 0 0.4rem;
+    line-height: 1.2;
+  }
+  .step-text p {
+    font-size: 0.96rem;
+    color: var(--text-mid);
+    line-height: 1.65;
+    max-width: 60ch;
+    margin: 0;
+  }
+  .step-text code {
     font-family: var(--font-mono);
     font-size: 0.88em;
     color: var(--text);
@@ -786,21 +750,9 @@ const regressionIdx = 25;
     border-radius: 4px;
   }
 
-  .example-sub em {
-    font-style: normal;
-    color: var(--accent);
-    font-weight: 500;
-  }
-
-  .example-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 1.25rem;
-    align-items: start;
-  }
-
   .example-code,
-  .example-alert {
+  .example-alert,
+  .example-terminal {
     background: var(--bg-deep);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -809,8 +761,25 @@ const regressionIdx = 25;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
 
+  .example-terminal pre {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    background: transparent;
+    overflow-x: auto;
+  }
+  .example-terminal .t-prompt { color: var(--green); font-weight: 600; margin-right: 0.5em; }
+  .example-terminal .t-cmd { color: var(--accent); font-weight: 500; }
+  .example-terminal .t-dim { color: var(--text-dim); }
+  .example-terminal .t-warn { color: var(--red); font-weight: 500; }
+  .example-shell { color: var(--text-dim); }
+
   .example-code figcaption,
-  .example-alert figcaption {
+  .example-alert figcaption,
+  .example-terminal figcaption {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -850,7 +819,7 @@ const regressionIdx = 25;
   }
 
   .alert-fields {
-    padding: 1.15rem 1.25rem 0.5rem;
+    padding: 1.15rem 1.25rem 1.25rem;
     margin: 0;
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -900,117 +869,6 @@ const regressionIdx = 25;
   .alert-link:hover {
     color: var(--text);
     border-bottom-color: var(--accent);
-  }
-
-  .example-caption {
-    margin: 2.25rem 0 0;
-    font-size: 0.98rem;
-    color: var(--text-mid);
-    line-height: 1.7;
-    max-width: 64ch;
-  }
-
-  /* ── Why Wezel ─────────────────────────────────────── */
-  .why {
-    position: relative;
-    padding: 5.5rem 0 5rem;
-    border-top: 1px solid var(--border);
-    background: var(--bg-deep);
-    overflow: hidden;
-  }
-
-  .why::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 80% 0%, var(--accent-glow) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .why-inner {
-    position: relative;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .why-title {
-    margin-bottom: 3.5rem;
-  }
-
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .why-item {
-    padding: 2.25rem 2rem;
-    border-left: 1px solid var(--border);
-    position: relative;
-  }
-  .why-item:first-child {
-    border-left: none;
-    padding-left: 0;
-  }
-  .why-item:last-child {
-    padding-right: 0;
-  }
-
-  .why-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-    margin-bottom: 1.5rem;
-  }
-  .why-tag-mark {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    box-shadow: 0 0 8px currentColor;
-  }
-  .why-item[data-tone="red"] .why-tag-mark { background: var(--red); color: var(--red); }
-  .why-item[data-tone="accent"] .why-tag-mark { background: var(--accent); color: var(--accent); }
-  .why-item[data-tone="green"] .why-tag-mark { background: var(--green); color: var(--green); }
-
-  .why-item h3 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.2rem;
-    color: var(--text);
-    letter-spacing: -0.04em;
-    line-height: 1.22;
-    margin: 0 0 0.95rem;
-    max-width: 22ch;
-  }
-  .why-item h3 em {
-    font-style: normal;
-    color: var(--accent);
-    background-image: linear-gradient(
-      0deg,
-      var(--accent-glow-strong) 0%,
-      var(--accent-glow-strong) 28%,
-      transparent 28%
-    );
-    padding: 0 0.1em;
-    margin: 0 -0.04em;
-  }
-
-  .why-item p {
-    font-size: 0.93rem;
-    color: var(--text-dim);
-    line-height: 1.65;
-    max-width: 36ch;
-    margin: 0;
   }
 
   /* ── Bottom CTA ────────────────────────────────────── */
@@ -1176,24 +1034,6 @@ const regressionIdx = 25;
       right: -200px;
       top: -240px;
     }
-    .example-grid {
-      grid-template-columns: 1fr;
-    }
-    .why-grid {
-      grid-template-columns: 1fr;
-    }
-    .why-item {
-      border-left: none;
-      border-top: 1px solid var(--border);
-      padding: 2rem 0;
-    }
-    .why-item:first-child {
-      border-top: none;
-      padding-top: 0;
-    }
-    .why-item:last-child {
-      padding-bottom: 0;
-    }
   }
 
   @media (max-width: 700px) {
@@ -1206,23 +1046,27 @@ const regressionIdx = 25;
     .hero-rule {
       left: 1rem; right: 1rem;
     }
-    .hero-meta {
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
+    .stats-inner {
+      padding: 0.75rem 1.25rem;
+      gap: 0.75rem 1.5rem;
     }
-    .how, .why, .example {
+    .scope, .example {
       padding: 3.5rem 0;
     }
-    .how-inner, .why-inner, .example-inner {
+    .step-head {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+    .step-num {
+      padding-top: 0;
+    }
+    .scope-inner, .example-inner {
       padding: 0 1.25rem;
     }
-    .how-step {
+    .scope-item {
       grid-template-columns: 1fr;
-      gap: 0.75rem;
+      gap: 0.5rem;
       padding: 1.5rem 0;
-    }
-    .how-num {
-      font-size: 2.2rem;
     }
     .bottom-cta {
       padding: 4rem 1.25rem 3.5rem;
