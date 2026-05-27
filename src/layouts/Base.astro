@@ -10,6 +10,7 @@ const { title = "Wezel — Your build, always at its best." } = Astro.props;
 const navLinks = [
   { label: "Blog", href: "/blog" },
   { label: "Docs", href: "/docs" },
+  { label: "Status", href: "https://status.wezel.build" },
 ];
 
 const themes = ["warm", "slate", "light"] as const;
@@ -95,7 +96,7 @@ const themes = ["warm", "slate", "light"] as const;
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Wezel &middot; Open source under MIT</p>
+        <p>&copy; 2025 Wezel &middot; Open source under Apache-2.0</p>
       </div>
     </footer>
   </body>
