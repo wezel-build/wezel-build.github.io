@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { Code } from 'astro:components';
 
-const installUrl = new URL('install.sh', Astro.site ?? 'https://wezel-build.github.io/').toString();
+const installUrl = new URL('install.sh', Astro.site ?? 'https://wezel.build/').toString();
 const installCmd = `curl -fsSL ${installUrl} | sh`;
 
 const experimentToml = `description = "Tracks compile time of the wezel workspace"
@@ -370,7 +370,6 @@ const commits = Array.from({ length: N }, (_, i) => {
     <div class="bottom-cta-glow"></div>
     <div class="bottom-cta-inner">
       <p class="section-label">Get started</p>
-      <h2 class="bottom-cta-title">Run it <em>locally.</em></h2>
       <div class="bottom-cta-buttons">
         <a href="https://github.com/wezel-build/wezel" class="btn btn-lg btn-primary" target="_blank" rel="noopener">
           Star on GitHub

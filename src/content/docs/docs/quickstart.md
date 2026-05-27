@@ -20,7 +20,7 @@ Without further busytalk, let's get to work.
 Wezel is currently supported on Linux and MacOS. 
 To get Wezel, you can execute the following script in your terminal of choice:
 ```sh
-curl -fsSL https://wezel-build.github.io/install.sh | sh
+curl -fsSL https://wezel.build/install.sh | sh
 ```
 Alternatively, you can grab a binary off of our GitHub releases.
 

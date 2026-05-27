@@ -5,7 +5,7 @@
 # Resolves the most recent GitHub release (prereleases included, since
 # wezel ships those today) and forwards to its bundled installer.
 #
-# Usage:  curl -fsSL https://wezel-build.github.io/install.sh | sh
+# Usage:  curl -fsSL https://wezel.build/install.sh | sh
 #
 set -eu
 
