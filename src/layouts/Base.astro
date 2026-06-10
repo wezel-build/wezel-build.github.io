@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import iosevkaAile600Url from '@fontsource/iosevka-aile/files/iosevka-aile-latin-600-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -13,7 +14,7 @@ const navLinks = [
   { label: "Status", href: "https://status.wezel.build" },
 ];
 
-const themes = ["warm", "slate", "light"] as const;
+const themes = ["dark", "light"] as const;
 ---
 
 <!doctype html>
@@ -23,24 +24,14 @@ const themes = ["warm", "slate", "light"] as const;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Wezel is an open-source build observability suite that catches regressions before they slow your team down." />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b08868'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='18' fill='%23141210'%3Ew%3C/text%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/400.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/500.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/600.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/700.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka-aile@5/400.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka-aile@5/500.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka-aile@5/600.css" />
-    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka-aile@5/700.css" />
+    <link rel="preload" href={iosevkaAile600Url} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
   </head>
   <body>
     <script is:inline>
       (function() {
-        var t = localStorage.getItem('theme') || 'warm';
+        var t = localStorage.getItem('theme') || 'dark';
+        if (t === 'slate') { t = 'dark'; localStorage.setItem('theme', t); }
         document.documentElement.setAttribute('data-theme', t);
       })();
     </script>
@@ -56,7 +47,7 @@ const themes = ["warm", "slate", "light"] as const;
             <a href={link.href} class="nav-link">{link.label}</a>
           ))}
           <button id="theme-toggle" class="theme-btn" type="button" aria-label="Switch theme">
-            warm
+            dark
           </button>
           <a href="https://github.com/wezel-build/wezel" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">
             GitHub
@@ -66,9 +57,9 @@ const themes = ["warm", "slate", "light"] as const;
     </nav>
     <script is:inline>
       (function() {
-        var order = ['warm', 'slate', 'light'];
+        var order = ['dark', 'light'];
         var btn = document.getElementById('theme-toggle');
-        var current = localStorage.getItem('theme') || 'warm';
+        var current = localStorage.getItem('theme') || 'dark';
         btn.textContent = current;
         btn.addEventListener('click', function() {
           var i = order.indexOf(current);

@@ -1,3 +1,16 @@
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans/latin-700.css';
+@import '@fontsource/iosevka/latin-400.css';
+@import '@fontsource/iosevka/latin-500.css';
+@import '@fontsource/iosevka/latin-600.css';
+@import '@fontsource/iosevka/latin-700.css';
+@import '@fontsource/iosevka-aile/latin-400.css';
+@import '@fontsource/iosevka-aile/latin-500.css';
+@import '@fontsource/iosevka-aile/latin-600.css';
+@import '@fontsource/iosevka-aile/latin-700.css';
+
 /* ===== Reset ===== */
 *,
 *::before,
@@ -65,7 +78,7 @@ ol {
 
 /* ── Warm (default) ────────────────────────────────── */
 :root,
-[data-theme="warm"] {
+[data-theme="dark"] {
     --bg: #141210;
     --bg-deep: #0e0d0b;
     --surface: #1c1a17;
@@ -73,7 +86,7 @@ ol {
     --surface3: #2e2c28;
     --text: #d0ccc4;
     --text-mid: #9a9488;
-    --text-dim: #686058;
+    --text-dim: #8b8075;
     --accent: #b08868;
     --accent-glow: rgba(176, 136, 104, 0.12);
     --accent-glow-strong: rgba(176, 136, 104, 0.25);
@@ -88,52 +101,28 @@ ol {
     --nav-bg: rgba(20, 18, 16, 0.82);
 }
 
-/* ── Slate ─────────────────────────────────────────── */
-[data-theme="slate"] {
-    --bg: #101218;
-    --bg-deep: #0a0c12;
-    --surface: #171b22;
-    --surface2: #1e222c;
-    --surface3: #262c38;
-    --text: #c8ccd4;
-    --text-mid: #8890a0;
-    --text-dim: #586070;
-    --accent: #7880b0;
-    --accent-glow: rgba(120, 128, 176, 0.12);
-    --accent-glow-strong: rgba(120, 128, 176, 0.25);
-    --green: #6a9a78;
-    --green-dim: rgba(106, 154, 120, 0.15);
-    --cyan: #6898a0;
-    --cyan-dim: rgba(104, 152, 160, 0.15);
-    --red: #b45454;
-    --amber: #b09868;
-    --border: #232836;
-    --border-light: #2c3340;
-    --nav-bg: rgba(16, 18, 24, 0.82);
-}
-
 /* ── Light ─────────────────────────────────────────── */
 [data-theme="light"] {
-    --bg: #f8f7f5;
-    --bg-deep: #f0eeeb;
-    --surface: #ffffff;
-    --surface2: #f0eeeb;
-    --surface3: #e6e3de;
-    --text: #2c2a28;
-    --text-mid: #5c5850;
-    --text-dim: #908880;
-    --accent: #8a6e50;
-    --accent-glow: rgba(138, 110, 80, 0.1);
-    --accent-glow-strong: rgba(138, 110, 80, 0.18);
-    --green: #4a7a52;
-    --green-dim: rgba(74, 122, 82, 0.1);
-    --cyan: #4a7a80;
-    --cyan-dim: rgba(74, 122, 128, 0.1);
-    --red: #b04838;
-    --amber: #9a7830;
-    --border: #d8d4ce;
-    --border-light: #c8c4be;
-    --nav-bg: rgba(248, 247, 245, 0.82);
+    --bg: #f5f2ee;
+    --bg-deep: #ece8e3;
+    --surface: #faf8f5;
+    --surface2: #ece8e3;
+    --surface3: #e2ddd7;
+    --text: #28241f;
+    --text-mid: #56504a;
+    --text-dim: #746e68;
+    --accent: #8a5e2e;
+    --accent-glow: rgba(138, 94, 46, 0.14);
+    --accent-glow-strong: rgba(138, 94, 46, 0.26);
+    --green: #3d6e42;
+    --green-dim: rgba(61, 110, 66, 0.14);
+    --cyan: #3d6e72;
+    --cyan-dim: rgba(61, 110, 114, 0.14);
+    --red: #a03020;
+    --amber: #907020;
+    --border: #d6d0c8;
+    --border-light: #c8c2ba;
+    --nav-bg: rgba(245, 242, 238, 0.88);
 }
 
 /* ===== Base ===== */
@@ -295,6 +284,8 @@ samp {
 }
 
 [data-theme="light"] .btn-primary:hover {
+    background: #7a5028;
+    border-color: #7a5028;
     box-shadow:
         0 0 24px var(--accent-glow-strong),
         0 2px 6px rgba(0, 0, 0, 0.12);

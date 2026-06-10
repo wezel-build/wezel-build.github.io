@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.37.6",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@fontsource/iosevka": "^5.2.5",
+    "@fontsource/iosevka-aile": "^5.2.5",
     "astro": "^5.10.0"
   }
 }
