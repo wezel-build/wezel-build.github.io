@@ -1,0 +1,41 @@
+## Why?
+
+Builds get slower one commit at a time, and nobody notices until the whole
+team is waiting. Wezel watches the build scenarios you actually run and tells
+you the moment one of them regresses — while the change is still fresh enough
+to fix.
+
+## What
+
+An `experiment.toml`, committed next to your code, declares what to measure.
+The `cargo` tool builds your target and emits per-crate timing outcomes, and a
+single outcome can feed several summaries.
+
+```toml
+description = "Tracks compile time of the wezel workspace"
+
+[step.cargo.build]
+build_target = "workspace"
+
+summary.workspace-build-time = { outcome = "duration.total" }
+summary.slowest-crate-time   = { outcome = "duration.max" }
+```
+
+On every commit, the CLI walks the steps, captures the outcomes, and compares
+each summary against the trailing baseline. When a summary drifts past
+tolerance, Wezel reports the offending commit, the delta, and the affected
+scope.
+
+```console
+$ wezel experiment run workspace-build
+→ step.cargo.build  ...........  59.7s
+→ summary.workspace-build-time   59.7s   (baseline 47.3s · +12.4s · regression)
+→ summary.slowest-crate-time      8.4s   (baseline  8.1s · +0.3s)
+done in 59.9s
+```
+
+## Stay tuned
+
+Wezel is open source and under active development. Follow along on
+[GitHub](https://github.com/wezel-build/wezel), or read the
+[quickstart](/docs/quickstart) to wire it into your own builds.

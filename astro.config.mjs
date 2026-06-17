@@ -1,9 +1,16 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import mdx from "@astrojs/mdx";
 
 export default defineConfig({
   site: process.env.SITE_URL ?? "https://wezel.build",
   base: process.env.SITE_BASE ?? "/",
+
+  // Code blocks in the hand-authored landing body (src/home/index.mdx).
+  // Starlight manages its own theming for docs separately.
+  markdown: {
+    shikiConfig: { theme: "vitesse-dark", wrap: false },
+  },
 
   integrations: [
     starlight({
@@ -52,5 +59,8 @@ export default defineConfig({
         },
       ],
     }),
+    // mdx() must come after starlight() — Starlight registers
+    // expressive-code, which has to be set up before MDX.
+    mdx(),
   ],
 });

@@ -31,8 +31,11 @@ const themes = ["dark", "light"] as const;
   <body>
     <script is:inline>
       (function() {
-        var t = localStorage.getItem('theme') || 'dark';
+        var t = localStorage.getItem('theme');
         if (t === 'slate') { t = 'dark'; localStorage.setItem('theme', t); }
+        // The landing leans on the light warm-paper palette by default;
+        // the rest of the site defaults dark. A saved preference wins either way.
+        if (!t) t = (location.pathname === '/' ? 'light' : 'dark');
         document.documentElement.setAttribute('data-theme', t);
       })();
     </script>
@@ -60,7 +63,9 @@ const themes = ["dark", "light"] as const;
       (function() {
         var order = ['dark', 'light'];
         var btn = document.getElementById('theme-toggle');
-        var current = localStorage.getItem('theme') || 'dark';
+        // Reflect whatever was actually applied (which may be the
+        // landing's light default rather than a stored value).
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
         btn.textContent = current;
         btn.addEventListener('click', function() {
           var i = order.indexOf(current);
