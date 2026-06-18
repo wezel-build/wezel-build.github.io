@@ -1,0 +1,83 @@
+/* Align Starlight's docs with the landing's warm-paper look.
+   The site is light-only, so we force every theme state to the same
+   light values and hide the theme switcher. */
+
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans/latin-700.css';
+@import '@fontsource/iosevka/latin-400.css';
+@import '@fontsource/iosevka/latin-500.css';
+@import '@fontsource/iosevka-aile/latin-600.css';
+@import '@fontsource/iosevka-aile/latin-700.css';
+
+/* Force the warm-paper palette regardless of the data-theme attribute. */
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  /* Accent (matches --accent #8a5e2e on the landing) */
+  --sl-color-accent-low: #e7dccb;
+  --sl-color-accent: #8a5e2e;
+  --sl-color-accent-high: #5e3f1f;
+
+  /* Text → background ramp, warm and light.
+     In Starlight's light theme, white = darkest text, black = page bg. */
+  --sl-color-white: #28241f;
+  --sl-color-gray-1: #2f2b25;
+  --sl-color-gray-2: #46413a;
+  --sl-color-gray-3: #56504a;
+  --sl-color-gray-4: #746e68;
+  --sl-color-gray-5: #c8c2ba;
+  --sl-color-gray-6: #d6d0c8;
+  --sl-color-gray-7: #ece8e3;
+  --sl-color-black: #f5f2ee;
+
+  /* Semantic surfaces */
+  --sl-color-bg: #f5f2ee;
+  --sl-color-bg-nav: rgba(245, 242, 238, 0.88);
+  --sl-color-bg-sidebar: #faf8f5;
+  --sl-color-bg-inline-code: var(--sl-color-accent-low);
+  --sl-color-hairline: #d6d0c8;
+  --sl-color-hairline-light: #e2ddd7;
+  --sl-color-hairline-shade: #e2ddd7;
+  --sl-color-text: #56504a;
+  --sl-color-text-accent: #8a5e2e;
+  --sl-color-text-invert: #f5f2ee;
+
+  /* Fonts (match the landing) */
+  --sl-font: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --sl-font-mono: "Iosevka", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* Light-only: drop the theme switcher entirely. */
+starlight-theme-select {
+  display: none !important;
+}
+
+/* Headings in the Iosevka Aile display face, like the landing. */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6),
+.site-title {
+  font-family: "Iosevka Aile", "Iosevka", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* The little accent bar on section headings — the dodeca/vixen tell. */
+.sl-markdown-content h2 {
+  position: relative;
+  padding-left: 0.85rem;
+}
+.sl-markdown-content h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  bottom: 0.12em;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--sl-color-accent);
+}
+
+/* Site title wordmark in the header, to echo the nav logo. */
+.site-title {
+  font-weight: 700;
+}

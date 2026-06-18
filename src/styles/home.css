@@ -1,0 +1,266 @@
+/* Landing page — light warm-paper, prose-forward, README-like.
+   Centered wordmark hero; body reads as a styled document with accent-bar
+   section headings. Styling only; words live in index.astro (hero) and
+   src/home/index.mdx (body). */
+
+/* ── Hero (centered wordmark) ─────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 5.5rem 1.5rem 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.hero-inner {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+.hero-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1.5rem;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+}
+.hero-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 6vw, 3.6rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+  margin: 0;
+}
+.hero-tagline {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  margin: 0.6rem 0 0;
+}
+.hero-sub {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--text-mid);
+  max-width: 48ch;
+  margin: 1.5rem auto 0;
+}
+.hero-banner {
+  display: inline-block;
+  margin: 1.75rem auto 0;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.hero-ctas {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* ── Body (hand-authored MDX prose) ───────────────────── */
+.body {
+  border-bottom: 1px solid var(--border);
+}
+.prose {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 4.5rem;
+}
+.prose h2 {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  padding-left: 0.85rem;
+  margin: 3rem 0 1rem;
+}
+.prose h2:first-child {
+  margin-top: 0;
+}
+/* the little accent bar that gives the dodeca/vixen heading feel */
+.prose h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  bottom: 0.15em;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.prose h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 2rem 0 0.75rem;
+}
+.prose p {
+  font-size: 1.02rem;
+  line-height: 1.78;
+  color: var(--text-mid);
+  margin: 0 0 1.15rem;
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1.15rem 1.25rem;
+  list-style: revert;
+  color: var(--text-mid);
+  line-height: 1.78;
+}
+.prose li {
+  margin: 0.3rem 0;
+}
+.prose a {
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: border-color 0.15s;
+}
+.prose a:hover {
+  border-bottom-color: var(--accent);
+}
+/* inline code — subtle tint, the way vixen styles it */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 0.1em 0.36em;
+  border-radius: 4px;
+}
+
+/* ── Code blocks (expressive-code), flattened ─────────── */
+/* Strip the window chrome so blocks read as flat documents, not a
+   terminal app. Token colors still come from expressive-code's themes,
+   which track the light/dark toggle. */
+.prose .expressive-code {
+  margin: 1.5rem 0;
+}
+.prose .expressive-code .frame {
+  box-shadow: none !important;
+}
+.prose .expressive-code .frame .header {
+  display: none !important;
+}
+.prose .expressive-code pre {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+}
+
+/* ── Install snippet (flat, centered in closing) ──────── */
+.install-snippet {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.install-snippet figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.install-shell {
+  color: var(--text-dim);
+}
+.install-copy {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.15rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.install-copy:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+.install-copy-done {
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+  background: var(--green-dim) !important;
+}
+.install-snippet pre {
+  margin: 0;
+  padding: 0.95rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: transparent;
+  overflow-x: auto;
+  white-space: pre;
+}
+.install-snippet .t-prompt { color: var(--green); font-weight: 600; margin-right: 0.5em; }
+.install-snippet .t-cmd { color: var(--accent); font-weight: 500; }
+.install-snippet .t-flag { color: var(--text-mid); }
+.install-snippet .t-url { color: var(--cyan); }
+.install-snippet .t-pipe { color: var(--text-mid); margin: 0 0.15em; }
+
+/* ── Closing (quiet, centered) ────────────────────────── */
+.closing {
+  text-align: center;
+  padding: 4rem 1.5rem 5rem;
+}
+.closing-inner {
+  max-width: 44rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+.closing-lead {
+  font-size: 1.05rem;
+  color: var(--text-mid);
+  margin: 0;
+}
+.closing-links {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.closing-links a { color: var(--accent); }
+.closing-links a:hover { color: var(--text); }
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 700px) {
+  .hero { padding: 3.5rem 1.25rem 2.5rem; }
+  .prose { padding: 3rem 1.25rem 3.5rem; }
+  .closing { padding: 3rem 1.25rem 4rem; }
+}

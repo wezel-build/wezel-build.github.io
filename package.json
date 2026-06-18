@@ -8,10 +8,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.3.14",
     "@astrojs/starlight": "^0.37.6",
     "@fontsource/ibm-plex-sans": "^5.2.8",
     "@fontsource/iosevka": "^5.2.5",
     "@fontsource/iosevka-aile": "^5.2.5",
-    "astro": "^5.10.0"
+    "astro": "^5.10.0",
+    "ci-info": "^4.4.0"
   }
 }
