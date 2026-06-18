@@ -76,33 +76,8 @@ ol {
     --radius-lg: 12px;
 }
 
-/* ── Warm (default) ────────────────────────────────── */
-:root,
-[data-theme="dark"] {
-    --bg: #141210;
-    --bg-deep: #0e0d0b;
-    --surface: #1c1a17;
-    --surface2: #242220;
-    --surface3: #2e2c28;
-    --text: #d0ccc4;
-    --text-mid: #9a9488;
-    --text-dim: #8b8075;
-    --accent: #b08868;
-    --accent-glow: rgba(176, 136, 104, 0.12);
-    --accent-glow-strong: rgba(176, 136, 104, 0.25);
-    --green: #7a9870;
-    --green-dim: rgba(122, 152, 112, 0.15);
-    --cyan: #7a9ca0;
-    --cyan-dim: rgba(122, 156, 160, 0.15);
-    --red: #c27458;
-    --amber: #b89860;
-    --border: #2a2724;
-    --border-light: #38342e;
-    --nav-bg: rgba(20, 18, 16, 0.82);
-}
-
-/* ── Light ─────────────────────────────────────────── */
-[data-theme="light"] {
+/* ── Warm paper (light — the only theme) ───────────────── */
+:root {
     --bg: #f5f2ee;
     --bg-deep: #ece8e3;
     --surface: #faf8f5;
@@ -170,8 +145,8 @@ samp {
 }
 
 .btn-primary:hover {
-    background: #c09878;
-    border-color: #c09878;
+    background: #7a5028;
+    border-color: #7a5028;
 }
 
 .btn-secondary {
@@ -220,7 +195,7 @@ samp {
 
 .card:hover {
     border-color: var(--border-light);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ===== Labels / Tags ===== */
@@ -267,16 +242,6 @@ samp {
     max-width: var(--max-width);
     margin-inline: auto;
     padding-inline: 2rem;
-}
-
-/* ===== Subtle noise texture on body ===== */
-[data-theme="light"] .btn-primary:hover {
-    background: #7a5028;
-    border-color: #7a5028;
-}
-
-[data-theme="light"] .card:hover {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ===== Responsive ===== */

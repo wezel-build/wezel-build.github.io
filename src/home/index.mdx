@@ -32,6 +32,7 @@ single outcome can feed several summaries.
 ```toml
 description = "Tracks compile time of the wezel workspace"
 
+# A single experiment consists of multiple steps, executed in order
 [step.cargo.release-build]
 command = "build"
 build_target = ["burrow"]
@@ -51,16 +52,14 @@ summary.build-time = { outcome = "time_ms", aggregation = "mean",  samples = 5 }
 Most commits do not meaningfully regress your builds though. That's why we resort to sparse sampling: instead of running these experiments on every single commit you make, we run these measurements once a day or so.
 Only when there's a meaningful regression between the last measurement and a current one do we resort to running experiments on all unmeasured commits - until all sources of regressions are found.
 
-```console
-$ wezel experiment run workspace-build
-→ step.cargo.build  ...........  59.7s
-→ summary.workspace-build-time   59.7s   (baseline 47.3s · +12.4s · regression)
-→ summary.slowest-crate-time      8.4s   (baseline  8.1s · +0.3s)
-done in 59.9s
-```
+The results of experiment runs are surfaced in a dashboard over at [app.wezel.build](app.wezel.build).
+
+### Not just Rust
+
+The whole thing is extensible - tool implementations live in separate binaries. Nothing prevents you from adding support for your own toolchain of choice - as long as you follow the protocol.
 
 ## Where
 
 Wezel is open source and under active development. Follow along on
-[GitHub](https://github.com/wezel-build/wezel), or read the
-[quickstart](/docs/quickstart) to wire it into your own builds.
+[GitHub](https://github.com/wezel-build/wezel), read the
+[quickstart](/docs/quickstart) to wire it into your own builds. There's also [Discord server](https://discord.gg/NE6HAz7H) you can join to chat and follow along.

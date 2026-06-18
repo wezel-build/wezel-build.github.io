@@ -9,36 +9,24 @@ interface Props {
 const { title = "Wezel — Your build, always at its best." } = Astro.props;
 
 const navLinks = [
-  { label: "Blog", href: "/blog" },
   { label: "Docs", href: "/docs" },
   { label: "Status", href: "https://status.wezel.build" },
 ];
 
-const themes = ["dark", "light"] as const;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Wezel is an open-source build observability suite that catches regressions before they slow your team down." />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b08868'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='18' fill='%23141210'%3Ew%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href={iosevkaAile600Url} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <script defer src="https://cloud.umami.is/script.js" data-website-id="83b509e2-8cc4-430d-a0aa-876262ff4082"></script>
   </head>
   <body>
-    <script is:inline>
-      (function() {
-        var t = localStorage.getItem('theme');
-        if (t === 'slate') { t = 'dark'; localStorage.setItem('theme', t); }
-        // The landing leans on the light warm-paper palette by default;
-        // the rest of the site defaults dark. A saved preference wins either way.
-        if (!t) t = (location.pathname === '/' ? 'light' : 'dark');
-        document.documentElement.setAttribute('data-theme', t);
-      })();
-    </script>
     <nav class="nav">
       <div class="nav-inner">
         <a href="/" class="nav-logo">
@@ -50,32 +38,12 @@ const themes = ["dark", "light"] as const;
           {navLinks.map(link => (
             <a href={link.href} class="nav-link">{link.label}</a>
           ))}
-          <button id="theme-toggle" class="theme-btn" type="button" aria-label="Switch theme">
-            dark
-          </button>
           <a href="https://github.com/wezel-build/wezel" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">
             GitHub
           </a>
         </div>
       </div>
     </nav>
-    <script is:inline>
-      (function() {
-        var order = ['dark', 'light'];
-        var btn = document.getElementById('theme-toggle');
-        // Reflect whatever was actually applied (which may be the
-        // landing's light default rather than a stored value).
-        var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        btn.textContent = current;
-        btn.addEventListener('click', function() {
-          var i = order.indexOf(current);
-          current = order[(i + 1) % order.length];
-          document.documentElement.setAttribute('data-theme', current);
-          localStorage.setItem('theme', current);
-          btn.textContent = current;
-        });
-      })();
-    </script>
 
     <main>
       <slot />
@@ -167,25 +135,6 @@ const themes = ["dark", "light"] as const;
   }
 
   .nav-link:hover {
-    color: var(--text);
-  }
-
-  .theme-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 10px;
-    cursor: pointer;
-    color: var(--text-mid);
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    transition: border-color 0.15s, color 0.15s;
-  }
-
-  .theme-btn:hover {
-    border-color: var(--text-dim);
     color: var(--text);
   }
 
