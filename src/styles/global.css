@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/*
+  Wezel design tokens — light, warm, confident.
+  Aesthetic direction (swappable): humanist serif display + clean grotesk body.
+  The mood we're after: relief + agency. Calm paper, generous space, one warm accent.
+*/
+@theme {
+  /* surfaces */
+  --color-paper: #fbfaf6; /* page background — warm off-white */
+  --color-surface: #ffffff; /* cards / raised panels */
+  --color-veil: #f4f1ea; /* subtle fills, code wells */
+
+  /* ink */
+  --color-ink: #1c1b18; /* primary text */
+  --color-ink-soft: #57544c; /* secondary text */
+  --color-ink-faint: #8c887d; /* tertiary / captions */
+
+  /* lines */
+  --color-line: #e7e3d8; /* hairline borders */
+  --color-line-strong: #d8d3c5;
+
+  /* accent — warm terracotta, used sparingly */
+  --color-accent: #c2562b;
+  --color-accent-deep: #a8431d;
+  --color-accent-wash: #f6e7df;
+
+  /* receipt signal colors — regression vs recovery */
+  --color-warn: #c2410c; /* the regression (slower) */
+  --color-warn-wash: #f7e3d8;
+  --color-good: #2f7d57; /* the recovery (faster) */
+  --color-good-wash: #e2efe7;
+
+  /* type */
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* rhythm */
+  --spacing-gutter: 1.5rem;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+::selection {
+  background: var(--color-accent-wash);
+  color: var(--color-accent-deep);
+}
+
+/* utility: the page's content rail */
+.rail {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}

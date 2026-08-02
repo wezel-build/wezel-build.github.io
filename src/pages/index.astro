@@ -1,0 +1,463 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Wezel — build regression observability"
+  description="Wezel watches the build scenarios your team waits on, detects real drift, and bisects only when there is something to explain."
+>
+  <!-- =========================================================
+       HEADER
+       ========================================================= -->
+  <header class="site-header">
+    <div class="rail header-inner">
+      <a href="/" class="brand" aria-label="Wezel home">
+        <svg class="brand-mark" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect x="2.5" y="2.5" width="16" height="16" rx="4" stroke="var(--color-accent)" stroke-width="2.5" />
+          <rect x="12" y="12" width="13" height="13" rx="4" fill="var(--color-good)" />
+        </svg>
+        <span class="brand-name">wezel</span>
+      </a>
+      <nav class="nav">
+        <a href="/docs">Docs</a>
+        <a href="/blog">Blog</a>
+        <a href="/status">Status</a>
+        <a href="https://github.com/wezel-build" rel="noopener">GitHub</a>
+        <a href="/docs" class="nav-cta">Install CLI</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       HERO — forensic build report, not a SaaS billboard.
+       Left: the promise (hope). Right: the receipt (evidence).
+       ========================================================= -->
+  <main>
+    <section class="hero">
+      <div class="rail hero-grid">
+        <!-- LEFT: promise -->
+        <div class="hero-copy">
+          <p class="eyebrow">Cargo-native build regression observability</p>
+
+          <h1 class="hero-title">
+            Your build got faster
+            <span class="mark-here">here<svg class="underline" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 50 2, 150 2, 198 7" stroke="var(--color-good)" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span>.
+          </h1>
+
+          <p class="hero-sub">
+            Wezel watches the build scenarios your team actually waits on.
+            It detects real drift and bisects only when there's something to explain.
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="/docs">Install CLI</a>
+            <a class="btn btn-ghost" href="/blog">Read the case &rarr;</a>
+          </div>
+
+          <div class="install" role="group" aria-label="Install Wezel">
+            <span class="install-prompt" aria-hidden="true">$</span>
+            <code class="install-cmd">curl -fsSL https://wezel.build/install.sh | sh</code>
+          </div>
+        </div>
+
+        <!-- RIGHT: the receipt -->
+        <figure class="receipt">
+          <figcaption class="receipt-head">
+            <span class="receipt-title">regression receipt</span>
+            <span class="receipt-id">a3f8c1d</span>
+          </figcaption>
+
+          <div class="receipt-chips">
+            <div class="chip">
+              <span class="chip-k">scenario</span>
+              <span class="chip-v">incremental · crate dirty</span>
+            </div>
+            <div class="chip">
+              <span class="chip-k">scope</span>
+              <span class="chip-v">workspace build time</span>
+            </div>
+          </div>
+
+          <!-- the arc: continuous drift up → tipping point (wezel installed) → improves somewhat -->
+          <svg class="receipt-chart" viewBox="0 0 520 250" role="img"
+               aria-label="Build time drifts continuously slower over 32 commits, peaking at +12.4s, then reverses and improves after Wezel is installed.">
+            <!-- baseline: where build time started, 32 commits ago -->
+            <line x1="40" y1="178" x2="492" y2="178" stroke="var(--color-line-strong)" stroke-width="1.5" stroke-dasharray="2 5" />
+            <text x="40" y="172" class="c-axis">baseline</text>
+
+            <!-- tipping point marker -->
+            <line x1="366" y1="58" x2="366" y2="200" stroke="var(--color-good)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.75" />
+            <text x="373" y="72" class="c-mark">wezel installed</text>
+
+            <!-- drift: continuous creep slower, commit after commit -->
+            <path
+              d="M40,178 L68,174 L92,176 L118,168 L146,170 L172,161 L198,163 L224,152 L250,145 L276,137 L302,124 L328,108 L352,90 L366,80"
+              fill="none" stroke="var(--color-warn)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <!-- reversal: no longer regressing, even improves somewhat -->
+            <path
+              d="M366,80 C392,87 420,95 458,100 L492,103"
+              fill="none" stroke="var(--color-good)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- tipping point peak: the accumulated regression, caught -->
+            <circle cx="366" cy="80" r="5" fill="var(--color-warn)" stroke="var(--color-surface)" stroke-width="2" />
+            <g class="badge badge-warn" transform="translate(262,42)">
+              <rect width="92" height="22" rx="6" />
+              <text x="46" y="15">+12.4s · +26%</text>
+            </g>
+
+            <!-- where it's heading now -->
+            <circle cx="492" cy="103" r="5" fill="var(--color-good)" stroke="var(--color-surface)" stroke-width="2" />
+            <g class="badge badge-good" transform="translate(396,112)">
+              <rect width="98" height="22" rx="6" />
+              <text x="49" y="15">−3.1s · improving</text>
+            </g>
+
+            <!-- x labels -->
+            <text x="40" y="226" class="c-axis">32 commits ago</text>
+            <text x="492" y="226" class="c-axis" text-anchor="end">now</text>
+          </svg>
+        </figure>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         WHAT IT DOES — three honest beats (from your mockup)
+         ========================================================= -->
+    <section class="beats">
+      <div class="rail beats-grid">
+        <div class="beat">
+          <h3>Choose scenarios</h3>
+          <p>Clean, incremental, release, LTO — or whatever your repo actually hurts on.</p>
+        </div>
+        <div class="beat">
+          <h3>Measure sparsely</h3>
+          <p>Don't burn CI minutes proving nothing changed on every commit.</p>
+        </div>
+        <div class="beat">
+          <h3>Bisect regressions</h3>
+          <p>When the line jumps, locate the culprit and show the delta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- blog teaser -->
+    <section class="rail">
+      <a class="blog-teaser" href="/blog">
+        <span class="blog-kicker">latest from /blog</span>
+        <span class="blog-title">Faster runners hide regressions</span>
+        <span class="blog-dek">Build performance is a maintained property &rarr;</span>
+      </a>
+    </section>
+  </main>
+
+  <style>
+    /* ---------- header ---------- */
+    .site-header {
+      border-bottom: 1px solid var(--color-line);
+      background: color-mix(in srgb, var(--color-paper) 85%, transparent);
+      backdrop-filter: saturate(140%) blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 4.25rem;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      color: var(--color-ink);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1.6rem;
+      font-size: 0.95rem;
+    }
+    .nav a {
+      color: var(--color-ink-soft);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav a:hover {
+      color: var(--color-ink);
+    }
+    .nav-cta {
+      border: 1px solid var(--color-line-strong);
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      color: var(--color-ink) !important;
+    }
+    .nav-cta:hover {
+      border-color: var(--color-ink-faint);
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      padding-block: clamp(3rem, 8vh, 6rem) clamp(2.5rem, 6vh, 4rem);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: center;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--color-ink-soft);
+      margin-bottom: 1.1rem;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.6rem, 5.4vw, 4rem);
+      line-height: 1.04;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .mark-here {
+      position: relative;
+      white-space: nowrap;
+    }
+    .mark-here .underline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.12em;
+      width: 100%;
+      height: 0.5em;
+      overflow: visible;
+    }
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 1.12rem;
+      line-height: 1.55;
+      color: var(--color-ink-soft);
+      max-width: 38ch;
+    }
+    .hero-cta {
+      margin-top: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.98rem;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 0.6rem;
+      padding: 0.7rem 1.3rem;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+    .btn-primary:hover {
+      background: #000;
+    }
+    .btn-ghost {
+      color: var(--color-ink-soft);
+    }
+    .btn-ghost:hover {
+      color: var(--color-ink);
+    }
+    .install {
+      margin-top: 1.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--color-ink-soft);
+    }
+    .install-prompt {
+      color: var(--color-ink-faint);
+    }
+    .install-cmd {
+      color: var(--color-ink);
+    }
+
+    /* ---------- receipt ---------- */
+    .receipt {
+      margin: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-line);
+      border-radius: 1rem;
+      padding: 1.25rem 1.4rem 1rem;
+      box-shadow: 0 1px 2px rgba(28, 27, 24, 0.04), 0 12px 28px -18px rgba(28, 27, 24, 0.18);
+    }
+    .receipt-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-line);
+      padding-bottom: 0.7rem;
+    }
+    .receipt-title {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--color-ink);
+    }
+    .receipt-id {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-ink-faint);
+    }
+    .receipt-chips {
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 0.85rem;
+    }
+    .chip {
+      flex: 1;
+      background: var(--color-veil);
+      border: 1px solid var(--color-line);
+      border-radius: 0.55rem;
+      padding: 0.5rem 0.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .chip-k {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-ink-faint);
+    }
+    .chip-v {
+      font-size: 0.88rem;
+      color: var(--color-ink);
+    }
+    .receipt-chart {
+      width: 100%;
+      height: auto;
+      margin-top: 0.5rem;
+      overflow: visible;
+    }
+    .c-axis {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      fill: var(--color-ink-faint);
+    }
+    .c-mark {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      fill: var(--color-good);
+    }
+    .c-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      fill: var(--color-ink-soft);
+    }
+    .badge rect {
+      fill: var(--color-warn-wash);
+    }
+    .badge text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-anchor: middle;
+      fill: var(--color-warn);
+      font-weight: 500;
+    }
+    .badge-good rect {
+      fill: var(--color-good-wash);
+    }
+    .badge-good text {
+      fill: var(--color-good);
+    }
+
+    /* ---------- beats ---------- */
+    .beats {
+      padding-block: clamp(2rem, 5vh, 3.5rem);
+      border-top: 1px solid var(--color-line);
+    }
+    .beats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 4vw, 3rem);
+    }
+    .beat h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .beat h3::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: var(--color-ink);
+    }
+    .beat p {
+      margin: 0;
+      color: var(--color-ink-soft);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    /* ---------- blog teaser ---------- */
+    .blog-teaser {
+      display: block;
+      border: 1px solid var(--color-line);
+      border-radius: 0.8rem;
+      padding: 1.1rem 1.3rem;
+      margin-bottom: 4rem;
+      text-decoration: none;
+      transition: border-color 0.15s ease;
+    }
+    .blog-teaser:hover {
+      border-color: var(--color-ink-faint);
+    }
+    .blog-kicker {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-ink-faint);
+      margin-bottom: 0.3rem;
+    }
+    .blog-title {
+      display: block;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--color-ink);
+    }
+    .blog-dek {
+      display: block;
+      color: var(--color-ink-soft);
+      font-size: 0.95rem;
+      margin-top: 0.1rem;
+    }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 820px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .beats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .nav a:not(.nav-cta) {
+        display: none;
+      }
+    }
+  </style>
+</Base>
