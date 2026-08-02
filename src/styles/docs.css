@@ -1,0 +1,550 @@
+/*
+  Starlight, dressed in the Wezel design system.
+
+  Everything here maps Starlight's `--sl-*` tokens onto the palette defined in
+  `global.css`. No new colours are introduced: the two derived values below are
+  `color-mix()` of existing tokens, because Starlight's neutral ramp has more
+  steps than ours does.
+
+  Light theme only — the theme toggle is removed and `data-theme` is pinned to
+  `light` (see `src/components/docs/ThemeProvider.astro`).
+*/
+
+/*
+  Layer order. Tailwind's `base` (preflight) is declared first so that
+  Starlight's own resets and component styles win over it; without this the two
+  resets fight and Starlight loses depending on injection order.
+*/
+@layer base, starlight.base, starlight.reset, starlight.core, starlight.content,
+  starlight.components, starlight.utils, theme, components, utilities;
+
+/* ==========================================================================
+   TOKENS
+   ========================================================================== */
+
+:root,
+:root[data-theme="light"],
+::backdrop,
+[data-theme="light"] ::backdrop {
+  /* --- neutral ramp -------------------------------------------------------
+     Starlight's light mode inverts this ramp: `white` is the darkest ink and
+     `black` is the page background. */
+  --sl-color-white: var(--color-ink);
+  --sl-color-gray-1: var(--color-ink);
+  --sl-color-gray-2: var(--color-ink-soft);
+  --sl-color-gray-3: var(--color-ink-faint);
+  /* derived: Starlight wants a step between ink-faint and line-strong */
+  --sl-color-gray-4: color-mix(in srgb, var(--color-ink-faint) 55%, var(--color-line-strong));
+  --sl-color-gray-5: var(--color-line-strong);
+  --sl-color-gray-6: var(--color-line);
+  --sl-color-gray-7: var(--color-veil);
+  --sl-color-black: var(--color-paper);
+
+  /* --- accent: terracotta, used sparingly --- */
+  --sl-color-accent-low: var(--color-accent-wash);
+  --sl-color-accent: var(--color-accent);
+  --sl-color-accent-high: var(--color-accent-deep);
+
+  /* --- semantic surfaces --- */
+  --sl-color-bg: var(--color-paper);
+  /* translucent paper, same treatment as the landing header */
+  --sl-color-bg-nav: color-mix(in srgb, var(--color-paper) 85%, transparent);
+  --sl-color-bg-sidebar: var(--color-paper);
+  --sl-color-bg-inline-code: var(--color-veil);
+  --sl-color-bg-accent: var(--color-accent);
+  --sl-color-text: var(--color-ink-soft);
+  --sl-color-text-accent: var(--color-accent);
+  --sl-color-text-invert: var(--color-paper);
+  --sl-color-hairline: var(--color-line);
+  --sl-color-hairline-light: var(--color-line);
+  --sl-color-hairline-shade: var(--color-line);
+  --sl-color-backdrop-overlay: color-mix(in srgb, var(--color-ink) 45%, transparent);
+
+  /* --- signal colours -----------------------------------------------------
+     Starlight names its aside palette blue/purple/orange/red. We only have
+     three signals, so: note → neutral, tip → good, caution → accent,
+     danger → warn. */
+  --sl-color-blue-low: var(--color-veil);
+  --sl-color-blue: var(--color-line-strong);
+  --sl-color-blue-high: var(--color-ink-soft);
+
+  --sl-color-purple-low: var(--color-good-wash);
+  --sl-color-purple: var(--color-good);
+  --sl-color-purple-high: var(--color-good);
+
+  --sl-color-orange-low: var(--color-accent-wash);
+  --sl-color-orange: var(--color-accent);
+  --sl-color-orange-high: var(--color-accent-deep);
+
+  --sl-color-red-low: var(--color-warn-wash);
+  --sl-color-red: var(--color-warn);
+  --sl-color-red-high: var(--color-warn);
+
+  --sl-color-green-low: var(--color-good-wash);
+  --sl-color-green: var(--color-good);
+  --sl-color-green-high: var(--color-good);
+
+  /* --- shadows: warm, and barely there --- */
+  --sl-shadow-sm: 0 1px 2px color-mix(in srgb, var(--color-ink) 4%, transparent);
+  --sl-shadow-md: 0 1px 2px color-mix(in srgb, var(--color-ink) 4%, transparent),
+    0 12px 28px -18px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  --sl-shadow-lg: 0 1px 2px color-mix(in srgb, var(--color-ink) 5%, transparent),
+    0 24px 48px -24px color-mix(in srgb, var(--color-ink) 22%, transparent);
+
+  /* --- type --- */
+  --sl-font: var(--font-sans);
+  --sl-font-mono: var(--font-mono);
+
+  --sl-text-h1: 2.1rem;
+  --sl-text-h2: 1.45rem;
+  --sl-text-h3: 1.15rem;
+  --sl-text-h4: 1rem;
+  --sl-line-height: 1.7;
+  --sl-line-height-headings: 1.25;
+
+  /* --- layout: matched to the landing --- */
+  --sl-nav-height: 4.25rem;
+  --sl-nav-pad-x: 1.5rem;
+  --sl-sidebar-width: 17rem;
+  --sl-sidebar-pad-x: 1.25rem;
+  --sl-content-width: 46rem;
+  --sl-content-pad-x: 1.75rem;
+}
+
+@media (min-width: 50em) {
+  :root {
+    --sl-text-h1: 2.6rem;
+    --sl-text-h2: 1.75rem;
+    --sl-text-h3: 1.3rem;
+    --sl-text-h4: 1.05rem;
+  }
+}
+
+/* ==========================================================================
+   PAGE CHROME
+   ========================================================================== */
+
+/* Starlight's PageFrame owns the fixed header bar and its hairline; we only add
+   the landing's blur so the two chromes are indistinguishable. */
+.header {
+  backdrop-filter: saturate(140%) blur(8px);
+}
+
+/* Sidebar and TOC sit on paper, separated by hairlines only. */
+#starlight__sidebar,
+.sidebar-pane {
+  border-inline-end: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.right-sidebar {
+  border-inline-start: 1px solid var(--color-line);
+}
+
+@media (min-width: 72rem) {
+  .right-sidebar {
+    border-inline-start: none;
+  }
+}
+
+/* ==========================================================================
+   SIDEBAR — uppercase, letter-tracked group labels; one accent on active
+   ========================================================================== */
+
+.sidebar-content {
+  padding-top: 1.5rem;
+}
+
+/* group headings */
+.sidebar-content summary,
+.sidebar-content > ul > li > details > summary .group-label > span,
+.sidebar-content .large {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.sidebar-content ul.top-level > li + li {
+  margin-top: 1.4rem;
+}
+
+.sidebar-content a {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  border-inline-start: 2px solid transparent;
+  border-radius: 0;
+  padding-block: 0.32rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-content a:hover {
+  color: var(--color-ink);
+  background: transparent;
+}
+
+.sidebar-content a[aria-current="page"],
+.sidebar-content a[aria-current="page"]:hover {
+  font-weight: 500;
+  color: var(--color-accent);
+  background: transparent;
+  border-inline-start-color: var(--color-accent);
+}
+
+/* nested lists get the rail the active marker sits on */
+.sidebar-content ul ul {
+  border-inline-start: 1px solid var(--color-line);
+  padding-inline-start: 0;
+  margin-inline-start: 0;
+}
+
+.sidebar-content ul ul li {
+  border-inline-start: none;
+  padding-inline-start: 0;
+  margin-inline-start: 0;
+}
+
+.sidebar-content ul ul a {
+  padding-inline-start: 0.85rem;
+  margin-inline-start: -1px;
+}
+
+/* ==========================================================================
+   TABLE OF CONTENTS
+   ========================================================================== */
+
+starlight-toc nav > h2,
+.right-sidebar h2 {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 0.6rem;
+}
+
+starlight-toc a {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  border-inline-start: 2px solid var(--color-line);
+  padding-block: 0.3rem;
+  border-radius: 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+starlight-toc a:hover {
+  color: var(--color-ink);
+}
+
+starlight-toc a[aria-current="true"],
+starlight-toc a[aria-current="true"]:hover {
+  font-weight: 500;
+  color: var(--color-accent);
+  background: transparent;
+  border-inline-start-color: var(--color-accent);
+}
+
+/* mobile TOC bar */
+starlight-toc > nav > button,
+.right-sidebar-container mobile-starlight-toc button {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: var(--color-veil);
+  border-color: var(--color-line);
+}
+
+/* ==========================================================================
+   CONTENT — mono headings (the SST cue), generous rhythm
+   ========================================================================== */
+
+.content-panel + .content-panel {
+  border-top: 1px solid var(--color-line);
+}
+
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6,
+h1#_top {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+h1#_top {
+  font-size: var(--sl-text-h1);
+}
+
+/* Starlight makes headings `display: inline` inside `.sl-heading-wrapper` so the
+   anchor link can sit on the same line. Section rules therefore go on the
+   wrapper, which is the block-level element. */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-line);
+}
+
+/* A page that opens straight into a section shouldn't stack its own hairline
+   on top of the one under the page title. */
+.sl-markdown-content > .sl-heading-wrapper.level-h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.sl-markdown-content .sl-heading-wrapper.level-h3 {
+  margin-top: 2rem;
+}
+
+.sl-markdown-content .sl-anchor-link {
+  color: var(--color-ink-faint);
+}
+
+.sl-markdown-content .sl-anchor-link:hover {
+  color: var(--color-accent);
+}
+
+/* the page's own descriptive standfirst, set apart from body copy */
+.page-standfirst {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+  max-width: 46ch;
+  margin-top: 0.9rem;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--color-accent);
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+  color: var(--color-accent-deep);
+  text-decoration-color: currentColor;
+}
+
+.sl-markdown-content strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* inline code reads as a token, not a button */
+.sl-markdown-content code:not(:where(.not-content *)) {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--color-veil);
+  border: 1px solid var(--color-line);
+  border-radius: 0.3rem;
+  padding: 0.1em 0.35em;
+  color: var(--color-ink);
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) code {
+  font-size: 1em;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+  border-inline-start: 2px solid var(--color-line-strong);
+  color: var(--color-ink-soft);
+  font-style: normal;
+}
+
+.sl-markdown-content hr {
+  border-color: var(--color-line);
+}
+
+/* tables read as receipts */
+.sl-markdown-content table:not(:where(.not-content *)) {
+  font-size: 0.92rem;
+}
+
+.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+  border-color: var(--color-line);
+}
+
+.sl-markdown-content th:not(:where(.not-content *)) {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* ==========================================================================
+   ASIDES — soft warm tints, hairline keyline
+   ========================================================================== */
+
+.starlight-aside {
+  border-radius: 0.6rem;
+  border-inline-start-width: 2px;
+  padding: 0.95rem 1.1rem;
+  color: var(--color-ink-soft);
+}
+
+.starlight-aside__title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.starlight-aside--note {
+  --sl-color-asides-text-accent: var(--color-ink-soft);
+  --sl-color-asides-border: var(--color-line-strong);
+}
+
+/* ==========================================================================
+   CODE BLOCKS
+   ========================================================================== */
+
+.expressive-code .frame pre {
+  border-color: var(--color-line);
+}
+
+.expressive-code .frame.is-terminal .header::before,
+.expressive-code figcaption.header {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   PAGINATION / FOOTER
+   ========================================================================== */
+
+.pagination-links a {
+  border-color: var(--color-line);
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+
+.pagination-links a:hover {
+  border-color: var(--color-line-strong);
+}
+
+.pagination-links svg {
+  color: var(--color-ink-faint);
+}
+
+/* The direct span holds the "Previous"/"Next" kicker; `.link-title` inside it
+   holds the page name. Kicker small and quiet, page name prominent. */
+.pagination-links a > span {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.pagination-links a .link-title {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.pagination-links a:hover .link-title {
+  color: var(--color-accent);
+}
+
+footer .meta {
+  font-size: 0.85rem;
+  color: var(--color-ink-faint);
+}
+
+/* ==========================================================================
+   SEARCH — ⌘K dialog on paper
+   ========================================================================== */
+
+site-search button[data-open-modal] {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border-color: var(--color-line-strong);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-ink-faint);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+
+site-search button[data-open-modal]:hover {
+  border-color: var(--color-ink-faint);
+}
+
+site-search kbd {
+  font-family: var(--font-mono);
+  background: var(--color-veil);
+  color: var(--color-ink-faint);
+}
+
+site-search dialog {
+  border: 1px solid var(--color-line);
+  border-radius: 0.9rem;
+  background: var(--color-paper);
+  box-shadow: var(--sl-shadow-lg);
+}
+
+#starlight__search {
+  --pagefind-ui-font: var(--font-sans);
+  --pagefind-ui-text: var(--color-ink);
+  --pagefind-ui-background: var(--color-paper);
+  --pagefind-ui-border: var(--color-line);
+  --pagefind-ui-primary: var(--color-accent);
+  --pagefind-ui-tag: var(--color-veil);
+  --pagefind-ui-border-radius: 0.6rem;
+  --pagefind-ui-border-width: 1px;
+}
+
+#starlight__search .pagefind-ui__search-input {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  background: var(--color-surface);
+}
+
+#starlight__search .pagefind-ui__result-title a {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+#starlight__search mark {
+  background: var(--color-accent-wash);
+  color: var(--color-accent-deep);
+}
+
+/* ==========================================================================
+   MOBILE MENU
+   ========================================================================== */
+
+starlight-menu-button button {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  border-radius: 0.5rem;
+  box-shadow: none;
+  color: var(--color-ink);
+}
+
+@media (max-width: 50rem) {
+  .sidebar-pane {
+    border-inline-end: none;
+    border-top: 1px solid var(--color-line);
+  }
+}

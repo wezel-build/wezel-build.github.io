@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Brand from "../components/Brand.astro";
 ---
 
 <Base
@@ -11,19 +12,13 @@ import Base from "../layouts/Base.astro";
        ========================================================= -->
   <header class="site-header">
     <div class="rail header-inner">
-      <a href="/" class="brand" aria-label="Wezel home">
-        <svg class="brand-mark" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect x="2.5" y="2.5" width="16" height="16" rx="4" stroke="var(--color-accent)" stroke-width="2.5" />
-          <rect x="12" y="12" width="13" height="13" rx="4" fill="var(--color-good)" />
-        </svg>
-        <span class="brand-name">wezel</span>
-      </a>
+      <Brand href="/" />
       <nav class="nav">
         <a href="/docs">Docs</a>
         <a href="/blog">Blog</a>
         <a href="/status">Status</a>
         <a href="https://github.com/wezel-build" rel="noopener">GitHub</a>
-        <a href="/docs" class="nav-cta">Install CLI</a>
+        <a href="/docs/installation" class="nav-cta">Install CLI</a>
       </nav>
     </div>
   </header>
@@ -40,7 +35,8 @@ import Base from "../layouts/Base.astro";
           <p class="eyebrow">Cargo-native build regression observability</p>
 
           <h1 class="hero-title">
-            Your build got faster
+            {/* explicit space: Astro 7 collapses the newline before the span */}
+            Your build got faster{" "}
             <span class="mark-here">here<svg class="underline" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 50 2, 150 2, 198 7" stroke="var(--color-good)" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span>.
           </h1>
 
@@ -50,7 +46,7 @@ import Base from "../layouts/Base.astro";
           </p>
 
           <div class="hero-cta">
-            <a class="btn btn-primary" href="/docs">Install CLI</a>
+            <a class="btn btn-primary" href="/docs/installation">Install CLI</a>
             <a class="btn btn-ghost" href="/blog">Read the case &rarr;</a>
           </div>
 
@@ -165,17 +161,6 @@ import Base from "../layouts/Base.astro";
       align-items: center;
       justify-content: space-between;
       height: 4.25rem;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-    }
-    .brand-name {
-      font-family: var(--font-display);
-      font-size: 1.55rem;
-      color: var(--color-ink);
     }
     .nav {
       display: flex;
