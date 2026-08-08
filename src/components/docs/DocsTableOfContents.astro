@@ -1,0 +1,60 @@
+---
+import type { TableOfContentsItem } from "../../lib/table-of-contents.ts";
+
+interface Props {
+  items: TableOfContentsItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="docs-toc" aria-labelledby="toc-heading">
+  <h2 id="toc-heading">On this page</h2>
+  <ul>
+    {
+      items.map((item) => (
+        <li>
+          <a href={`#${item.slug}`}>{item.text}</a>
+          {item.children.length > 0 && (
+            <ul class="toc-children">
+              {item.children.map((child) => (
+                <li>
+                  <a href={`#${child.slug}`}>{child.text}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  // Highlight the heading currently in view.
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>(".docs-toc a"),
+  );
+
+  const targets = links
+    .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+    .filter((element): element is HTMLElement => element !== null);
+
+  if (targets.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          for (const link of links) link.removeAttribute("aria-current");
+          const match = links.find(
+            (link) => decodeURIComponent(link.hash.slice(1)) === entry.target.id,
+          );
+          match?.setAttribute("aria-current", "true");
+        }
+      },
+      { rootMargin: "-20% 0px -70% 0px" },
+    );
+
+    for (const target of targets) observer.observe(target);
+  }
+</script>

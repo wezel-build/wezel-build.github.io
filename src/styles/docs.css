@@ -1,550 +1,650 @@
 /*
-  Starlight, dressed in the Wezel design system.
+  Wezel docs.
 
-  Everything here maps Starlight's `--sl-*` tokens onto the palette defined in
-  `global.css`. No new colours are introduced: the two derived values below are
-  `color-mix()` of existing tokens, because Starlight's neutral ramp has more
-  steps than ours does.
+  Implements DOCS-DESIGN.md §4. The load-bearing ideas, so that cases not
+  covered here can be derived rather than guessed:
 
-  Light theme only — the theme toggle is removed and `data-theme` is pinned to
-  `light` (see `src/components/docs/ThemeProvider.astro`).
+    - The sheet has edges. Bounded, centred rail; the space outside it is desk.
+    - Space, not lines. Rules and whitespace are substitutes and this design
+      spends whitespace. A rule has to earn its place.
+    - Rules survive only where they separate data: table head, table rows, the
+      callout's left edge. Nothing in the page furniture is ruled except the
+      sidebar divider.
+    - Nothing floats. Radius 0, no shadows.
+    - Two faces. Inter carries voice and body both — headings are the same face
+      set heavy and tight, not a change of typeface. Mono is the apparatus and
+      the data. Instrument Serif belongs to the brand, not to the docs.
 */
 
-/*
-  Layer order. Tailwind's `base` (preflight) is declared first so that
-  Starlight's own resets and component styles win over it; without this the two
-  resets fight and Starlight loses depending on injection order.
-*/
-@layer base, starlight.base, starlight.reset, starlight.core, starlight.content,
-  starlight.components, starlight.utils, theme, components, utilities;
+:root {
+  --docs-rail: 87rem;
+  --docs-sidebar: 16rem;
+  --docs-toc: 14rem;
+  --docs-measure: 54rem;
+  --docs-margin: 4.75rem;
+  --docs-header-h: 3.75rem;
 
-/* ==========================================================================
-   TOKENS
-   ========================================================================== */
-
-:root,
-:root[data-theme="light"],
-::backdrop,
-[data-theme="light"] ::backdrop {
-  /* --- neutral ramp -------------------------------------------------------
-     Starlight's light mode inverts this ramp: `white` is the darkest ink and
-     `black` is the page background. */
-  --sl-color-white: var(--color-ink);
-  --sl-color-gray-1: var(--color-ink);
-  --sl-color-gray-2: var(--color-ink-soft);
-  --sl-color-gray-3: var(--color-ink-faint);
-  /* derived: Starlight wants a step between ink-faint and line-strong */
-  --sl-color-gray-4: color-mix(in srgb, var(--color-ink-faint) 55%, var(--color-line-strong));
-  --sl-color-gray-5: var(--color-line-strong);
-  --sl-color-gray-6: var(--color-line);
-  --sl-color-gray-7: var(--color-veil);
-  --sl-color-black: var(--color-paper);
-
-  /* --- accent: terracotta, used sparingly --- */
-  --sl-color-accent-low: var(--color-accent-wash);
-  --sl-color-accent: var(--color-accent);
-  --sl-color-accent-high: var(--color-accent-deep);
-
-  /* --- semantic surfaces --- */
-  --sl-color-bg: var(--color-paper);
-  /* translucent paper, same treatment as the landing header */
-  --sl-color-bg-nav: color-mix(in srgb, var(--color-paper) 85%, transparent);
-  --sl-color-bg-sidebar: var(--color-paper);
-  --sl-color-bg-inline-code: var(--color-veil);
-  --sl-color-bg-accent: var(--color-accent);
-  --sl-color-text: var(--color-ink-soft);
-  --sl-color-text-accent: var(--color-accent);
-  --sl-color-text-invert: var(--color-paper);
-  --sl-color-hairline: var(--color-line);
-  --sl-color-hairline-light: var(--color-line);
-  --sl-color-hairline-shade: var(--color-line);
-  --sl-color-backdrop-overlay: color-mix(in srgb, var(--color-ink) 45%, transparent);
-
-  /* --- signal colours -----------------------------------------------------
-     Starlight names its aside palette blue/purple/orange/red. We only have
-     three signals, so: note → neutral, tip → good, caution → accent,
-     danger → warn. */
-  --sl-color-blue-low: var(--color-veil);
-  --sl-color-blue: var(--color-line-strong);
-  --sl-color-blue-high: var(--color-ink-soft);
-
-  --sl-color-purple-low: var(--color-good-wash);
-  --sl-color-purple: var(--color-good);
-  --sl-color-purple-high: var(--color-good);
-
-  --sl-color-orange-low: var(--color-accent-wash);
-  --sl-color-orange: var(--color-accent);
-  --sl-color-orange-high: var(--color-accent-deep);
-
-  --sl-color-red-low: var(--color-warn-wash);
-  --sl-color-red: var(--color-warn);
-  --sl-color-red-high: var(--color-warn);
-
-  --sl-color-green-low: var(--color-good-wash);
-  --sl-color-green: var(--color-good);
-  --sl-color-green-high: var(--color-good);
-
-  /* --- shadows: warm, and barely there --- */
-  --sl-shadow-sm: 0 1px 2px color-mix(in srgb, var(--color-ink) 4%, transparent);
-  --sl-shadow-md: 0 1px 2px color-mix(in srgb, var(--color-ink) 4%, transparent),
-    0 12px 28px -18px color-mix(in srgb, var(--color-ink) 18%, transparent);
-  --sl-shadow-lg: 0 1px 2px color-mix(in srgb, var(--color-ink) 5%, transparent),
-    0 24px 48px -24px color-mix(in srgb, var(--color-ink) 22%, transparent);
-
-  /* --- type --- */
-  --sl-font: var(--font-sans);
-  --sl-font-mono: var(--font-mono);
-
-  --sl-text-h1: 2.1rem;
-  --sl-text-h2: 1.45rem;
-  --sl-text-h3: 1.15rem;
-  --sl-text-h4: 1rem;
-  --sl-line-height: 1.7;
-  --sl-line-height-headings: 1.25;
-
-  /* --- layout: matched to the landing --- */
-  --sl-nav-height: 4.25rem;
-  --sl-nav-pad-x: 1.5rem;
-  --sl-sidebar-width: 17rem;
-  --sl-sidebar-pad-x: 1.25rem;
-  --sl-content-width: 46rem;
-  --sl-content-pad-x: 1.75rem;
+  --docs-leading: 1.8;
+  --docs-block-gap: 1.885rem;
+  --docs-h2-lead: 4.16rem;
+  --docs-h3-lead: 2.6rem;
 }
 
-@media (min-width: 50em) {
-  :root {
-    --sl-text-h1: 2.6rem;
-    --sl-text-h2: 1.75rem;
-    --sl-text-h3: 1.3rem;
-    --sl-text-h4: 1.05rem;
-  }
+/* Nothing floats, anywhere in the docs. */
+.docs-header *,
+.docs-sheet * {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--color-line-strong);
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+#main-content:focus {
+  outline: none;
 }
 
 /* ==========================================================================
-   PAGE CHROME
+   HEADER — full bleed, above the sheet, no bottom rule
    ========================================================================== */
-
-/* Starlight's PageFrame owns the fixed header bar and its hairline; we only add
-   the landing's blur so the two chromes are indistinguishable. */
-.header {
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: var(--docs-header-h);
+  padding-inline: 1.75rem;
+  background: color-mix(in srgb, var(--color-paper) 90%, transparent);
   backdrop-filter: saturate(140%) blur(8px);
 }
 
-/* Sidebar and TOC sit on paper, separated by hairlines only. */
-#starlight__sidebar,
-.sidebar-pane {
-  border-inline-end: 1px solid var(--color-line);
-  background: var(--color-paper);
+.docs-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  min-width: 0;
 }
 
-.right-sidebar {
-  border-inline-start: 1px solid var(--color-line);
-}
-
-@media (min-width: 72rem) {
-  .right-sidebar {
-    border-inline-start: none;
-  }
-}
-
-/* ==========================================================================
-   SIDEBAR — uppercase, letter-tracked group labels; one accent on active
-   ========================================================================== */
-
-.sidebar-content {
-  padding-top: 1.5rem;
-}
-
-/* group headings */
-.sidebar-content summary,
-.sidebar-content > ul > li > details > summary .group-label > span,
-.sidebar-content .large {
+.search-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 2.25rem;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+  padding: 0.3rem 0.55rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  font-size: 0.72rem;
   color: var(--color-ink-faint);
 }
 
-.sidebar-content ul.top-level > li + li {
-  margin-top: 1.4rem;
-}
-
-.sidebar-content a {
-  font-size: 0.9rem;
-  color: var(--color-ink-soft);
-  border-inline-start: 2px solid transparent;
-  border-radius: 0;
-  padding-block: 0.32rem;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.sidebar-content a:hover {
-  color: var(--color-ink);
-  background: transparent;
-}
-
-.sidebar-content a[aria-current="page"],
-.sidebar-content a[aria-current="page"]:hover {
-  font-weight: 500;
-  color: var(--color-accent);
-  background: transparent;
-  border-inline-start-color: var(--color-accent);
-}
-
-/* nested lists get the rail the active marker sits on */
-.sidebar-content ul ul {
-  border-inline-start: 1px solid var(--color-line);
-  padding-inline-start: 0;
-  margin-inline-start: 0;
-}
-
-.sidebar-content ul ul li {
-  border-inline-start: none;
-  padding-inline-start: 0;
-  margin-inline-start: 0;
-}
-
-.sidebar-content ul ul a {
-  padding-inline-start: 0.85rem;
-  margin-inline-start: -1px;
-}
-
-/* ==========================================================================
-   TABLE OF CONTENTS
-   ========================================================================== */
-
-starlight-toc nav > h2,
-.right-sidebar h2 {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
-  margin-bottom: 0.6rem;
-}
-
-starlight-toc a {
-  font-size: 0.85rem;
-  color: var(--color-ink-soft);
-  border-inline-start: 2px solid var(--color-line);
-  padding-block: 0.3rem;
-  border-radius: 0;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-starlight-toc a:hover {
-  color: var(--color-ink);
-}
-
-starlight-toc a[aria-current="true"],
-starlight-toc a[aria-current="true"]:hover {
-  font-weight: 500;
-  color: var(--color-accent);
-  background: transparent;
-  border-inline-start-color: var(--color-accent);
-}
-
-/* mobile TOC bar */
-starlight-toc > nav > button,
-.right-sidebar-container mobile-starlight-toc button {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+.search-placeholder kbd {
+  font: inherit;
   background: var(--color-veil);
-  border-color: var(--color-line);
+  padding: 0 0.3rem;
 }
 
-/* ==========================================================================
-   CONTENT — mono headings (the SST cue), generous rhythm
-   ========================================================================== */
-
-.content-panel + .content-panel {
-  border-top: 1px solid var(--color-line);
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  font-size: 0.95rem;
 }
 
-.sl-markdown-content h1,
-.sl-markdown-content h2,
-.sl-markdown-content h3,
-.sl-markdown-content h4,
-.sl-markdown-content h5,
-.sl-markdown-content h6,
-h1#_top {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  letter-spacing: -0.015em;
+.header-nav a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.header-nav a:hover {
   color: var(--color-ink);
 }
 
-h1#_top {
-  font-size: var(--sl-text-h1);
+.header-nav a[aria-current="page"]:not(.header-cta) {
+  color: var(--color-accent);
 }
 
-/* Starlight makes headings `display: inline` inside `.sl-heading-wrapper` so the
-   anchor link can sit on the same line. Section rules therefore go on the
-   wrapper, which is the block-level element. */
-.sl-markdown-content .sl-heading-wrapper.level-h2 {
-  margin-top: 2.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-line);
+.header-cta {
+  border: 1px solid var(--color-line-strong);
+  padding: 0.35rem 0.85rem;
+  color: var(--color-ink) !important;
 }
 
-/* A page that opens straight into a section shouldn't stack its own hairline
-   on top of the one under the page title. */
-.sl-markdown-content > .sl-heading-wrapper.level-h2:first-child {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
+.header-cta:hover {
+  border-color: var(--color-ink-faint);
 }
 
-.sl-markdown-content .sl-heading-wrapper.level-h3 {
-  margin-top: 2rem;
+.sidebar-toggle {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
 }
 
-.sl-markdown-content .sl-anchor-link {
+/* ==========================================================================
+   THE SHEET — bounded and centred. No outline: the centring is the edge.
+   ========================================================================== */
+.docs-sheet {
+  max-width: var(--docs-rail);
+  margin-inline: auto;
+  min-height: calc(100vh - var(--docs-header-h));
+  display: grid;
+  grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+}
+
+.docs-sheet[data-toc] {
+  grid-template-columns:
+    var(--docs-sidebar) minmax(0, 1fr)
+    var(--docs-toc);
+}
+
+/* The one rule in the page furniture. */
+.docs-sidebar-column {
+  border-inline-end: 1px solid var(--color-line);
+}
+
+.rail-inner {
+  position: sticky;
+  top: var(--docs-header-h);
+  max-height: calc(100vh - var(--docs-header-h));
+  overflow-y: auto;
+  padding: 2.9rem 1.5rem;
+}
+
+/* ==========================================================================
+   SIDEBAR + TOC — apparatus, set in mono
+   ========================================================================== */
+.nav-group + .nav-group {
+  margin-top: 2.1rem;
+}
+
+.nav-group > h2,
+.docs-toc > h2 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-ink-faint);
 }
 
-.sl-markdown-content .sl-anchor-link:hover {
-  color: var(--color-accent);
+.nav-group ul,
+.docs-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* the page's own descriptive standfirst, set apart from body copy */
-.page-standfirst {
-  font-size: 1.08rem;
-  line-height: 1.6;
+.nav-group a,
+.nav-label,
+.docs-toc a {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.3rem 0;
   color: var(--color-ink-soft);
-  max-width: 46ch;
-  margin-top: 0.9rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
-.sl-markdown-content a:not(:where(.not-content *)) {
+.nav-group a:hover,
+.docs-toc a:hover {
+  color: var(--color-ink);
+}
+
+/* Accent is a signal: it marks where you are, nothing else. */
+.nav-group a[aria-current="page"],
+.docs-toc a[aria-current="true"] {
   color: var(--color-accent);
-  text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  font-weight: 500;
+}
+
+.nav-label {
+  color: var(--color-ink-faint);
+}
+
+.nav-children,
+.toc-children {
+  margin-inline-start: 0.9rem !important;
+}
+
+.nav-children a,
+.toc-children a {
+  font-size: 0.85rem;
+  color: var(--color-ink-faint);
+}
+
+.docs-toc a {
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   PAGE HEAD
+   ========================================================================== */
+.docs-page-header {
+  padding: 3.4rem var(--docs-margin) 0;
+  max-width: var(--docs-measure);
+}
+
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 1.1rem;
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-ink);
+}
+
+.breadcrumb > * + *::before {
+  content: "/";
+  margin-inline: 0.5rem;
+  color: var(--color-line-strong);
+}
+
+.docs-page-header h1 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 4.5vw, 3.85rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.standfirst {
+  max-width: 44ch;
+  margin: 1.4rem 0 0;
+  font-size: 1.22rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+/* ==========================================================================
+   PROSE — the text block, with margins you can see
+   ========================================================================== */
+.docs-prose {
+  max-width: var(--docs-measure);
+  padding: 3.25rem var(--docs-margin) 4.55rem;
+  /* Source Sans 3 has a smaller x-height than Inter, so it needs the extra
+     0.03rem to read at the same apparent size across the 54rem measure. */
+  font-size: 1.08rem;
+  line-height: var(--docs-leading);
+  color: var(--color-ink);
+
+  /* Shiki runs on `css-variables`, so code inherits the Wezel palette
+     instead of importing a foreign editor theme. */
+  --astro-code-foreground: var(--color-ink);
+  --astro-code-background: transparent;
+  --astro-code-token-comment: var(--color-ink-faint);
+  --astro-code-token-string: var(--color-good);
+  --astro-code-token-string-expression: var(--color-good);
+  --astro-code-token-keyword: var(--color-warn);
+  --astro-code-token-function: var(--color-accent);
+  --astro-code-token-constant: var(--color-accent-deep);
+  --astro-code-token-parameter: var(--color-ink);
+  --astro-code-token-punctuation: var(--color-ink-faint);
+  --astro-code-token-link: var(--color-accent);
+}
+
+.docs-prose > * {
+  margin-block: 0;
+}
+
+.docs-prose > * + * {
+  margin-block-start: var(--docs-block-gap);
+}
+
+.docs-prose :is(h2, h3, h4) {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-wrap: balance;
+  scroll-margin-top: calc(var(--docs-header-h) + 1.75rem);
+}
+
+/* No rule above the section: the lead carries the break on its own. */
+.docs-prose > h2 {
+  font-size: 1.9rem;
+  margin-block-start: var(--docs-h2-lead);
+}
+
+.docs-prose > h2:first-child {
+  margin-block-start: 0;
+}
+
+.docs-prose > h3 {
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+  margin-block-start: var(--docs-h3-lead);
+}
+
+.docs-prose > h4 {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin-block-start: 2rem;
+}
+
+.docs-prose a {
+  color: var(--color-accent);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-accent) 35%,
+    transparent
+  );
   text-underline-offset: 0.2em;
 }
 
-.sl-markdown-content a:not(:where(.not-content *)):hover {
+.docs-prose a:hover {
   color: var(--color-accent-deep);
   text-decoration-color: currentColor;
 }
 
-.sl-markdown-content strong {
-  color: var(--color-ink);
+.docs-prose strong {
   font-weight: 600;
-}
-
-/* inline code reads as a token, not a button */
-.sl-markdown-content code:not(:where(.not-content *)) {
-  font-family: var(--font-mono);
-  font-size: 0.86em;
-  background: var(--color-veil);
-  border: 1px solid var(--color-line);
-  border-radius: 0.3rem;
-  padding: 0.1em 0.35em;
   color: var(--color-ink);
 }
 
-.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) code {
-  font-size: 1em;
-  background: none;
-  border: none;
-  padding: 0;
+.docs-prose :is(ul, ol) {
+  padding-inline-start: 1.3rem;
 }
 
-.sl-markdown-content blockquote:not(:where(.not-content *)) {
+.docs-prose li + li {
+  margin-top: 0.5rem;
+}
+
+.docs-prose li::marker {
+  color: var(--color-ink-faint);
+}
+
+.docs-prose hr {
+  border: none;
+  border-block-start: 1px solid var(--color-line);
+  margin-block: 2.5rem;
+}
+
+.docs-prose blockquote:not(.markdown-alert) {
+  margin: 0;
+  padding-inline-start: 1.1rem;
   border-inline-start: 2px solid var(--color-line-strong);
   color: var(--color-ink-soft);
-  font-style: normal;
 }
 
-.sl-markdown-content hr {
-  border-color: var(--color-line);
+.docs-prose :is(img, video) {
+  max-width: 100%;
+  height: auto;
 }
 
-/* tables read as receipts */
-.sl-markdown-content table:not(:where(.not-content *)) {
-  font-size: 0.92rem;
-}
-
-.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
-  border-color: var(--color-line);
-}
-
-.sl-markdown-content th:not(:where(.not-content *)) {
+/* ---- code: inline code is text, not a button ------------------------- */
+.docs-prose code {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
+  font-size: 0.86em;
 }
 
-/* ==========================================================================
-   ASIDES — soft warm tints, hairline keyline
-   ========================================================================== */
-
-.starlight-aside {
-  border-radius: 0.6rem;
-  border-inline-start-width: 2px;
-  padding: 0.95rem 1.1rem;
-  color: var(--color-ink-soft);
-}
-
-.starlight-aside__title {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.starlight-aside--note {
-  --sl-color-asides-text-accent: var(--color-ink-soft);
-  --sl-color-asides-border: var(--color-line-strong);
-}
-
-/* ==========================================================================
-   CODE BLOCKS
-   ========================================================================== */
-
-.expressive-code .frame pre {
-  border-color: var(--color-line);
-}
-
-.expressive-code .frame.is-terminal .header::before,
-.expressive-code figcaption.header {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-}
-
-/* ==========================================================================
-   PAGINATION / FOOTER
-   ========================================================================== */
-
-.pagination-links a {
-  border-color: var(--color-line);
-  border-radius: 0.6rem;
-  background: var(--color-surface);
-  box-shadow: none;
-  transition: border-color 0.15s ease;
-}
-
-.pagination-links a:hover {
-  border-color: var(--color-line-strong);
-}
-
-.pagination-links svg {
-  color: var(--color-ink-faint);
-}
-
-/* The direct span holds the "Previous"/"Next" kicker; `.link-title` inside it
-   holds the page name. Kicker small and quiet, page name prominent. */
-.pagination-links a > span {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
-}
-
-.pagination-links a .link-title {
-  display: inline-block;
-  margin-top: 0.25rem;
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: var(--color-ink);
-}
-
-.pagination-links a:hover .link-title {
-  color: var(--color-accent);
-}
-
-footer .meta {
-  font-size: 0.85rem;
-  color: var(--color-ink-faint);
-}
-
-/* ==========================================================================
-   SEARCH — ⌘K dialog on paper
-   ========================================================================== */
-
-site-search button[data-open-modal] {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  border-color: var(--color-line-strong);
-  border-radius: 0.5rem;
-  background: var(--color-surface);
-  color: var(--color-ink-faint);
-  box-shadow: none;
-  transition: border-color 0.15s ease;
-}
-
-site-search button[data-open-modal]:hover {
-  border-color: var(--color-ink-faint);
-}
-
-site-search kbd {
-  font-family: var(--font-mono);
-  background: var(--color-veil);
-  color: var(--color-ink-faint);
-}
-
-site-search dialog {
-  border: 1px solid var(--color-line);
-  border-radius: 0.9rem;
-  background: var(--color-paper);
-  box-shadow: var(--sl-shadow-lg);
-}
-
-#starlight__search {
-  --pagefind-ui-font: var(--font-sans);
-  --pagefind-ui-text: var(--color-ink);
-  --pagefind-ui-background: var(--color-paper);
-  --pagefind-ui-border: var(--color-line);
-  --pagefind-ui-primary: var(--color-accent);
-  --pagefind-ui-tag: var(--color-veil);
-  --pagefind-ui-border-radius: 0.6rem;
-  --pagefind-ui-border-width: 1px;
-}
-
-#starlight__search .pagefind-ui__search-input {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  background: var(--color-surface);
-}
-
-#starlight__search .pagefind-ui__result-title a {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  color: var(--color-ink);
-}
-
-#starlight__search mark {
-  background: var(--color-accent-wash);
+.docs-prose :not(pre) > code {
   color: var(--color-accent-deep);
 }
 
-/* ==========================================================================
-   MOBILE MENU
-   ========================================================================== */
+.docs-prose :is(h2, h3, h4) code {
+  font-size: 0.9em;
+  color: inherit;
+}
 
-starlight-menu-button button {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line-strong);
-  border-radius: 0.5rem;
-  box-shadow: none;
+.docs-prose .code-figure {
+  margin: 0;
+  background: var(--color-veil);
+}
+
+.docs-prose .code-figure figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-faint);
+  padding: 0.55rem 0.95rem 0;
+}
+
+.docs-prose pre {
+  margin: 0;
+  padding: 0.95rem;
+  overflow-x: auto;
+  background: var(--color-veil) !important;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.docs-prose .code-figure pre {
+  padding-block-start: 0.65rem;
+}
+
+/* ---- tables: rules here separate data, so they stay ------------------ */
+.docs-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.docs-prose th {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  text-align: left;
+  padding: 0.45rem 0.9rem 0.45rem 0;
+  border-block-end: 1px solid var(--color-line-strong);
+}
+
+.docs-prose td {
+  padding: 0.55rem 0.9rem 0.55rem 0;
+  border-block-end: 1px solid var(--color-line);
+  vertical-align: baseline;
+}
+
+/* ---- callouts: a left rule and a label, no box ----------------------- */
+.docs-prose .markdown-alert {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  border-inline-start: 2px solid var(--color-line-strong);
+  color: var(--color-ink-soft);
+  font-size: 0.98rem;
+}
+
+.docs-prose .markdown-alert > * {
+  margin-block: 0;
+}
+
+.docs-prose .markdown-alert > * + * {
+  margin-block-start: 0.7rem;
+}
+
+.docs-prose .markdown-alert-title {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-block-end: 0.35rem !important;
+}
+
+/* The plugin ships an octicon; the design uses a word. */
+.docs-prose .markdown-alert-title svg {
+  display: none;
+}
+
+.docs-prose .markdown-alert-tip {
+  border-inline-start-color: var(--color-good);
+}
+
+.docs-prose .markdown-alert-tip .markdown-alert-title {
+  color: var(--color-good);
+}
+
+.docs-prose .markdown-alert-important {
+  border-inline-start-color: var(--color-accent);
+}
+
+.docs-prose .markdown-alert-important .markdown-alert-title {
+  color: var(--color-accent-deep);
+}
+
+.docs-prose :is(.markdown-alert-warning, .markdown-alert-caution) {
+  border-inline-start-color: var(--color-warn);
+}
+
+.docs-prose
+  :is(.markdown-alert-warning, .markdown-alert-caution)
+  .markdown-alert-title {
+  color: var(--color-warn);
+}
+
+/* ==========================================================================
+   PAGER — two cells divided by a rule, not two cards
+   ========================================================================== */
+.docs-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: var(--docs-measure);
+  padding-inline: var(--docs-margin);
+  padding-block-end: 3.5rem;
+  gap: 2rem;
+}
+
+.docs-pager a {
+  text-decoration: none;
+  display: block;
+}
+
+.docs-pager .pager-next {
+  text-align: right;
+  grid-column: 2;
+}
+
+.docs-pager .kicker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.docs-pager .title {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--color-ink);
 }
 
-@media (max-width: 50rem) {
-  .sidebar-pane {
+.docs-pager a:hover .title {
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
+   NARROW — the TOC goes first, then the sidebar becomes a drawer
+   ========================================================================== */
+@media (max-width: 78rem) {
+  .docs-sheet,
+  .docs-sheet[data-toc] {
+    grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+  }
+
+  .docs-toc-column {
+    display: none;
+  }
+}
+
+@media (max-width: 64rem) {
+  :root {
+    --docs-margin: 2rem;
+  }
+
+  .docs-sheet,
+  .docs-sheet[data-toc] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .header-nav a:not(.header-cta) {
+    display: none;
+  }
+
+  .docs-sidebar-column {
+    display: none;
     border-inline-end: none;
-    border-top: 1px solid var(--color-line);
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  .docs-sidebar-column[data-open] {
+    display: block;
+  }
+
+  .docs-sidebar-column .rail-inner {
+    position: static;
+    max-height: none;
+    padding-block: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --docs-margin: 1.4rem;
+  }
+
+  .search-placeholder,
+  .header-cta {
+    display: none;
+  }
+
+  .docs-page-header h1 {
+    font-size: clamp(2.1rem, 10vw, 2.75rem);
+  }
+
+  .docs-prose > h2 {
+    font-size: 1.6rem;
   }
 }

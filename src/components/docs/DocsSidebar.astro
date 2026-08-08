@@ -1,0 +1,63 @@
+---
+import type { NavigationGroup, NavigationItem } from "../../lib/docs-navigation.ts";
+
+interface Props {
+  navigation: NavigationGroup[];
+  id: string;
+}
+
+const { navigation, id } = Astro.props;
+
+function isCurrent(item: NavigationItem): boolean {
+  return item.type === "link" ? item.id === id : item.overview?.id === id;
+}
+---
+
+<nav class="docs-sidebar" aria-label="Documentation">
+  {
+    navigation.map((group) => (
+      <div class="nav-group">
+        <h2>{group.label}</h2>
+        <ul>
+          {group.items.map((item) =>
+            item.type === "link" ? (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isCurrent(item) ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ) : (
+              <li>
+                {item.overview ? (
+                  <a
+                    href={item.overview.href}
+                    aria-current={isCurrent(item) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <span class="nav-label">{item.label}</span>
+                )}
+                <ul class="nav-children">
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        href={child.type === "link" ? child.href : "#"}
+                        aria-current={isCurrent(child) ? "page" : undefined}
+                      >
+                        {child.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ),
+          )}
+        </ul>
+      </div>
+    ))
+  }
+</nav>

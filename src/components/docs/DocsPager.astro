@@ -1,0 +1,31 @@
+---
+import type { NavigationLink } from "../../lib/docs-navigation.ts";
+
+interface Props {
+  previous?: NavigationLink | undefined;
+  next?: NavigationLink | undefined;
+}
+
+const { previous, next } = Astro.props;
+---
+
+{
+  (previous || next) && (
+    <nav class="docs-pager" aria-label="Page navigation">
+      {previous ? (
+        <a href={previous.href} rel="prev">
+          <span class="kicker">Previous</span>
+          <span class="title">{previous.label}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+      {next && (
+        <a href={next.href} rel="next" class="pager-next">
+          <span class="kicker">Next</span>
+          <span class="title">{next.label}</span>
+        </a>
+      )}
+    </nav>
+  )
+}

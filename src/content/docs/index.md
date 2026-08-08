@@ -1,8 +1,6 @@
 ---
 title: Introduction
 description: What Wezel is, and what it does to a repository.
-sidebar:
-  label: Introduction
 ---
 
 <!-- COPY SLOT: standfirst — one or two sentences on what Wezel is. Descriptive
@@ -19,10 +17,9 @@ reports when that number moves for a reason worth reading.
 
 <!-- COPY SLOT: observations vs. regressions, and what lands in front of a human. -->
 
-:::note
-Slow shouldn't get slower; fast should stay fast. Wezel reports drift against a
-baseline — it does not attribute a cause.
-:::
+> [!NOTE]
+> Slow shouldn't get slower; fast should stay fast. Wezel reports drift against a
+> baseline — it does not attribute a cause.
 
 ## Where to go next
 

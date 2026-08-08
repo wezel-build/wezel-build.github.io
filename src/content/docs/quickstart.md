@@ -38,9 +38,8 @@ One run produces one outcome, which can be summarised more than one way:
 
 <!-- COPY SLOT: how to read the numbers; what a baseline is. -->
 
-:::tip
-<!-- COPY SLOT: the one thing worth doing next. -->
-:::
+> [!TIP]
+> <!-- COPY SLOT: the one thing worth doing next. -->
 
 ## Next
 

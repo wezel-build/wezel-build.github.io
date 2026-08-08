@@ -1,6 +1,12 @@
 ---
 // The Wezel wordmark. Shared by the landing header and the docs header so the
 // two chromes can't drift apart.
+//
+// The mark is the favicon, promoted: a terracotta tile with a serif `w`. Inline
+// here rather than an <img>, so the letter picks up Instrument Serif from the
+// page. The favicon file falls back to Georgia because an icon SVG is isolated
+// and never sees the webfont — close enough at 16px, and the two stay in step
+// otherwise. Keep public/favicon.svg in sync with this.
 interface Props {
   href?: string;
 }
@@ -13,19 +19,17 @@ const { href = "/" } = Astro.props;
     class="brand-mark"
     width="28"
     height="28"
-    viewBox="0 0 28 28"
-    fill="none"
+    viewBox="0 0 32 32"
     aria-hidden="true"
   >
-    <rect
-      x="2.5"
-      y="2.5"
-      width="16"
-      height="16"
-      rx="4"
-      stroke="var(--color-accent)"
-      stroke-width="2.5"></rect>
-    <rect x="12" y="12" width="13" height="13" rx="4" fill="var(--color-good)"></rect>
+    <rect width="32" height="32" rx="7" fill="var(--color-accent)"></rect>
+    <text
+      x="16"
+      y="22"
+      font-size="18"
+      fill="var(--color-paper)"
+      text-anchor="middle">w</text
+    >
   </svg>
   <span class="brand-name">wezel</span>
 </a>
@@ -37,9 +41,15 @@ const { href = "/" } = Astro.props;
     gap: 0.6rem;
     text-decoration: none;
   }
+
   .brand-mark {
     flex: none;
   }
+
+  .brand-mark text {
+    font-family: var(--font-display);
+  }
+
   .brand-name {
     font-family: var(--font-display);
     font-size: 1.55rem;

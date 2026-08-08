@@ -1,8 +1,6 @@
 ---
 title: Continuous integration
 description: Running Wezel on a CI runner and reporting results back.
-sidebar:
-  label: Continuous integration
 ---
 
 <!-- COPY SLOT: standfirst. -->

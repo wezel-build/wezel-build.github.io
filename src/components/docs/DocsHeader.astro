@@ -1,0 +1,61 @@
+---
+import Brand from "../Brand.astro";
+
+// Mirrors the landing header. The frame (height, hairline, translucent
+// background) belongs to the header itself now that Starlight's PageFrame is
+// gone — see DOCS-DESIGN.md §4.
+const links = [
+  { href: "/docs", label: "Docs" },
+  { href: "/blog", label: "Blog" },
+  { href: "/status", label: "Status" },
+  { href: "https://github.com/wezel-build", label: "GitHub", external: true },
+];
+
+const path = Astro.url.pathname;
+---
+
+<header class="docs-header">
+  <Brand href="/" />
+
+  <div class="header-right">
+    <!-- Inert until search lands (DOCS-DESIGN.md build plan, step 10). -->
+    <span class="search-placeholder" aria-hidden="true">
+      <span>Search</span><kbd>⌘K</kbd>
+    </span>
+
+    <nav class="header-nav" aria-label="Site">
+      {
+        links.map(({ href, label, external }) => (
+          <a
+            href={href}
+            aria-current={!external && path.startsWith(href) ? "page" : undefined}
+            {...external ? { rel: "noopener" } : {}}
+          >
+            {label}
+          </a>
+        ))
+      }
+      <a href="/docs/installation" class="header-cta">Install CLI</a>
+    </nav>
+
+    <button
+      class="sidebar-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="docs-sidebar"
+    >
+      Contents
+    </button>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>(".sidebar-toggle");
+  const sidebar = document.getElementById("docs-sidebar");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    sidebar?.toggleAttribute("data-open", !open);
+  });
+</script>

@@ -1,0 +1,68 @@
+---
+import type { MarkdownHeading } from "astro";
+
+import "../styles/docs.css";
+import DocsHeader from "../components/docs/DocsHeader.astro";
+import DocsPageHeader from "../components/docs/DocsPageHeader.astro";
+import DocsPager from "../components/docs/DocsPager.astro";
+import DocsSidebar from "../components/docs/DocsSidebar.astro";
+import DocsTableOfContents from "../components/docs/DocsTableOfContents.astro";
+import Base from "./Base.astro";
+import {
+  getBreadcrumbs,
+  getNavigation,
+  getPagerLinks,
+} from "../lib/docs-navigation.ts";
+import { generateTableOfContents } from "../lib/table-of-contents.ts";
+
+interface Props {
+  id: string;
+  title: string;
+  description?: string | undefined;
+  headings: MarkdownHeading[];
+}
+
+const { id, title, description, headings } = Astro.props;
+
+const navigation = await getNavigation();
+const breadcrumbs = getBreadcrumbs(navigation, id);
+const { previous, next } = getPagerLinks(navigation, id);
+const tableOfContents = generateTableOfContents(headings);
+const hasToc = tableOfContents.length > 0;
+---
+
+<Base title={`${title} — Wezel docs`} description={description}>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <DocsHeader />
+
+  <div class="docs-sheet" data-toc={hasToc ? "" : undefined}>
+    <aside class="docs-sidebar-column" id="docs-sidebar">
+      <div class="rail-inner">
+        <DocsSidebar navigation={navigation} id={id} />
+      </div>
+    </aside>
+
+    <main id="main-content" tabindex="-1">
+      <DocsPageHeader
+        title={title}
+        description={description}
+        breadcrumbs={breadcrumbs}
+      />
+      <article class="docs-prose">
+        <slot />
+      </article>
+      <DocsPager previous={previous} next={next} />
+    </main>
+
+    {
+      hasToc && (
+        <aside class="docs-toc-column">
+          <div class="rail-inner">
+            <DocsTableOfContents items={tableOfContents} />
+          </div>
+        </aside>
+      )
+    }
+  </div>
+</Base>

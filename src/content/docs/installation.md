@@ -25,6 +25,5 @@ wezel --version
 
 <!-- COPY SLOT: what a correct install looks like; supported platforms. -->
 
-:::caution
-<!-- COPY SLOT: any platform caveat worth stating up front. Declarative, peer-toned. -->
-:::
+> [!WARNING]
+> <!-- COPY SLOT: any platform caveat worth stating up front. Declarative, peer-toned. -->
