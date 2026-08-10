@@ -13,7 +13,7 @@ const { title, description, breadcrumbs } = Astro.props;
 <div class="docs-page-header">
   {
     breadcrumbs.length > 0 && (
-      <nav class="breadcrumb" aria-label="Breadcrumb">
+      <nav class="breadcrumb" aria-label="Breadcrumb" data-pagefind-ignore>
         {breadcrumbs.map((crumb) =>
           crumb.href ? <a href={crumb.href}>{crumb.label}</a> : <span>{crumb.label}</span>,
         )}

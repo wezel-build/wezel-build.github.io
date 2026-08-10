@@ -1,5 +1,6 @@
 ---
 import Brand from "../Brand.astro";
+import DocsSearch from "./DocsSearch.astro";
 
 // Mirrors the landing header. The frame (height, hairline, translucent
 // background) belongs to the header itself now that Starlight's PageFrame is
@@ -18,10 +19,7 @@ const path = Astro.url.pathname;
   <Brand href="/" />
 
   <div class="header-right">
-    <!-- Inert until search lands (DOCS-DESIGN.md build plan, step 10). -->
-    <span class="search-placeholder" aria-hidden="true">
-      <span>Search</span><kbd>⌘K</kbd>
-    </span>
+    <DocsSearch />
 
     <nav class="header-nav" aria-label="Site">
       {

@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import pagefind from "astro-pagefind";
 import tailwindcss from "@tailwindcss/vite";
 import { remarkAlert } from "remark-github-blockquote-alert";
 
@@ -48,7 +49,10 @@ const codeFigure = () => ({
 // https://astro.build/config
 export default defineConfig({
   site: "https://wezel.build",
-  integrations: [mdx(), sitemap()],
+  // Pagefind indexes the built HTML after the build and serves /pagefind/ in
+  // dev from the last build output — so `astro dev` has no index until
+  // `astro build` has run at least once.
+  integrations: [mdx(), sitemap(), pagefind()],
   markdown: {
     remarkPlugins: [remarkAlert],
     shikiConfig: {

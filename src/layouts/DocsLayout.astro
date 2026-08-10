@@ -24,6 +24,13 @@ interface Props {
 
 const { id, title, description, headings } = Astro.props;
 
+// `data-pagefind-body` on <main> scopes the search index to the docs: once any
+// page declares it, Pagefind indexes only pages that do, which keeps the landing
+// page out of docs results. The pager is wrapped in `data-pagefind-ignore` so a
+// page's neighbours don't surface in its own excerpt, and the breadcrumb is
+// ignored in DocsPageHeader for the same reason. Kept as a JS comment rather
+// than an HTML one so the rationale isn't shipped to the client.
+
 const navigation = await getNavigation();
 const breadcrumbs = getBreadcrumbs(navigation, id);
 const { previous, next } = getPagerLinks(navigation, id);
@@ -43,7 +50,7 @@ const hasToc = tableOfContents.length > 0;
       </div>
     </aside>
 
-    <main id="main-content" tabindex="-1">
+    <main id="main-content" tabindex="-1" data-pagefind-body>
       <DocsPageHeader
         title={title}
         description={description}
@@ -52,7 +59,9 @@ const hasToc = tableOfContents.length > 0;
       <article class="docs-prose">
         <slot />
       </article>
-      <DocsPager previous={previous} next={next} />
+      <div data-pagefind-ignore>
+        <DocsPager previous={previous} next={next} />
+      </div>
     </main>
 
     {
