@@ -64,11 +64,3 @@ body {
   background: var(--color-accent-wash);
   color: var(--color-accent-deep);
 }
-
-/* utility: the page's content rail */
-.rail {
-  width: 100%;
-  max-width: 64rem;
-  margin-inline: auto;
-  padding-inline: 1.5rem;
-}
