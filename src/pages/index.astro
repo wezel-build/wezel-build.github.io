@@ -20,9 +20,11 @@ import Brand from "../components/Brand.astro";
 //   - Figures are bounded objects with a ruled head, not tinted rectangles:
 //     hairline border, veil caption strip, body on surface. All four figures on
 //     the page are built this way.
-//   - Headings are Instrument Serif. That is the one place the landing departs
-//     from the docs, which set headings in Source Sans 3 600. Switch by moving
-//     h1/h2 to --font-sans and weight 600.
+//   - Two faces, as in the docs. Source Sans 3 carries voice and body both:
+//     headings are the same face set heavy and tight, not a change of typeface.
+//     Mono is the apparatus and the data. Instrument Serif belongs to the brand,
+//     so it appears in the wordmark and nowhere else on the page. Heading
+//     metrics track docs.css deliberately.
 //
 // Copy is the user's. Slots below are marked COPY SLOT; leave the words alone
 // unless asked.
@@ -63,10 +65,13 @@ import Brand from "../components/Brand.astro";
 
             <div class="fold-body">
                 <div>
-                    <!-- COPY SLOT: h1. The tagline. -->
+                    <!-- COPY SLOT: h1. The tagline.
+                         The {" "} are load-bearing: the formatter is free to
+                         break these lines, and Astro trims a newline before a
+                         tag to nothing rather than to a space. -->
                     <h1>
-                        Your build, always at its best<span class="stop"
-                            >.</span>
+                        Your build,{" "}<span class="accent">always</span>{" "}at
+                        its best
                     </h1>
 
                     <!-- COPY SLOT: the sentence under the tagline. -->
@@ -87,12 +92,15 @@ import Brand from "../components/Brand.astro";
                         >
                     </div>
 
-                    <p class="install-line">
-                        <span class="prompt" aria-hidden="true">$</span>
-                        <code
-                            >curl -fsSL https://wezel.build/install.sh | sh</code
-                        >
-                    </p>
+                    <div class="install">
+                        <span class="label">Install</span>
+                        <p class="install-line">
+                            <span class="prompt" aria-hidden="true">$</span>
+                            <code
+                                >curl -fsSL https://wezel.build/install.sh | sh</code
+                            >
+                        </p>
+                    </div>
                 </div>
 
                 <!-- VERIFY SLOT: this is a reconstruction, not observed output.
@@ -105,8 +113,7 @@ import Brand from "../components/Brand.astro";
 
                     <div class="run-body">
                         <div>
-                            <span class="p">$</span>
-                            <span class="bin">wezel</span> exp run
+                            <span class="p">$</span>{" "}<span class="bin">wezel</span> exp run
                         </div>
 
                         <div class="run-meta">
@@ -156,8 +163,7 @@ import Brand from "../components/Brand.astro";
                         <!-- Kept on one line: Astro trims the newline before a tag, which
                  would render "expbisect". -->
                         <div class="run-next">
-                            <span class="p">$</span>
-                            <span class="bin">wezel</span> exp <span class="sub"
+                            <span class="p">$</span>{" "}<span class="bin">wezel</span> exp <span class="sub"
                                 >bisect</span
                             > build-time
                         </div>
@@ -473,15 +479,13 @@ import Brand from "../components/Brand.astro";
                     <figcaption>Terminal</figcaption>
                     <div class="terminal">
                         <div>
-                            <span class="prompt">$</span>
-                            <span class="cmd">wezel</span> serve
+                            <span class="prompt">$</span>{" "}<span class="cmd">wezel</span> serve
                         </div>
                         <div class="out">listening on 127.0.0.1:8080</div>
                         <div class="out">store: ./wezel.db (sqlite)</div>
                         <div class="gap"></div>
                         <div>
-                            <span class="prompt">$</span>
-                            <span class="cmd">wezel</span> exp run
+                            <span class="prompt">$</span>{" "}<span class="cmd">wezel</span> exp run
                         </div>
                         <div class="out">
                             release-build · 5 samples · mean 42.1s
@@ -531,13 +535,13 @@ import Brand from "../components/Brand.astro";
                 <figure class="closing-install">
                     <figcaption class="label">Install</figcaption>
                     <div class="row">
-                        <span class="prompt">$</span>
+                        <span class="prompt" aria-hidden="true">$</span>
                         <code
                             >curl -fsSL https://wezel.build/install.sh | sh</code
                         >
                     </div>
                     <div class="row">
-                        <span class="prompt">$</span>
+                        <span class="prompt" aria-hidden="true">$</span>
                         <code>cargo install wezel</code>
                     </div>
                 </figure>
@@ -608,18 +612,27 @@ import Brand from "../components/Brand.astro";
             text-wrap: balance;
         }
 
-        /* The one place the landing departs from the docs, which set headings in
-       Source Sans 3 600. */
+        /* Headings are the body face set heavy and tight, not a change of
+           typeface — same rule as the docs (DOCS-DESIGN.md §4, "Two faces").
+           Instrument Serif belongs to the brand, so it stays in the wordmark
+           and nowhere else. Metrics match docs.css so a section head on this
+           page and one in the docs are the same object. */
         h1,
         h2 {
-            font-family: var(--font-display);
-            font-weight: 400;
+            font-family: var(--font-sans);
+            font-weight: 600;
         }
 
         h2 {
-            font-size: 2.4rem;
-            line-height: 1.12;
-            letter-spacing: -0.008em;
+            font-size: 2rem;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+        }
+
+        /* The one emphasised word in the tagline. Accent is a signal on this
+           site, so it gets spent once above the fold and nowhere else. */
+        .accent {
+            color: var(--color-accent);
         }
 
         h3 {
@@ -717,14 +730,13 @@ import Brand from "../components/Brand.astro";
             padding-block: clamp(2.5rem, 7vh, 4.5rem);
         }
 
+        /* Larger than a docs page head, which tops out at 3.85rem — this is the
+           one heading on the site that is a hero — but the same weight and the
+           same tightness, so the discipline holds. */
         .fold-body h1 {
-            font-size: clamp(3rem, 5.6vw, 4.9rem);
-            line-height: 0.97;
-            letter-spacing: -0.018em;
-        }
-
-        .stop {
-            color: var(--color-accent);
+            font-size: clamp(2.8rem, 5vw, 4.6rem);
+            line-height: 0.94;
+            letter-spacing: -0.042em;
         }
 
         .fold-sub {
@@ -775,8 +787,17 @@ import Brand from "../components/Brand.astro";
             border-color: var(--color-ink-faint);
         }
 
+        /* A footing for this column, built from the devices the page already
+           has — a hairline and a mono label — rather than a fourth framed box
+           competing with the terminal figure alongside it. */
+        .install {
+            margin-top: 1.9rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--color-line);
+        }
+
         .install-line {
-            margin-top: 1.6rem;
+            margin-top: 0.45rem;
             display: flex;
             align-items: baseline;
             gap: 0.7rem;
@@ -1258,12 +1279,13 @@ import Brand from "../components/Brand.astro";
                 display: none;
             }
 
+            /* Same narrow steps the docs take. */
             .fold-body h1 {
-                font-size: clamp(2.4rem, 11vw, 3rem);
+                font-size: clamp(2.1rem, 10vw, 2.75rem);
             }
 
             h2 {
-                font-size: 1.9rem;
+                font-size: 1.6rem;
             }
 
             .install-line {

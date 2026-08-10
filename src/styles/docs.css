@@ -8,8 +8,8 @@
     - Space, not lines. Rules and whitespace are substitutes and this design
       spends whitespace. A rule has to earn its place.
     - Rules survive only where they separate data: table head, table rows, the
-      callout's left edge. Nothing in the page furniture is ruled except the
-      sidebar divider.
+      callout's left edge, and the frame and caption rule of a code figure.
+      Nothing else in the page furniture is ruled except the sidebar divider.
     - Nothing floats. Radius 0, no shadows.
     - Two faces. Inter carries voice and body both — headings are the same face
       set heavy and tight, not a change of typeface. Mono is the apparatus and
@@ -426,30 +426,45 @@
   color: inherit;
 }
 
-.docs-prose .code-figure {
-  margin: 0;
-  background: var(--color-veil);
-}
+/* A code block is a bounded object with a ruled head, not a tinted rectangle.
+   The tint is spent on the caption strip, where it marks the head as apparatus;
+   the body sits on surface and the frame does the containing. Matches the
+   landing page, so a command reads the same on both surfaces.
 
-.docs-prose .code-figure figcaption {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  color: var(--color-ink-faint);
-  padding: 0.55rem 0.95rem 0;
-}
-
+   A radius-0, shadowless frame still doesn't float, so §3.4 holds. */
 .docs-prose pre {
   margin: 0;
-  padding: 0.95rem;
+  padding: 1.15rem 1.2rem 1.25rem;
   overflow-x: auto;
-  background: var(--color-veil) !important;
+  border: 1px solid var(--color-line-strong);
+  /* beats the inline background-color Shiki emits on the <pre> */
+  background: var(--color-surface) !important;
   font-size: 0.88rem;
   line-height: 1.7;
 }
 
+.docs-prose .code-figure {
+  margin: 0;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+}
+
+.docs-prose .code-figure > figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0.5rem 1.2rem;
+  background: var(--color-veil);
+  border-block-end: 1px solid var(--color-line);
+}
+
+/* The figure already provides the frame; the pre inside it must not add a second. */
 .docs-prose .code-figure pre {
-  padding-block-start: 0.65rem;
+  border: 0;
+  background: transparent !important;
 }
 
 /* ---- tables: rules here separate data, so they stay ------------------ */
