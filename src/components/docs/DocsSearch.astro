@@ -96,8 +96,9 @@
   }
 
   .search-dialog::backdrop {
-    /* The desk, dimmed. Warm rather than neutral so the paper stays warm. */
-    background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    /* Tokenised rather than mixed from ink: ink is light in the dark scheme, so
+       an ink-derived scrim would brighten the page instead of dimming it. */
+    background: var(--color-scrim);
   }
 
   /* ---- field: one rule under it, no box -------------------------------- */

@@ -1,9 +1,22 @@
 @import "tailwindcss";
 
 /*
-  Wezel design tokens — light, warm, confident.
+  Wezel design tokens — warm, confident, two schemes.
+
   Aesthetic direction (swappable): humanist serif display + clean grotesk body.
-  The mood we're after: relief + agency. Calm paper, generous space, one warm accent.
+  The mood we're after: relief + agency. Calm paper, generous space, one warm
+  accent.
+
+  This palette is the source of truth for the Wezel look, and anthill's
+  `anthill/src/index.css` + `anthill/src/lib/theme.ts` mirror it token for token
+  (anthill's --c-bg / --c-surface / --c-surface2 / --c-border / --c-text /
+  --c-text-mid / --c-text-dim / --c-accent / --c-red / --c-green are the same
+  values as paper / surface / veil / line-strong / ink / ink-soft / ink-faint /
+  accent / warn / good below). Change a value here and change it there.
+
+  Dark is not an inversion. Warm paper inverted is mud, so the dark scheme is a
+  warm near-black with its own neutrals; only the relationships are preserved —
+  surface is a step off paper, veil is a step further, and both stay warm.
 */
 @theme {
   /* surfaces */
@@ -15,6 +28,7 @@
   --color-ink: #1c1b18; /* primary text */
   --color-ink-soft: #57544c; /* secondary text */
   --color-ink-faint: #8c887d; /* tertiary / captions */
+  --color-ink-deep: #000000; /* pressed/hover past ink; inverts in dark */
 
   /* lines */
   --color-line: #e7e3d8; /* hairline borders */
@@ -31,6 +45,9 @@
   --color-good: #2f7d57; /* the recovery (faster) */
   --color-good-wash: #e2efe7;
 
+  /* the desk behind a modal. Not derived from ink: in dark, ink is light. */
+  --color-scrim: rgb(28 27 24 / 22%);
+
   /* type */
   --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-sans:
@@ -41,7 +58,99 @@
   --spacing-gutter: 1.5rem;
 }
 
+/*
+  Dark scheme.
+
+  Selectable, on the same `data-theme` attribute anthill switches on, so the two
+  agree structurally and not only in hex values. Three states: `auto` follows the
+  OS and is the default (no attribute), `light` and `dark` are explicit and are
+  persisted under the `wezel-theme` key. An inline script in Base.astro applies
+  the stored choice before first paint, so there is no flash of the wrong theme.
+
+  The values live once, in --d-*. Only the mapping is written twice: for an
+  explicit choice, and — for readers with no JavaScript — for an OS preference.
+  Colours cannot drift between the two; at worst a mapping line goes missing.
+
+  Every value clears 4.5:1 against both the page and the caption strip it can
+  sit on. The dim tone is lighter than a straight port of anthill's --c-text-dim
+  (#6a604f, 3.16:1 here) because this site spends that colour on 0.66rem mono
+  labels rather than on decorative text.
+*/
+:root {
+  --d-paper: #0f0c0a;
+  --d-surface: #1e1916;
+  --d-veil: #2a231f;
+
+  --d-ink: #ece5d8;
+  --d-ink-soft: #a89c87;
+  --d-ink-faint: #988a73;
+  --d-ink-deep: #fffdf8;
+
+  --d-line: #443a32;
+  --d-line-strong: #5c5045;
+
+  --d-accent: #e2764a;
+  --d-accent-deep: #ec8b62;
+  --d-accent-wash: #3a221a;
+
+  --d-warn: #df6a4a;
+  --d-warn-wash: #3a1d15;
+  --d-good: #8aae7e;
+  --d-good-wash: #1e2a1f;
+
+  --d-scrim: rgb(0 0 0 / 62%);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-paper: var(--d-paper);
+  --color-surface: var(--d-surface);
+  --color-veil: var(--d-veil);
+  --color-ink: var(--d-ink);
+  --color-ink-soft: var(--d-ink-soft);
+  --color-ink-faint: var(--d-ink-faint);
+  --color-ink-deep: var(--d-ink-deep);
+  --color-line: var(--d-line);
+  --color-line-strong: var(--d-line-strong);
+  --color-accent: var(--d-accent);
+  --color-accent-deep: var(--d-accent-deep);
+  --color-accent-wash: var(--d-accent-wash);
+  --color-warn: var(--d-warn);
+  --color-warn-wash: var(--d-warn-wash);
+  --color-good: var(--d-good);
+  --color-good-wash: var(--d-good-wash);
+  --color-scrim: var(--d-scrim);
+}
+
+/* No attribute means auto. With JavaScript the inline script resolves this to a
+   concrete value before paint; without it, this is the whole of dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --color-paper: var(--d-paper);
+    --color-surface: var(--d-surface);
+    --color-veil: var(--d-veil);
+    --color-ink: var(--d-ink);
+    --color-ink-soft: var(--d-ink-soft);
+    --color-ink-faint: var(--d-ink-faint);
+    --color-ink-deep: var(--d-ink-deep);
+    --color-line: var(--d-line);
+    --color-line-strong: var(--d-line-strong);
+    --color-accent: var(--d-accent);
+    --color-accent-deep: var(--d-accent-deep);
+    --color-accent-wash: var(--d-accent-wash);
+    --color-warn: var(--d-warn);
+    --color-warn-wash: var(--d-warn-wash);
+    --color-good: var(--d-good);
+    --color-good-wash: var(--d-good-wash);
+    --color-scrim: var(--d-scrim);
+  }
+}
+
 html {
+  color-scheme: light dark;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

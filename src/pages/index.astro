@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Brand from "../components/Brand.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 // The landing page.
 //
@@ -49,6 +50,7 @@ import Brand from "../components/Brand.astro";
             <a href="/blog">Blog</a>
             <a href="https://status.wezel.build" rel="noopener">Status</a>
             <a href="https://github.com/wezel-build" rel="noopener">GitHub</a>
+            <ThemeToggle />
             <a href="/docs/installation" class="header-cta">Install CLI</a>
         </nav>
     </header>
@@ -775,7 +777,7 @@ import Brand from "../components/Brand.astro";
         }
 
         .btn-primary:hover {
-            background: #000;
+            background: var(--color-ink-deep);
         }
 
         .btn-quiet {

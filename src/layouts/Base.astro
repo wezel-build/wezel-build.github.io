@@ -23,6 +23,20 @@ const {
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
+    {/*
+      Applies a stored colour-scheme choice before first paint. `is:inline` and
+      not deferred on purpose: bundled or async, the page would render in the OS
+      scheme and then snap to the chosen one on every navigation. Absence of the
+      attribute means auto, which global.css resolves from prefers-color-scheme.
+    */}
+    <script is:inline>
+      try {
+        const t = localStorage.getItem("wezel-theme");
+        if (t === "light" || t === "dark")
+          document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+
     <!-- fonts: humanist serif display + humanist sans text.
          Source Sans 3 is served as a variable face over 400–700, which covers
          body 400, nav-active 500 and headings 600. -->

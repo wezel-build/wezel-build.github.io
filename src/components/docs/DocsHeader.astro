@@ -1,6 +1,7 @@
 ---
 import Brand from "../Brand.astro";
 import DocsSearch from "./DocsSearch.astro";
+import ThemeToggle from "../ThemeToggle.astro";
 
 // Mirrors the landing header. The frame (height, hairline, translucent
 // background) belongs to the header itself now that Starlight's PageFrame is
@@ -33,6 +34,7 @@ const path = Astro.url.pathname;
           </a>
         ))
       }
+      <ThemeToggle />
       <a href="/docs/installation" class="header-cta">Install CLI</a>
     </nav>
 

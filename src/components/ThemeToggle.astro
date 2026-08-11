@@ -1,0 +1,105 @@
+---
+// Colour-scheme control. Three states, cycled: auto → light → dark → auto.
+//
+// `auto` is the absence of a `data-theme` attribute, so the media query in
+// global.css takes over; the two explicit states set the attribute and persist
+// under `wezel-theme`. The attribute is the one anthill switches on, so the two
+// codebases agree on mechanism as well as on palette.
+//
+// The label states the current mode in words rather than in an icon: this site
+// has no iconography, and a sun/moon glyph would be a whole new vocabulary for
+// one control. Mono uppercase makes it read as apparatus, like every other
+// label on the page.
+//
+// Base.astro carries the inline script that applies the stored choice before
+// first paint. Without it this button still works, but every navigation would
+// flash the OS scheme first.
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle>
+  <span class="visually-hidden">Colour scheme:</span>
+  <span data-theme-label>Auto</span>
+</button>
+
+<style>
+  .theme-toggle {
+    border: 0;
+    background: transparent;
+    padding: 0.35rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-ink);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const KEY = "wezel-theme";
+  const ORDER = ["auto", "light", "dark"] as const;
+  type Mode = (typeof ORDER)[number];
+
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const label = document.querySelector<HTMLElement>("[data-theme-label]");
+
+  if (button && label) {
+    function stored(): Mode {
+      try {
+        const v = localStorage.getItem(KEY);
+        return v === "light" || v === "dark" ? v : "auto";
+      } catch {
+        return "auto";
+      }
+    }
+
+    function apply(mode: Mode) {
+      // Auto is the absence of the attribute, which hands control back to the
+      // prefers-color-scheme block in global.css.
+      if (mode === "auto") {
+        delete document.documentElement.dataset.theme;
+      } else {
+        document.documentElement.dataset.theme = mode;
+      }
+
+      try {
+        if (mode === "auto") localStorage.removeItem(KEY);
+        else localStorage.setItem(KEY, mode);
+      } catch {
+        // Private browsing, or storage denied. The choice still applies for
+        // this page; it just won't survive a navigation.
+      }
+
+      label.textContent = mode[0].toUpperCase() + mode.slice(1);
+    }
+
+    apply(stored());
+
+    button.addEventListener("click", () => {
+      const next = ORDER[(ORDER.indexOf(stored()) + 1) % ORDER.length];
+      apply(next);
+    });
+
+    // Another tab changed the preference.
+    addEventListener("storage", (e) => {
+      if (e.key === KEY) apply(stored());
+    });
+  }
+</script>
