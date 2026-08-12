@@ -1,8 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
-import Brand from "../components/Brand.astro";
-import SocialLinks from "../components/SocialLinks.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 
 // The landing page.
 //
@@ -36,31 +35,7 @@ import ThemeToggle from "../components/ThemeToggle.astro";
     title="Wezel — build regression observability"
     description="Wezel watches the build scenarios a team waits on, records how long they take, and reports when that number moves."
 >
-    <!-- =========================================================
-       HEADER — full bleed, 3.75rem, no bottom rule (docs.css)
-
-       Status lives off-site at status.wezel.build. /blog has no route
-       under src/pages/ yet, so it 404s until it is built; it is in the
-       bar on purpose. Keep this list in step with DocsHeader.astro.
-       ========================================================= -->
-    <header class="site-header">
-        <Brand href="/" />
-
-        <nav class="header-nav" aria-label="Site">
-            <span class="nav-links">
-                <a href="/docs">Docs</a>{" "}
-                <a href="/blog">Blog</a>{" "}
-                <a href="https://status.wezel.build" rel="noopener">Status</a>
-            </span>
-
-            <span class="nav-chrome">
-                <SocialLinks />{" "}
-                <ThemeToggle />
-            </span>
-
-            <a href="/docs/installation" class="header-cta">Install CLI</a>
-        </nav>
-    </header>
+    <SiteHeader />
 
     <main class="sheet">
         <!-- =========================================================
@@ -558,18 +533,7 @@ import ThemeToggle from "../components/ThemeToggle.astro";
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="sheet band footer-inner">
-            <span>© 2026 Wezel · Open source under Apache-2.0</span>
-            <!-- Same destinations as the header, minus the Install CLI call. -->
-            <nav>
-                <a href="/docs">Docs</a>
-                <a href="/blog">Blog</a>
-                <a href="https://status.wezel.build" rel="noopener">Status</a>
-                <SocialLinks />
-            </nav>
-        </div>
-    </footer>
+    <SiteFooter />
 
     <style>
         /* ======================================================================
@@ -583,9 +547,7 @@ import ThemeToggle from "../components/ThemeToggle.astro";
         }
 
         /* Nothing floats. Ink doesn't cast shadows. (DOCS-DESIGN.md §3.4) */
-        .site-header *,
-        .sheet *,
-        .site-footer * {
+        .sheet * {
             border-radius: 0;
             box-shadow: none;
         }
@@ -659,73 +621,6 @@ import ThemeToggle from "../components/ThemeToggle.astro";
 
         p {
             margin: 0;
-        }
-
-        /* ======================================================================
-       HEADER — full bleed, 3.75rem, no bottom rule (docs.css)
-       ====================================================================== */
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1.5rem;
-            height: var(--header-h);
-            padding-inline: 1.75rem;
-            background: color-mix(in srgb, var(--color-paper) 90%, transparent);
-            backdrop-filter: saturate(140%) blur(8px);
-        }
-
-        /* Three clusters — destinations, chrome, action — separated by space
-           rather than by a rule, per DOCS-DESIGN.md §2. Without this the theme
-           control and the brand marks read as nav items.
-
-           The {" "} in the markup is load-bearing: Astro trims the newline
-           before a tag to nothing, so gap would otherwise be the only thing
-           separating these words, and the failure mode is "DocsBlogStatus".
-           Flex ignores whitespace-only text nodes, so it costs nothing here. */
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 2.5rem;
-            font-size: 0.95rem;
-        }
-
-        .nav-links,
-        .nav-chrome {
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .nav-links {
-            gap: 1.6rem;
-        }
-
-        .nav-chrome {
-            gap: 1.25rem;
-        }
-
-        .header-nav a {
-            color: var(--color-ink-soft);
-            text-decoration: none;
-            white-space: nowrap;
-            transition: color 0.15s ease;
-        }
-
-        .header-nav a:hover {
-            color: var(--color-ink);
-        }
-
-        .header-cta {
-            border: 1px solid var(--color-line-strong);
-            padding: 0.35rem 0.85rem;
-            color: var(--color-ink) !important;
-        }
-
-        .header-cta:hover {
-            border-color: var(--color-ink-faint);
         }
 
         /* ======================================================================
@@ -1252,39 +1147,6 @@ import ThemeToggle from "../components/ThemeToggle.astro";
         }
 
         /* ======================================================================
-       FOOTER
-       ====================================================================== */
-        .site-footer {
-            border-top: 1px solid var(--color-line);
-            padding-block: 2.5rem 3.5rem;
-        }
-
-        .footer-inner {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 2rem;
-            flex-wrap: wrap;
-            font-size: 0.92rem;
-            color: var(--color-ink-soft);
-        }
-
-        .footer-inner nav {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .footer-inner a {
-            text-decoration: none;
-            color: var(--color-ink-soft);
-            transition: color 0.15s ease;
-        }
-
-        .footer-inner a:hover {
-            color: var(--color-ink);
-        }
-
-        /* ======================================================================
        NARROW
        ====================================================================== */
         @media (max-width: 78rem) {
@@ -1304,9 +1166,6 @@ import ThemeToggle from "../components/ThemeToggle.astro";
                 --margin: 1.4rem;
             }
 
-            .header-nav a:not(.header-cta) {
-                display: none;
-            }
 
             /* Same narrow steps the docs take. */
             .fold-body h1 {

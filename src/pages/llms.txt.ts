@@ -55,10 +55,26 @@ export const GET: APIRoute = async ({ site }) => {
     );
   }
 
+  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+  );
+
+  if (posts.length > 0) {
+    lines.push("", "## Blog", "");
+    for (const post of posts) {
+      const when = post.data.date.toISOString().slice(0, 10);
+      lines.push(
+        `- [${post.data.title}](${abs(`/blog/${post.id}`)}) (${when}): ${post.data.description}`,
+      );
+    }
+  }
+
   lines.push("", "## Elsewhere", "");
   lines.push(`- [Home](${abs("/")})`);
   lines.push("- [Source](https://github.com/wezel-build)");
+  lines.push("- [Discord](https://discord.gg/HySRs8TRvH)");
   lines.push("- [Status](https://status.wezel.build)");
+  lines.push(`- [Feed](${abs("/rss.xml")})`);
   lines.push("");
 
   return new Response(lines.join("\n"), {

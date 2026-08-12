@@ -4,9 +4,18 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  /** "article" for blog posts; unfurlers treat the two differently. */
+  ogType?: "website" | "article";
+  /** ISO date, for og:type="article". */
+  published?: string;
 }
 
-const { title = "Wezel", description = "" } = Astro.props;
+const {
+  title = "Wezel",
+  description = "",
+  ogType = "website",
+  published,
+} = Astro.props;
 
 // Bluesky, Slack, Discord, iMessage and Mastodon all read Open Graph; none of
 // them need `twitter:` tags, so there are none. Bluesky in particular ignores
@@ -30,8 +39,15 @@ const ogImage = new URL("/og.png", Astro.site);
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Wezel"
+      href="/rss.xml"
+    />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    {published && <meta property="article:published_time" content={published} />}
     <meta property="og:site_name" content="Wezel" />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}

@@ -4,9 +4,12 @@
 //
 // The mark is the favicon, promoted: a terracotta tile with a serif `w`. Inline
 // here rather than an <img>, so the letter picks up Instrument Serif from the
-// page. The favicon file falls back to Georgia because an icon SVG is isolated
-// and never sees the webfont — close enough at 16px, and the two stay in step
-// otherwise. Keep public/favicon.svg in sync with this.
+// page.
+//
+// public/favicon.svg and brand/social/avatar.svg carry the same mark with the
+// `w` outlined to a path, since an icon SVG never sees the webfont. Those were
+// generated from this geometry — font-size 18, centred on x=16, baseline y=22 —
+// so changing anything here means regenerating them.
 interface Props {
   href?: string;
 }

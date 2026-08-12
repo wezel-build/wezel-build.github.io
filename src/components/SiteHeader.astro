@@ -1,0 +1,38 @@
+---
+import Brand from "./Brand.astro";
+import SiteNav from "./SiteNav.astro";
+
+// The header for every page that isn't docs: the landing and the blog. Docs has
+// its own frame because it carries search and the sidebar drawer toggle, but it
+// uses the same <SiteNav />, so the link list exists once.
+//
+// Full bleed, 3.75rem, no bottom rule — the geometry is docs.css's, so the two
+// chromes are the same object.
+---
+
+<header class="site-header">
+  <Brand href="/" />
+  <SiteNav />
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 3.75rem;
+    padding-inline: 1.75rem;
+    background: color-mix(in srgb, var(--color-paper) 90%, transparent);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+
+  /* Nothing floats. Ink doesn't cast shadows. (DOCS-DESIGN.md §3.4) */
+  .site-header :global(*) {
+    border-radius: 0;
+    box-shadow: none;
+  }
+</style>

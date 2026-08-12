@@ -1,0 +1,242 @@
+---
+import { getCollection } from "astro:content";
+
+import Base from "../../layouts/Base.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import { fetchAuthors, type Author } from "../../lib/authors";
+
+// The blog index.
+//
+// A dated list, not a grid of cards. Cards would be the third pattern on a site
+// that already has two ways of presenting things — chapters and figures — and a
+// list of posts is a contents page, which this design already knows how to set:
+// masthead rule, mono apparatus, one rule per row because the rows are data.
+//
+// Drafts are excluded from the build entirely, so `draft: true` is a real
+// switch and not just a label.
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const authorsByPost = new Map<string, Author[]>(
+  await Promise.all(
+    posts.map(
+      async (post) => [post.id, await fetchAuthors(post.data.author)] as const,
+    ),
+  ),
+);
+
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<Base
+  title="Blog — Wezel"
+  description="Notes on build performance, developer tooling, and building Wezel."
+>
+  <SiteHeader />
+
+  <main class="sheet">
+    <section class="band masthead-band">
+      <div class="masthead">
+        <span class="label">Blog</span>
+        <!-- One expression, not two: Astro trims the newline between them to
+             nothing, which renders "1POST". -->
+        <span class="label">
+          {`${posts.length} ${posts.length === 1 ? "post" : "posts"}`}
+        </span>
+      </div>
+
+      <div class="intro">
+        <!-- COPY SLOT: the blog's standfirst. -->
+        <h1>Notes on build performance</h1>
+        <p class="standfirst">
+          Why builds get slower, what it costs, and what Wezel does about it.
+        </p>
+      </div>
+    </section>
+
+    <section class="band">
+      {
+        posts.length === 0 && (
+          <p class="empty">Nothing published yet.</p>
+        )
+      }
+
+      <ol class="posts">
+        {
+          posts.map((post) => {
+            const authors = authorsByPost.get(post.id) ?? [];
+            return (
+              <li>
+                <a href={`/blog/${post.id}`}>
+                  <time datetime={post.data.date.toISOString()} class="label">
+                    {dateFormat.format(post.data.date)}
+                  </time>
+                  <h2>{post.data.title}</h2>
+                  <p class="dek">{post.data.description}</p>
+                  {authors.length > 0 && (
+                    <p class="byline label">
+                      {authors.map((a) => a.name).join(", ")}
+                    </p>
+                  )}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </section>
+  </main>
+
+  <SiteFooter />
+
+  <style>
+    .sheet {
+      max-width: 87rem;
+      margin-inline: auto;
+      font-size: 1.08rem;
+    }
+
+    .band {
+      padding-inline: 4.75rem;
+    }
+
+    .sheet :global(*) {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-ink-faint);
+    }
+
+    .masthead-band {
+      padding-block: 2.25rem 0;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--color-line);
+    }
+
+    .intro {
+      max-width: 44.5rem;
+      padding-block: clamp(2.5rem, 7vh, 4.5rem) clamp(2rem, 5vh, 3rem);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: clamp(2.6rem, 4.6vw, 3.85rem);
+      letter-spacing: -0.035em;
+      line-height: 0.98;
+      text-wrap: balance;
+    }
+
+    .standfirst {
+      margin: 1.3rem 0 0;
+      max-width: 44ch;
+      font-size: 1.22rem;
+      line-height: 1.5;
+      color: var(--color-ink-soft);
+    }
+
+    /* One rule per row: these rows are data, so they keep their rules. */
+    .posts {
+      list-style: none;
+      margin: 0 0 clamp(3rem, 8vh, 6rem);
+      padding: 0;
+      border-top: 1px solid var(--color-line);
+    }
+
+    .posts li {
+      border-bottom: 1px solid var(--color-line);
+    }
+
+    .posts a {
+      display: block;
+      padding: 1.5rem 0;
+      text-decoration: none;
+      color: inherit;
+      border-inline-start: 2px solid transparent;
+      padding-inline-start: 0;
+      transition:
+        border-color 0.15s ease,
+        padding-inline-start 0.15s ease;
+    }
+
+    .posts a:hover,
+    .posts a:focus-visible {
+      border-inline-start-color: var(--color-accent);
+      padding-inline-start: 1rem;
+      outline: none;
+    }
+
+    .posts h2 {
+      margin: 0.5rem 0 0;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 1.6rem;
+      letter-spacing: -0.028em;
+      line-height: 1.2;
+      max-width: 40ch;
+    }
+
+    .posts a:hover h2 {
+      color: var(--color-accent);
+    }
+
+    .dek {
+      margin: 0.4rem 0 0;
+      max-width: 60ch;
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: var(--color-ink-soft);
+    }
+
+    .byline {
+      margin: 0.7rem 0 0;
+    }
+
+    .empty {
+      margin: 0 0 4rem;
+      color: var(--color-ink-faint);
+    }
+
+    @media (max-width: 78rem) {
+      .band {
+        padding-inline: 3rem;
+      }
+    }
+
+    @media (max-width: 48rem) {
+      .band {
+        padding-inline: 1.4rem;
+      }
+
+      h1 {
+        font-size: clamp(2.1rem, 10vw, 2.75rem);
+      }
+
+      .posts h2 {
+        font-size: 1.35rem;
+      }
+    }
+  </style>
+</Base>
