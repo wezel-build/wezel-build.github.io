@@ -33,7 +33,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 
 <Base
     title="Wezel — build regression observability"
-    description="Wezel watches the build scenarios a team waits on, records how long they take, and reports when that number moves."
+    description="Wezel codifies your build scenarios, keeps track of their performance and helps you tackle regressions at your own pace"
 >
     <SiteHeader />
 
@@ -49,20 +49,16 @@ import SiteHeader from "../components/SiteHeader.astro";
 
             <div class="fold-body">
                 <div>
-                    <!-- COPY SLOT: h1. The tagline.
-                         The {" "} are load-bearing: the formatter is free to
-                         break these lines, and Astro trims a newline before a
-                         tag to nothing rather than to a space. -->
                     <h1>
-                        Your build,{" "}<span class="accent">always</span>{" "}at
-                        its best
+                        Your build,{" "}<span class="accent">always</span>{
+                            " "
+                        }at its best
                     </h1>
 
-                    <!-- COPY SLOT: the sentence under the tagline. -->
                     <p class="fold-sub">
-                        Wezel watches the build scenarios a team waits on,
-                        records how long they take, and reports when that number
-                        moves.
+                        Wezel codifies your build scenarios, keeps track of
+                        their performance and helps you tackle regressions at
+                        your own pace
                     </p>
 
                     <div class="fold-actions">
@@ -87,17 +83,14 @@ import SiteHeader from "../components/SiteHeader.astro";
                     </div>
                 </div>
 
-                <!-- VERIFY SLOT: this is a reconstruction, not observed output.
-             `wezel exp run` is the restructured CLI's spelling; `wezel exp
-             bisect`, the ±0.8s noise threshold and the column labels all need
-             confirming against the real binary. The layout does not depend on
-             the strings — swap them freely. -->
                 <figure class="run">
                     <figcaption class="label">Terminal</figcaption>
 
                     <div class="run-body">
                         <div>
-                            <span class="p">$</span>{" "}<span class="bin">wezel</span> exp run
+                            <span class="p">$</span>{" "}<span class="bin"
+                                >wezel</span
+                            > exp run
                         </div>
 
                         <div class="run-meta">
@@ -144,30 +137,20 @@ import SiteHeader from "../components/SiteHeader.astro";
                             threshold of &plusmn;0.8s.
                         </div>
 
-                        <!-- Kept on one line: Astro trims the newline before a tag, which
-                 would render "expbisect". -->
                         <div class="run-next">
-                            <span class="p">$</span>{" "}<span class="bin">wezel</span> exp <span class="sub"
-                                >bisect</span
-                            > build-time
+                            <span class="p">$</span>{" "}<span class="bin"
+                                >wezel</span
+                            > exp <span class="sub">bisect</span> build-time
                         </div>
                     </div>
                 </figure>
             </div>
         </section>
 
-        <!-- =========================================================
-         THE EXPERIMENT FILE
-
-         Schema note: this follows wezel.build, which declares
-         experiment.toml with command/build_target/profile and a
-         summary table. src/content/docs/ still says wezel.toml with
-         args = [...]. One of the two is stale.
-         ========================================================= -->
         <section class="band chapter">
             <div class="chapter-head">
                 <span class="label">The experiment file</span>
-                <!-- COPY SLOT: h2 + standfirst. -->
+
                 <h2>A build scenario is a file in the repository</h2>
                 <p class="standfirst">
                     An experiment names the steps to run and the numbers to
@@ -178,7 +161,9 @@ import SiteHeader from "../components/SiteHeader.astro";
 
             <div class="chapter-body with-margin-note">
                 <figure class="code-figure">
-                    <figcaption>experiment.toml</figcaption>
+                    <figcaption>
+                        .wezel/experiments/my-c00l-experiment/experiment.toml
+                    </figcaption>
                     <pre><code><span class="t-key">description</span> <span class="t-punct">=</span> <span class="t-string">"Tracks compile time of the wezel workspace"</span>
 
 <span class="t-comment"># A single experiment consists of multiple steps, executed in order.</span>
@@ -192,7 +177,6 @@ import SiteHeader from "../components/SiteHeader.astro";
 <span class="t-key">summary.build-time</span> <span class="t-punct">=</span> <span class="t-punct">&#123;</span> <span class="t-key">outcome</span> <span class="t-punct">=</span> <span class="t-string">"time_ms"</span><span class="t-punct">,</span> <span class="t-key">aggregation</span> <span class="t-punct">=</span> <span class="t-string">"mean"</span><span class="t-punct">,</span> <span class="t-key">samples</span> <span class="t-punct">=</span> <span class="t-num">5</span> <span class="t-punct">&#125;</span></code></pre>
                 </figure>
 
-                <!-- COPY SLOT: the three margin notes. -->
                 <div class="margin-note">
                     <h3>Steps</h3>
                     <p>
@@ -288,9 +272,6 @@ import SiteHeader from "../components/SiteHeader.astro";
             </div>
         </section>
 
-        <!-- =========================================================
-         SPARSE, THEN DENSE — one figure for sampling and bisection
-         ========================================================= -->
         <section class="band chapter">
             <div class="chapter-head">
                 <span class="label">Sampling</span>
@@ -449,12 +430,11 @@ import SiteHeader from "../components/SiteHeader.astro";
         <section class="band chapter">
             <div class="chapter-head">
                 <span class="label">The server</span>
-                <!-- COPY SLOT: h2 + standfirst. -->
-                <h2>Runs go somewhere you own</h2>
+                <h2>Definition of "good" at your fingertips</h2>
                 <p class="standfirst">
-                    Results are stored in SQLite and served by the same binary
-                    that records them. Point the CLI at a hosted instance or at
-                    one of your own.
+                    Wezel scenarios can be executed locally or via a daemon. Use
+                    the former when iterating on your build and the latter to
+                    keep the tabs on health of your codebase over time.
                 </p>
             </div>
 
@@ -463,13 +443,17 @@ import SiteHeader from "../components/SiteHeader.astro";
                     <figcaption>Terminal</figcaption>
                     <div class="terminal">
                         <div>
-                            <span class="prompt">$</span>{" "}<span class="cmd">wezel</span> serve
+                            <span class="prompt">$</span>{" "}<span class="cmd"
+                                >wezel</span
+                            > serve
                         </div>
                         <div class="out">listening on 127.0.0.1:8080</div>
                         <div class="out">store: ./wezel.db (sqlite)</div>
                         <div class="gap"></div>
                         <div>
-                            <span class="prompt">$</span>{" "}<span class="cmd">wezel</span> exp run
+                            <span class="prompt">$</span>{" "}<span class="cmd"
+                                >wezel</span
+                            > exp run
                         </div>
                         <div class="out">
                             release-build · 5 samples · mean 42.1s
@@ -1165,7 +1149,6 @@ import SiteHeader from "../components/SiteHeader.astro";
             :root {
                 --margin: 1.4rem;
             }
-
 
             /* Same narrow steps the docs take. */
             .fold-body h1 {
