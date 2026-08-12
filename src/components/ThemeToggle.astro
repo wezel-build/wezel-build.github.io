@@ -6,38 +6,88 @@
 // under `wezel-theme`. The attribute is the one anthill switches on, so the two
 // codebases agree on mechanism as well as on palette.
 //
-// The label states the current mode in words rather than in an icon: this site
-// has no iconography, and a sun/moon glyph would be a whole new vocabulary for
-// one control. Mono uppercase makes it read as apparatus, like every other
-// label on the page.
+// Icons, now that the header carries brand marks and iconography is no longer
+// foreign to the page. All three are drawn here rather than imported: they are
+// circles and straight lines on a 24 grid, and the sun's rays are placed on a
+// computed 45° ring rather than by eye. `auto` is a half-filled disc — the
+// design's own vocabulary — rather than a picture of a monitor, which would be
+// a bigger metaphor leap than "half one, half the other".
+//
+// Icon-only controls have to say what they are: the accessible name and the
+// native tooltip both carry the current state, and a visually hidden text node
+// keeps it announced. All three icons ship and CSS shows one, so switching state
+// touches an attribute rather than rebuilding DOM.
 //
 // Base.astro carries the inline script that applies the stored choice before
 // first paint. Without it this button still works, but every navigation would
 // flash the OS scheme first.
 ---
 
-<button class="theme-toggle" type="button" data-theme-toggle>
-  <span class="visually-hidden">Colour scheme:</span>
-  <span data-theme-label>Auto</span>
+<button
+  class="theme-toggle"
+  type="button"
+  data-theme-toggle
+  data-mode="auto"
+  aria-label="Colour scheme: auto"
+  title="Colour scheme: auto"
+>
+  <span class="visually-hidden" data-theme-label>Auto</span>
+
+  <!-- auto: half light, half dark -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="auto" aria-hidden="true">
+    <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
+    <path d="M12 3.8 A8.2 8.2 0 0 0 12 20.2 Z" fill="currentColor"></path>
+  </svg>
+
+  <!-- light -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="light" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.4" fill="currentColor"></circle>
+    <g stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <line x1="18.60" y1="12.00" x2="21.40" y2="12.00"></line>
+      <line x1="16.67" y1="16.67" x2="18.65" y2="18.65"></line>
+      <line x1="12.00" y1="18.60" x2="12.00" y2="21.40"></line>
+      <line x1="7.33" y1="16.67" x2="5.35" y2="18.65"></line>
+      <line x1="5.40" y1="12.00" x2="2.60" y2="12.00"></line>
+      <line x1="7.33" y1="7.33" x2="5.35" y2="5.35"></line>
+      <line x1="12.00" y1="5.40" x2="12.00" y2="2.60"></line>
+      <line x1="16.67" y1="7.33" x2="18.65" y2="5.35"></line>
+    </g>
+  </svg>
+
+  <!-- dark -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="dark" aria-hidden="true">
+    <path
+      d="M20.7 13.2A8.6 8.6 0 1 1 10.8 3.3 6.9 6.9 0 0 0 20.7 13.2Z"
+      fill="currentColor"
+    ></path>
+  </svg>
 </button>
 
 <style>
   .theme-toggle {
+    display: inline-flex;
+    align-items: center;
     border: 0;
     background: transparent;
-    padding: 0.35rem 0;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
+    padding: 0;
+    color: var(--color-ink-soft);
     cursor: pointer;
     transition: color 0.15s ease;
   }
 
   .theme-toggle:hover {
     color: var(--color-ink);
+  }
+
+  .theme-toggle svg {
+    display: none;
+  }
+
+  /* One attribute selects the icon, so changing state never rebuilds DOM. */
+  .theme-toggle[data-mode="auto"] svg[data-icon="auto"],
+  .theme-toggle[data-mode="light"] svg[data-icon="light"],
+  .theme-toggle[data-mode="dark"] svg[data-icon="dark"] {
+    display: block;
   }
 
   .visually-hidden {
@@ -87,7 +137,13 @@
         // this page; it just won't survive a navigation.
       }
 
-      label.textContent = mode[0].toUpperCase() + mode.slice(1);
+      const word = mode[0].toUpperCase() + mode.slice(1);
+      button.dataset.mode = mode;
+      label.textContent = word;
+      // An icon-only control has to name itself, and the tooltip is the only
+      // affordance a mouse user gets.
+      button.setAttribute("aria-label", `Colour scheme: ${mode}`);
+      button.setAttribute("title", `Colour scheme: ${mode}`);
     }
 
     apply(stored());

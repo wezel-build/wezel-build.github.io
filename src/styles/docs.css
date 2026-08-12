@@ -82,11 +82,28 @@
   min-width: 0;
 }
 
+/* Three clusters — destinations, chrome, action — separated by space rather
+   than by a rule (§2). Without this the theme control and the brand marks read
+   as nav items. Mirrors the landing header. */
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 1.6rem;
+  gap: 2.5rem;
   font-size: 0.95rem;
+}
+
+.header-nav .nav-links,
+.header-nav .nav-chrome {
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-nav .nav-links {
+  gap: 1.6rem;
+}
+
+.header-nav .nav-chrome {
+  gap: 1.25rem;
 }
 
 .header-nav a {

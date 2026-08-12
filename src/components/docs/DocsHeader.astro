@@ -1,6 +1,7 @@
 ---
 import Brand from "../Brand.astro";
 import DocsSearch from "./DocsSearch.astro";
+import SocialLinks from "../SocialLinks.astro";
 import ThemeToggle from "../ThemeToggle.astro";
 
 // Mirrors the landing header. The frame (height, hairline, translucent
@@ -10,7 +11,6 @@ const links = [
   { href: "/docs", label: "Docs" },
   { href: "/blog", label: "Blog" },
   { href: "https://status.wezel.build", label: "Status", external: true },
-  { href: "https://github.com/wezel-build", label: "GitHub", external: true },
 ];
 
 const path = Astro.url.pathname;
@@ -23,18 +23,27 @@ const path = Astro.url.pathname;
     <DocsSearch />
 
     <nav class="header-nav" aria-label="Site">
-      {
-        links.map(({ href, label, external }) => (
-          <a
-            href={href}
-            aria-current={!external && path.startsWith(href) ? "page" : undefined}
-            {...external ? { rel: "noopener" } : {}}
-          >
-            {label}
-          </a>
-        ))
-      }
-      <ThemeToggle />
+      <span class="nav-links">
+        {
+          links.map(({ href, label, external }) => (
+            <>
+              <a
+                href={href}
+                aria-current={!external && path.startsWith(href) ? "page" : undefined}
+                {...external ? { rel: "noopener" } : {}}
+              >
+                {label}
+              </a>{" "}
+            </>
+          ))
+        }
+      </span>
+
+      <span class="nav-chrome">
+        <SocialLinks />{" "}
+        <ThemeToggle />
+      </span>
+
       <a href="/docs/installation" class="header-cta">Install CLI</a>
     </nav>
 

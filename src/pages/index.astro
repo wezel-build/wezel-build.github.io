@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Brand from "../components/Brand.astro";
+import SocialLinks from "../components/SocialLinks.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 
 // The landing page.
@@ -46,11 +47,17 @@ import ThemeToggle from "../components/ThemeToggle.astro";
         <Brand href="/" />
 
         <nav class="header-nav" aria-label="Site">
-            <a href="/docs">Docs</a>
-            <a href="/blog">Blog</a>
-            <a href="https://status.wezel.build" rel="noopener">Status</a>
-            <a href="https://github.com/wezel-build" rel="noopener">GitHub</a>
-            <ThemeToggle />
+            <span class="nav-links">
+                <a href="/docs">Docs</a>{" "}
+                <a href="/blog">Blog</a>{" "}
+                <a href="https://status.wezel.build" rel="noopener">Status</a>
+            </span>
+
+            <span class="nav-chrome">
+                <SocialLinks />{" "}
+                <ThemeToggle />
+            </span>
+
             <a href="/docs/installation" class="header-cta">Install CLI</a>
         </nav>
     </header>
@@ -559,9 +566,7 @@ import ThemeToggle from "../components/ThemeToggle.astro";
                 <a href="/docs">Docs</a>
                 <a href="/blog">Blog</a>
                 <a href="https://status.wezel.build" rel="noopener">Status</a>
-                <a href="https://github.com/wezel-build" rel="noopener"
-                    >GitHub</a
-                >
+                <SocialLinks />
             </nav>
         </div>
     </footer>
@@ -673,11 +678,33 @@ import ThemeToggle from "../components/ThemeToggle.astro";
             backdrop-filter: saturate(140%) blur(8px);
         }
 
+        /* Three clusters — destinations, chrome, action — separated by space
+           rather than by a rule, per DOCS-DESIGN.md §2. Without this the theme
+           control and the brand marks read as nav items.
+
+           The {" "} in the markup is load-bearing: Astro trims the newline
+           before a tag to nothing, so gap would otherwise be the only thing
+           separating these words, and the failure mode is "DocsBlogStatus".
+           Flex ignores whitespace-only text nodes, so it costs nothing here. */
         .header-nav {
             display: flex;
             align-items: center;
-            gap: 1.6rem;
+            gap: 2.5rem;
             font-size: 0.95rem;
+        }
+
+        .nav-links,
+        .nav-chrome {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-links {
+            gap: 1.6rem;
+        }
+
+        .nav-chrome {
+            gap: 1.25rem;
         }
 
         .header-nav a {
