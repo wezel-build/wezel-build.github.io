@@ -1,9 +1,9 @@
 ---
 import SocialLinks from "./SocialLinks.astro";
 
-// Shared by the landing and the blog. Same destinations as the header, minus the
-// Install CLI call — a footer is where you go when you didn't find what you
-// wanted, not where you get sold to.
+// Shared by the landing and the blog. The header's destinations minus the
+// Install CLI call, plus the contact address — a footer is where you go when you
+// didn't find what you wanted, not where you get sold to.
 //
 // The {" "} between links is load-bearing: Astro trims the newline before a tag
 // to nothing, so flex `gap` would otherwise be the only thing separating these
@@ -18,6 +18,7 @@ import SocialLinks from "./SocialLinks.astro";
       <a href="/docs">Docs</a>{" "}
       <a href="/blog">Blog</a>{" "}
       <a href="https://status.wezel.build" rel="noopener">Status</a>{" "}
+      <a href="mailto:hi@wezel.build">hi@wezel.build</a>{" "}
       <SocialLinks />
     </nav>
   </div>
