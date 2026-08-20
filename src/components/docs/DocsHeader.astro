@@ -1,0 +1,40 @@
+---
+import Brand from "../Brand.astro";
+import SiteNav from "../SiteNav.astro";
+import DocsSearch from "./DocsSearch.astro";
+
+// The docs chrome. Same frame as SiteHeader — height, translucency, no bottom
+// rule — but it carries two things the other surfaces don't: search, and the
+// sidebar drawer toggle. The nav itself is <SiteNav />, so the link list lives
+// in one place rather than being mirrored here; it had already drifted once.
+// See DOCS-DESIGN.md §4.
+---
+
+<header class="docs-header">
+  <Brand href="/" />
+
+  <div class="header-right">
+    <DocsSearch />
+    <SiteNav />
+
+    <button
+      class="sidebar-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="docs-sidebar"
+    >
+      Contents
+    </button>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>(".sidebar-toggle");
+  const sidebar = document.getElementById("docs-sidebar");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    sidebar?.toggleAttribute("data-open", !open);
+  });
+</script>

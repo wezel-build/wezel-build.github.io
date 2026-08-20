@@ -1,0 +1,114 @@
+---
+import SocialLinks from "./SocialLinks.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+// The site nav, shared by the landing header, the blog header and the docs
+// header. It used to be duplicated in two places with a comment asking whoever
+// touched one to remember the other, which is exactly the smell that says
+// extract — the list had already drifted once (GitHub was dropped from the
+// landing and left in the docs).
+//
+// Three clusters — destinations, chrome, action — separated by space rather
+// than by a rule, per DOCS-DESIGN.md §2. Without the grouping the theme control
+// and the brand marks read as nav items.
+//
+// The {" "} between links is load-bearing. Astro trims the newline before a tag
+// to nothing, so `gap` would otherwise be the only thing separating these words
+// and the failure mode is "DocsBlogStatus". Flex ignores whitespace-only text
+// nodes, so it costs nothing when gap applies.
+
+const links = [
+  { href: "/docs", label: "Docs" },
+  { href: "/blog", label: "Blog" },
+  { href: "https://status.wezel.build", label: "Status", external: true },
+];
+
+const path = Astro.url.pathname;
+---
+
+<nav class="header-nav" aria-label="Site">
+  <span class="nav-links">
+    {
+      links.map(({ href, label, external }, i) => (
+        <>
+          {i > 0 ? " " : ""}
+          <a
+            href={href}
+            aria-current={!external && path.startsWith(href) ? "page" : undefined}
+            {...external ? { rel: "noopener" } : {}}
+          >
+            {label}
+          </a>
+        </>
+      ))
+    }
+  </span>
+
+  <span class="nav-chrome">
+    <SocialLinks />{" "}
+    <ThemeToggle />
+  </span>
+
+  <a href="/docs/installation" class="header-cta">Install CLI</a>
+</nav>
+
+<style>
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    font-size: 0.95rem;
+  }
+
+  .nav-links,
+  .nav-chrome {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav-links {
+    gap: 1.6rem;
+  }
+
+  .nav-chrome {
+    gap: 1.25rem;
+  }
+
+  .header-nav a {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+  }
+
+  .header-nav a:hover {
+    color: var(--color-ink);
+  }
+
+  /* Accent is a signal: it marks where you are, nothing else. */
+  .header-nav a[aria-current="page"]:not(.header-cta) {
+    color: var(--color-accent);
+  }
+
+  .header-cta {
+    border: 1px solid var(--color-line-strong);
+    padding: 0.35rem 0.85rem;
+    color: var(--color-ink) !important;
+  }
+
+  .header-cta:hover {
+    border-color: var(--color-ink-faint);
+  }
+
+  @media (max-width: 64rem) {
+    .nav-links {
+      display: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .header-cta {
+      display: none;
+    }
+  }
+</style>

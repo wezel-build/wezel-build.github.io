@@ -1,0 +1,608 @@
+/*
+  Wezel docs.
+
+  Implements DOCS-DESIGN.md §4. The load-bearing ideas, so that cases not
+  covered here can be derived rather than guessed:
+
+    - The sheet has edges. Bounded, centred rail; the space outside it is desk.
+    - Space, not lines. Rules and whitespace are substitutes and this design
+      spends whitespace. A rule has to earn its place.
+    - Rules survive only where they separate data: table head, table rows, the
+      callout's left edge, and the frame and caption rule of a code figure.
+      Nothing else in the page furniture is ruled except the sidebar divider.
+    - Nothing floats. Radius 0, no shadows.
+    - Two faces. Inter carries voice and body both — headings are the same face
+      set heavy and tight, not a change of typeface. Mono is the apparatus and
+      the data. Instrument Serif belongs to the brand, not to the docs.
+*/
+
+:root {
+  --docs-rail: 87rem;
+  --docs-sidebar: 16rem;
+  --docs-toc: 14rem;
+  --docs-measure: 54rem;
+  --docs-margin: 4.75rem;
+  --docs-header-h: 3.75rem;
+
+  --docs-leading: 1.8;
+  --docs-block-gap: 1.885rem;
+  --docs-h2-lead: 4.16rem;
+  --docs-h3-lead: 2.6rem;
+}
+
+/* Nothing floats, anywhere in the docs. */
+.docs-header *,
+.docs-sheet * {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--color-line-strong);
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+/* ==========================================================================
+   HEADER — full bleed, above the sheet, no bottom rule
+   ========================================================================== */
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: var(--docs-header-h);
+  padding-inline: 1.75rem;
+  background: color-mix(in srgb, var(--color-paper) 90%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+}
+
+.docs-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  min-width: 0;
+}
+
+.sidebar-toggle {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   THE SHEET — bounded and centred. No outline: the centring is the edge.
+   ========================================================================== */
+.docs-sheet {
+  max-width: var(--docs-rail);
+  margin-inline: auto;
+  min-height: calc(100vh - var(--docs-header-h));
+  display: grid;
+  grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+}
+
+.docs-sheet[data-toc] {
+  grid-template-columns:
+    var(--docs-sidebar) minmax(0, 1fr)
+    var(--docs-toc);
+}
+
+/* The one rule in the page furniture. */
+.docs-sidebar-column {
+  border-inline-end: 1px solid var(--color-line);
+}
+
+.rail-inner {
+  position: sticky;
+  top: var(--docs-header-h);
+  max-height: calc(100vh - var(--docs-header-h));
+  overflow-y: auto;
+  padding: 2.9rem 1.5rem;
+}
+
+/* ==========================================================================
+   SIDEBAR + TOC — apparatus, set in mono
+   ========================================================================== */
+.nav-group + .nav-group {
+  margin-top: 2.1rem;
+}
+
+.nav-group > h2,
+.docs-toc > h2 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.nav-group ul,
+.docs-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-group a,
+.nav-label,
+.docs-toc a {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.3rem 0;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nav-group a:hover,
+.docs-toc a:hover {
+  color: var(--color-ink);
+}
+
+/* Accent is a signal: it marks where you are, nothing else. */
+.nav-group a[aria-current="page"],
+.docs-toc a[aria-current="true"] {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.nav-label {
+  color: var(--color-ink-faint);
+}
+
+.nav-children,
+.toc-children {
+  margin-inline-start: 0.9rem !important;
+}
+
+.nav-children a,
+.toc-children a {
+  font-size: 0.85rem;
+  color: var(--color-ink-faint);
+}
+
+.docs-toc a {
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   PAGE HEAD
+   ========================================================================== */
+.docs-page-header {
+  padding: 3.4rem var(--docs-margin) 0;
+  max-width: var(--docs-measure);
+}
+
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 1.1rem;
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-ink);
+}
+
+.breadcrumb > * + *::before {
+  content: "/";
+  margin-inline: 0.5rem;
+  color: var(--color-line-strong);
+}
+
+.docs-page-header h1 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 4.5vw, 3.85rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.standfirst {
+  max-width: 44ch;
+  margin: 1.4rem 0 0;
+  font-size: 1.22rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+/* ==========================================================================
+   PROSE — the text block, with margins you can see
+   ========================================================================== */
+.docs-prose {
+  max-width: var(--docs-measure);
+  padding: 3.25rem var(--docs-margin) 4.55rem;
+  /* Source Sans 3 has a smaller x-height than Inter, so it needs the extra
+     0.03rem to read at the same apparent size across the 54rem measure. */
+  font-size: 1.08rem;
+  line-height: var(--docs-leading);
+  color: var(--color-ink);
+
+  /* Shiki runs on `css-variables`, so code inherits the Wezel palette
+     instead of importing a foreign editor theme. */
+  --astro-code-foreground: var(--color-ink);
+  --astro-code-background: transparent;
+  --astro-code-token-comment: var(--color-ink-faint);
+  --astro-code-token-string: var(--color-good);
+  --astro-code-token-string-expression: var(--color-good);
+  --astro-code-token-keyword: var(--color-warn);
+  --astro-code-token-function: var(--color-accent);
+  --astro-code-token-constant: var(--color-accent-deep);
+  --astro-code-token-parameter: var(--color-ink);
+  --astro-code-token-punctuation: var(--color-ink-faint);
+  --astro-code-token-link: var(--color-accent);
+}
+
+.docs-prose > * {
+  margin-block: 0;
+}
+
+.docs-prose > * + * {
+  margin-block-start: var(--docs-block-gap);
+}
+
+.docs-prose :is(h2, h3, h4) {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-wrap: balance;
+  scroll-margin-top: calc(var(--docs-header-h) + 1.75rem);
+}
+
+/* No rule above the section: the lead carries the break on its own. */
+.docs-prose > h2 {
+  font-size: 1.9rem;
+  margin-block-start: var(--docs-h2-lead);
+}
+
+.docs-prose > h2:first-child {
+  margin-block-start: 0;
+}
+
+.docs-prose > h3 {
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+  margin-block-start: var(--docs-h3-lead);
+}
+
+.docs-prose > h4 {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin-block-start: 2rem;
+}
+
+.docs-prose a {
+  color: var(--color-accent);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-accent) 35%,
+    transparent
+  );
+  text-underline-offset: 0.2em;
+}
+
+.docs-prose a:hover {
+  color: var(--color-accent-deep);
+  text-decoration-color: currentColor;
+}
+
+.docs-prose strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.docs-prose :is(ul, ol) {
+  padding-inline-start: 1.3rem;
+}
+
+.docs-prose li + li {
+  margin-top: 0.5rem;
+}
+
+.docs-prose li::marker {
+  color: var(--color-ink-faint);
+}
+
+.docs-prose hr {
+  border: none;
+  border-block-start: 1px solid var(--color-line);
+  margin-block: 2.5rem;
+}
+
+.docs-prose blockquote:not(.markdown-alert) {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  border-inline-start: 2px solid var(--color-line-strong);
+  color: var(--color-ink-soft);
+}
+
+.docs-prose :is(img, video) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---- code: inline code is text, not a button ------------------------- */
+.docs-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+
+.docs-prose :not(pre) > code {
+  color: var(--color-accent-deep);
+}
+
+.docs-prose :is(h2, h3, h4) code {
+  font-size: 0.9em;
+  color: inherit;
+}
+
+/* A code block is a bounded object with a ruled head, not a tinted rectangle.
+   The tint is spent on the caption strip, where it marks the head as apparatus;
+   the body sits on surface and the frame does the containing. Matches the
+   landing page, so a command reads the same on both surfaces.
+
+   A radius-0, shadowless frame still doesn't float, so §3.4 holds. */
+.docs-prose pre {
+  margin: 0;
+  padding: 1.15rem 1.2rem 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-line-strong);
+  /* beats the inline background-color Shiki emits on the <pre> */
+  background: var(--color-surface) !important;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.docs-prose .code-figure {
+  margin: 0;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+}
+
+.docs-prose .code-figure > figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0.5rem 1.2rem;
+  background: var(--color-veil);
+  border-block-end: 1px solid var(--color-line);
+}
+
+/* The figure already provides the frame; the pre inside it must not add a second. */
+.docs-prose .code-figure pre {
+  border: 0;
+  background: transparent !important;
+}
+
+/* ---- tables: rules here separate data, so they stay ------------------ */
+.docs-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.docs-prose th {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  text-align: left;
+  padding: 0.45rem 0.9rem 0.45rem 0;
+  border-block-end: 1px solid var(--color-line-strong);
+}
+
+.docs-prose td {
+  padding: 0.55rem 0.9rem 0.55rem 0;
+  border-block-end: 1px solid var(--color-line);
+  vertical-align: baseline;
+}
+
+/* ---- callouts: a left rule and a label, no box ----------------------- */
+.docs-prose .markdown-alert {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  border-inline-start: 2px solid var(--color-line-strong);
+  color: var(--color-ink-soft);
+  font-size: 0.98rem;
+}
+
+.docs-prose .markdown-alert > * {
+  margin-block: 0;
+}
+
+.docs-prose .markdown-alert > * + * {
+  margin-block-start: 0.7rem;
+}
+
+.docs-prose .markdown-alert-title {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-block-end: 0.35rem !important;
+}
+
+/* The plugin ships an octicon; the design uses a word. */
+.docs-prose .markdown-alert-title svg {
+  display: none;
+}
+
+.docs-prose .markdown-alert-tip {
+  border-inline-start-color: var(--color-good);
+}
+
+.docs-prose .markdown-alert-tip .markdown-alert-title {
+  color: var(--color-good);
+}
+
+.docs-prose .markdown-alert-important {
+  border-inline-start-color: var(--color-accent);
+}
+
+.docs-prose .markdown-alert-important .markdown-alert-title {
+  color: var(--color-accent-deep);
+}
+
+.docs-prose :is(.markdown-alert-warning, .markdown-alert-caution) {
+  border-inline-start-color: var(--color-warn);
+}
+
+.docs-prose
+  :is(.markdown-alert-warning, .markdown-alert-caution)
+  .markdown-alert-title {
+  color: var(--color-warn);
+}
+
+/* ==========================================================================
+   PAGER — two cells divided by a rule, not two cards
+   ========================================================================== */
+.docs-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: var(--docs-measure);
+  padding-inline: var(--docs-margin);
+  padding-block-end: 3.5rem;
+  gap: 2rem;
+}
+
+.docs-pager a {
+  text-decoration: none;
+  display: block;
+}
+
+.docs-pager .pager-next {
+  text-align: right;
+  grid-column: 2;
+}
+
+.docs-pager .kicker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.docs-pager .title {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.docs-pager a:hover .title {
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
+   NARROW — the TOC goes first, then the sidebar becomes a drawer
+   ========================================================================== */
+@media (max-width: 78rem) {
+  .docs-sheet,
+  .docs-sheet[data-toc] {
+    grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+  }
+
+  .docs-toc-column {
+    display: none;
+  }
+}
+
+@media (max-width: 64rem) {
+  :root {
+    --docs-margin: 2rem;
+  }
+
+  .docs-sheet,
+  .docs-sheet[data-toc] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+
+  .docs-sidebar-column {
+    display: none;
+    border-inline-end: none;
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  .docs-sidebar-column[data-open] {
+    display: block;
+  }
+
+  .docs-sidebar-column .rail-inner {
+    position: static;
+    max-height: none;
+    padding-block: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --docs-margin: 1.4rem;
+  }
+
+
+  .docs-page-header h1 {
+    font-size: clamp(2.1rem, 10vw, 2.75rem);
+  }
+
+  .docs-prose > h2 {
+    font-size: 1.6rem;
+  }
+}

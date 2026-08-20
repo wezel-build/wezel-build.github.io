@@ -1,122 +1,1172 @@
 ---
 import Base from "../layouts/Base.astro";
-import "../styles/home.css";
-import { Content as Body } from "../home/index.mdx";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 
-const installUrl = new URL(
-    "install.sh",
-    Astro.site ?? "https://wezel.build/",
-).toString();
-const installCmd = `curl -fsSL ${installUrl} | sh`;
+// The landing page.
+//
+// Built from landing-mockup.html. The load-bearing decisions, so cases not
+// covered here can be derived rather than guessed:
+//
+//   - The landing and the docs are the same printed object. Geometry is lifted
+//     from docs.css: an 87rem sheet, a visible 4.75rem inline margin, a
+//     3.75rem full-bleed header with no bottom rule. Radius 0, no shadows.
+//   - Space, not lines. A rule has to earn its place, and here they earn it in
+//     three ways only: the masthead and footing of the fold, the break between
+//     chapters, and inside figures and tables where they separate data.
+//   - The fold is an artifact, not a symbol. Five earlier attempts (line chart,
+//     bar plate, readout, oversized wordmark, three different instruments) all
+//     failed either as fabricated evidence or as decoration. What the tool
+//     prints when a summary has moved does the job on its own.
+//   - Figures are bounded objects with a ruled head, not tinted rectangles:
+//     hairline border, veil caption strip, body on surface. All four figures on
+//     the page are built this way.
+//   - Two faces, as in the docs. Source Sans 3 carries voice and body both:
+//     headings are the same face set heavy and tight, not a change of typeface.
+//     Mono is the apparatus and the data. Instrument Serif belongs to the brand,
+//     so it appears in the wordmark and nowhere else on the page. Heading
+//     metrics track docs.css deliberately.
+//
+// Copy is the user's. Slots below are marked COPY SLOT; leave the words alone
+// unless asked.
 ---
 
-<Base>
-    <!-- ── Hero (centered wordmark, vixen-style) ─────────── -->
-    <section class="hero">
-        <div class="hero-inner">
-            <div class="hero-mark" aria-hidden="true">w</div>
+<Base
+    title="Wezel — build regression observability"
+    description="Wezel codifies your build scenarios, keeps track of their performance and helps you tackle regressions at your own pace."
+>
+    <SiteHeader />
 
-            {/* copy slot: wordmark (usually the product name) */}
-            <h1 class="hero-word">wezel</h1>
-
-            {/* copy slot: tagline */}
-            <p class="hero-tagline">Build-time observability</p>
-
-            {/* copy slot: subtitle */}
-            <p class="hero-sub">
-                Wezel benchmarks the build scenarios your team runs most, on
-                every commit, and surfaces the offending change the moment
-                something gets slower.
-            </p>
-
-            {/* copy slot: status banner — edit or delete */}
-            <p class="hero-banner">
-                Early development · not yet ready for production
-            </p>
-
-            <div class="hero-ctas">
-                <a
-                    href="https://github.com/wezel-build/wezel"
-                    class="btn btn-lg btn-primary"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    Get started
-                </a>
-                <a href="/docs" class="btn btn-lg btn-secondary">
-                    Read the docs
-                </a>
+    <main class="sheet">
+        <!-- =========================================================
+         THE FOLD — `wezel exp run`, against the previous run
+         ========================================================= -->
+        <section class="band fold">
+            <div class="fold-masthead">
+                <span class="label">Build regression observability</span>
+                <span class="label">Apache-2.0 · early development</span>
             </div>
-        </div>
-    </section>
 
-    <!-- ── Body (authored in src/home/index.mdx) ─────────── -->
-    <section class="body">
-        <article class="prose">
-            <Body />
-        </article>
-    </section>
+            <div class="fold-body">
+                <div>
+                    <h1>
+                        Your build,{" "}<span class="accent">always</span>{
+                            " "
+                        }at its best
+                    </h1>
 
-    <!-- ── Closing ───────────────────────────────────────── -->
-    <section class="closing">
-        <div class="closing-inner">
-            {/* copy slot: closing line */}
-            <p class="closing-lead">Install the CLI and point it at a build.</p>
+                    <p class="fold-sub">
+                        Wezel codifies your build scenarios, keeps track of
+                        their performance and helps you tackle regressions at
+                        your own pace.
+                    </p>
 
-            <figure class="install-snippet">
-                <figcaption>
-                    <span class="install-shell">shell</span>
-                    <button
-                        class="install-copy"
-                        type="button"
-                        data-copy={installCmd}
-                        aria-label="Copy install command"
-                    >
-                        <span class="install-copy-text">copy</span>
-                    </button>
-                </figcaption>
-                <pre><code><span class="t-prompt">$</span> <span class="t-cmd">curl</span> <span class="t-flag">-fsSL</span> <span class="t-url">{installUrl}</span> <span class="t-pipe">|</span> <span class="t-cmd">sh</span></code></pre>
-            </figure>
+                    <div class="fold-actions">
+                        <a class="btn btn-primary" href="/docs/quickstart"
+                            >Read the quickstart</a
+                        >
+                        <a
+                            class="btn btn-quiet"
+                            href="https://github.com/wezel-build"
+                            rel="noopener">View on GitHub</a
+                        >
+                    </div>
 
-            <p class="closing-links">
-                <a
-                    href="https://github.com/wezel-build/wezel"
-                    target="_blank"
-                    rel="noopener">Star on GitHub</a
+                    <div class="install">
+                        <span class="label">Install</span>
+                        <p class="install-line">
+                            <span class="prompt" aria-hidden="true">$</span>
+                            <code
+                                >curl -fsSL https://wezel.build/install.sh | sh</code
+                            >
+                        </p>
+                    </div>
+                </div>
+
+                <figure class="run">
+                    <figcaption class="label">Terminal</figcaption>
+
+                    <div class="run-body">
+                        <div>
+                            <span class="p">$</span>{" "}<span class="bin"
+                                >wezel</span
+                            > exp run
+                        </div>
+
+                        <div class="run-meta">
+                            workspace-build · incremental · crate dirty
+                        </div>
+                        <div class="run-meta">
+                            against 8f21c4b · previous run, 6 days ago
+                        </div>
+
+                        <div class="run-step">step.cargo.release-build</div>
+                        <div class="run-samples">
+                            5 samples &nbsp;41.9s &nbsp;42.3s &nbsp;42.0s
+                            &nbsp;42.1s &nbsp;42.2s
+                        </div>
+
+                        <div class="run-table">
+                            <span class="rh">Summary</span>
+                            <span class="rh n">This run</span>
+                            <span class="rh n">Previous</span>
+                            <span class="rh n">&Delta;</span>
+                            <span class="rh n">&nbsp;</span>
+
+                            <span>build-time</span>
+                            <span class="n">42.1s</span>
+                            <span class="n flat">29.7s</span>
+                            <span class="n up">+12.4s</span>
+                            <span class="n up">+26%</span>
+
+                            <span>binary-size</span>
+                            <span class="n">18.4 MB</span>
+                            <span class="n flat">18.4 MB</span>
+                            <span class="n flat">&plusmn;0</span>
+                            <span class="n flat"></span>
+
+                            <span>llvm-lines</span>
+                            <span class="n">1.94 M</span>
+                            <span class="n flat">1.63 M</span>
+                            <span class="n up">+310 k</span>
+                            <span class="n up">+19%</span>
+                        </div>
+
+                        <div class="run-verdict">
+                            <span class="up">build-time</span> moved beyond the noise
+                            threshold of &plusmn;0.8s.
+                        </div>
+
+                        <div class="run-next">
+                            <span class="p">$</span>{" "}<span class="bin"
+                                >wezel</span
+                            > exp <span class="sub">bisect</span> build-time
+                        </div>
+                    </div>
+                </figure>
+            </div>
+        </section>
+
+        <section class="band chapter">
+            <div class="chapter-head">
+                <span class="label">The experiment file</span>
+
+                <h2>A build scenario is a file in the repository</h2>
+                <p class="standfirst">
+                    An experiment names the steps to run and the numbers to
+                    keep. It is committed next to the code it measures, so the
+                    definition of &ldquo;slow&rdquo; moves with the branch.
+                </p>
+            </div>
+
+            <div class="chapter-body with-margin-note">
+                <figure class="code-figure">
+                    <figcaption>
+                        .wezel/experiments/my-c00l-experiment/experiment.toml
+                    </figcaption>
+                    <pre><code><span class="t-key">description</span> <span class="t-punct">=</span> <span class="t-string">"Tracks compile time of the wezel workspace"</span>
+
+<span class="t-comment"># A single experiment consists of multiple steps, executed in order.</span>
+<span class="t-table">[step.cargo.release-build]</span>
+<span class="t-key">command</span>      <span class="t-punct">=</span> <span class="t-string">"build"</span>
+<span class="t-key">build_target</span> <span class="t-punct">=</span> <span class="t-punct">[</span><span class="t-string">"burrow"</span><span class="t-punct">]</span>
+<span class="t-key">profile</span>      <span class="t-punct">=</span> <span class="t-string">"release"</span>
+
+<span class="t-comment"># The cargo tool emits time_ms as an outcome. This summary runs the</span>
+<span class="t-comment"># step five times and keeps the mean, which is what bisection reads.</span>
+<span class="t-key">summary.build-time</span> <span class="t-punct">=</span> <span class="t-punct">&#123;</span> <span class="t-key">outcome</span> <span class="t-punct">=</span> <span class="t-string">"time_ms"</span><span class="t-punct">,</span> <span class="t-key">aggregation</span> <span class="t-punct">=</span> <span class="t-string">"mean"</span><span class="t-punct">,</span> <span class="t-key">samples</span> <span class="t-punct">=</span> <span class="t-num">5</span> <span class="t-punct">&#125;</span></code></pre>
+                </figure>
+
+                <div class="margin-note">
+                    <h3>Steps</h3>
+                    <p>
+                        Every step is declared as <code class="tool"
+                            >[step.&lt;tool&gt;.&lt;name&gt;]</code
+                        >. The tool decides what is measured; the name is how
+                        the step is referred to afterwards.
+                    </p>
+
+                    <h3>Outcomes</h3>
+                    <p>
+                        An outcome is whatever the step produced. It is not
+                        necessarily a number — a timings file or a profile is an
+                        outcome too.
+                    </p>
+
+                    <h3>Summaries</h3>
+                    <p>
+                        A summary reduces an outcome to one scalar. Scalars are
+                        what bisection can compare, so a summary is the thing
+                        that can regress. One outcome supports several of them.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+         ONE RUN, SEVERAL SUMMARIES
+         ========================================================= -->
+        <section class="band chapter">
+            <div class="chapter-head">
+                <span class="label">What a run leaves behind</span>
+                <!-- COPY SLOT: h2 + standfirst. -->
+                <h2>One run, more than one number</h2>
+                <p class="standfirst">
+                    <code class="tool">wezel exp run</code> executes the steps in
+                    order and records the outcomes. The summaries are read off that
+                    one run, so a build that got slower and a binary that got larger
+                    are the same measurement seen twice.
+                </p>
+            </div>
+
+            <div class="chapter-body with-margin-note">
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Summary</th>
+                                <th scope="col">Tool</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">vs. baseline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>build-time</td>
+                                <td><code class="tool">cargo</code></td>
+                                <td class="num">42.1 s</td>
+                                <td class="num delta-warn">+12.4 s</td>
+                            </tr>
+                            <tr>
+                                <td>binary size</td>
+                                <td><code class="tool">filesize</code></td>
+                                <td class="num">18.4 MB</td>
+                                <td class="num delta-flat">&plusmn;0</td>
+                            </tr>
+                            <tr>
+                                <td>generic bloat</td>
+                                <td><code class="tool">llvm-lines</code></td>
+                                <td class="num">1.94 M</td>
+                                <td class="num delta-warn">+310 k</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- COPY SLOT: the margin note. -->
+                <div class="margin-note">
+                    <h3>Not just Rust</h3>
+                    <p>
+                        <code class="tool">cargo</code>, <code class="tool"
+                            >filesize</code
+                        > and{" "}
+                        <code class="tool">llvm-lines</code> ship with Wezel;{
+                            " "
+                        }
+                        <code class="tool">exec</code> measures any command. Tool
+                        implementations live in separate binaries, so a toolchain
+                        that follows the protocol can be added without touching Wezel
+                        itself.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="band chapter">
+            <div class="chapter-head">
+                <span class="label">Sampling</span>
+                <!-- COPY SLOT: h2 + standfirst. -->
+                <h2>Sparse until something moves</h2>
+                <p class="standfirst">
+                    Most commits do not meaningfully change a build. Wezel
+                    measures on a schedule rather than on every push, and only
+                    fills in the commits it skipped once two measurements
+                    disagree.
+                </p>
+            </div>
+
+            <div class="chapter-body">
+                <svg
+                    class="strip"
+                    viewBox="0 0 1040 210"
+                    role="img"
+                    aria-label="Thirty-two commits on a line. Five were measured on the schedule. The last scheduled run is 12.4 seconds slower than the one before it, so Wezel measures the skipped commits between them by bisection — three further runs — and lands on the commit where the number moved."
                 >
-                <span aria-hidden="true"> · </span>
-                <a href="/docs/quickstart">Read the quickstart →</a>
-            </p>
-        </div>
-    </section>
+                    <line
+                        x1="30"
+                        y1="96"
+                        x2="1010"
+                        y2="96"
+                        stroke="var(--color-line)"
+                        stroke-width="1.5"></line>
 
-    <script is:inline>
-        document.querySelectorAll(".install-copy").forEach(function (btn) {
-            btn.addEventListener("click", async function () {
-                var txt = btn.getAttribute("data-copy") || "";
-                var label = btn.querySelector(".install-copy-text");
-                try {
-                    await navigator.clipboard.writeText(txt);
-                } catch (e) {
-                    var ta = document.createElement("textarea");
-                    ta.value = txt;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    try {
-                        document.execCommand("copy");
-                    } catch (_) {}
-                    document.body.removeChild(ta);
-                }
-                if (label) {
-                    var orig = label.textContent;
-                    label.textContent = "copied";
-                    btn.classList.add("install-copy-done");
-                    setTimeout(function () {
-                        label.textContent = orig;
-                        btn.classList.remove("install-copy-done");
-                    }, 1400);
-                }
-            });
-        });
-    </script>
+                    <g class="s-tick">
+                        <line x1="30" y1="90" x2="30" y2="102"></line>
+                        <line x1="61.6" y1="90" x2="61.6" y2="102"></line>
+                        <line x1="93.2" y1="90" x2="93.2" y2="102"></line>
+                        <line x1="124.8" y1="90" x2="124.8" y2="102"></line>
+                        <line x1="156.4" y1="90" x2="156.4" y2="102"></line>
+                        <line x1="188" y1="90" x2="188" y2="102"></line>
+                        <line x1="219.6" y1="90" x2="219.6" y2="102"></line>
+                        <line x1="251.2" y1="90" x2="251.2" y2="102"></line>
+                        <line x1="282.8" y1="90" x2="282.8" y2="102"></line>
+                        <line x1="314.4" y1="90" x2="314.4" y2="102"></line>
+                        <line x1="346" y1="90" x2="346" y2="102"></line>
+                        <line x1="377.6" y1="90" x2="377.6" y2="102"></line>
+                        <line x1="409.2" y1="90" x2="409.2" y2="102"></line>
+                        <line x1="440.8" y1="90" x2="440.8" y2="102"></line>
+                        <line x1="472.4" y1="90" x2="472.4" y2="102"></line>
+                        <line x1="504" y1="90" x2="504" y2="102"></line>
+                        <line x1="535.6" y1="90" x2="535.6" y2="102"></line>
+                        <line x1="567.2" y1="90" x2="567.2" y2="102"></line>
+                        <line x1="598.8" y1="90" x2="598.8" y2="102"></line>
+                        <line x1="630.4" y1="90" x2="630.4" y2="102"></line>
+                        <line x1="662" y1="90" x2="662" y2="102"></line>
+                        <line x1="693.6" y1="90" x2="693.6" y2="102"></line>
+                        <line x1="725.2" y1="90" x2="725.2" y2="102"></line>
+                        <line x1="756.8" y1="90" x2="756.8" y2="102"></line>
+                        <line x1="788.4" y1="90" x2="788.4" y2="102"></line>
+                        <line x1="820" y1="90" x2="820" y2="102"></line>
+                        <line x1="851.6" y1="90" x2="851.6" y2="102"></line>
+                        <line x1="883.2" y1="90" x2="883.2" y2="102"></line>
+                        <line x1="914.8" y1="90" x2="914.8" y2="102"></line>
+                        <line x1="946.4" y1="90" x2="946.4" y2="102"></line>
+                        <line x1="978" y1="90" x2="978" y2="102"></line>
+                        <line x1="1010" y1="90" x2="1010" y2="102"></line>
+                    </g>
+
+                    <text x="30" y="34" class="s-caption">Scheduled</text>
+                    <g fill="var(--color-ink)">
+                        <circle cx="30" cy="62" r="5"></circle>
+                        <circle cx="251.2" cy="62" r="5"></circle>
+                        <circle cx="472.4" cy="62" r="5"></circle>
+                        <circle cx="693.6" cy="62" r="5"></circle>
+                    </g>
+                    <circle cx="978" cy="62" r="5" fill="var(--color-warn)"
+                    ></circle>
+                    <g
+                        stroke="var(--color-line-strong)"
+                        stroke-width="1"
+                        stroke-dasharray="2 3"
+                    >
+                        <line x1="30" y1="70" x2="30" y2="88"></line>
+                        <line x1="251.2" y1="70" x2="251.2" y2="88"></line>
+                        <line x1="472.4" y1="70" x2="472.4" y2="88"></line>
+                        <line x1="693.6" y1="70" x2="693.6" y2="88"></line>
+                    </g>
+                    <line
+                        x1="978"
+                        y1="70"
+                        x2="978"
+                        y2="88"
+                        stroke="var(--color-warn)"
+                        stroke-width="1"
+                        stroke-dasharray="2 3"></line>
+                    <text x="978" y="46" class="s-label-warn" text-anchor="end"
+                        >+12.4s · regression</text
+                    >
+
+                    <text x="30" y="135" class="s-caption">Bisected</text>
+                    <g fill="var(--color-accent)">
+                        <circle cx="836" cy="130" r="5"></circle>
+                        <circle cx="899" cy="130" r="5"></circle>
+                        <circle cx="946.4" cy="130" r="5"></circle>
+                    </g>
+                    <g
+                        stroke="var(--color-accent)"
+                        stroke-width="1"
+                        stroke-dasharray="2 3"
+                    >
+                        <line x1="836" y1="104" x2="836" y2="122"></line>
+                        <line x1="899" y1="104" x2="899" y2="122"></line>
+                        <line x1="946.4" y1="104" x2="946.4" y2="122"></line>
+                    </g>
+
+                    <path
+                        d="M693.6,150 L693.6,158 L978,158 L978,150"
+                        fill="none"
+                        stroke="var(--color-line-strong)"
+                        stroke-width="1"></path>
+                    <text x="835" y="176" class="s-label" text-anchor="middle">
+                        9 unmeasured commits · 3 runs to close
+                    </text>
+
+                    <circle
+                        cx="946.4"
+                        cy="96"
+                        r="6"
+                        fill="var(--color-accent)"
+                        stroke="var(--color-paper)"
+                        stroke-width="2.5"></circle>
+                    <text
+                        x="1010"
+                        y="130"
+                        class="s-label-accent"
+                        text-anchor="end">a3f8c1d</text
+                    >
+                </svg>
+
+                <p class="strip-key">
+                    <span><span class="swatch swatch-ink"></span>Scheduled</span
+                    >
+                    <span><span class="swatch swatch-warn"></span>Detected</span
+                    >
+                    <span
+                        ><span class="swatch swatch-accent"
+                        ></span>Bisected</span
+                    >
+                </p>
+
+                <p class="strip-coda">
+                    Wezel locates the commit where a measurement moved. It does
+                    not attribute a cause.
+                </p>
+            </div>
+        </section>
+
+        <!-- =========================================================
+         THE SERVER
+         ========================================================= -->
+        <section class="band chapter">
+            <div class="chapter-head">
+                <span class="label">The server</span>
+                <h2>Definition of &ldquo;good&rdquo; at your fingertips</h2>
+                <p class="standfirst">
+                    Wezel scenarios can be executed locally or via a daemon. Use
+                    the former when iterating on your build and the latter to
+                    keep tabs on the health of your codebase over time.
+                </p>
+            </div>
+
+            <div class="chapter-body with-margin-note">
+                <figure class="code-figure">
+                    <figcaption>Terminal</figcaption>
+                    <div class="terminal">
+                        <div>
+                            <span class="prompt">$</span>{" "}<span class="cmd"
+                                >wezel</span
+                            > serve
+                        </div>
+                        <div class="out">listening on 127.0.0.1:8080</div>
+                        <div class="out">store: ./wezel.db (sqlite)</div>
+                        <div class="gap"></div>
+                        <div>
+                            <span class="prompt">$</span>{" "}<span class="cmd"
+                                >wezel</span
+                            > exp run
+                        </div>
+                        <div class="out">
+                            release-build · 5 samples · mean 42.1s
+                        </div>
+                        <div class="out">reported to http://127.0.0.1:8080</div>
+                    </div>
+                </figure>
+
+                <!-- COPY SLOT: the two margin notes. -->
+                <div class="margin-note">
+                    <h3>Hosted</h3>
+                    <p>
+                        Runs reported to the hosted instance are read at{" "}
+                        <code class="tool">app.wezel.build</code>.
+                    </p>
+
+                    <h3>Self-hosted</h3>
+                    <p>
+                        <code class="tool">wezel serve</code> is the whole server.
+                        It keeps runs in a single SQLite file, which is also the backup.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+         CLOSING
+         ========================================================= -->
+        <section class="band chapter">
+            <div class="closing">
+                <div class="chapter-head">
+                    <span class="label">Where</span>
+                    <!-- COPY SLOT: h2 + standfirst. -->
+                    <h2>Open source, under active development</h2>
+                    <p class="standfirst">
+                        Apache-2.0. The CLI is a single binary; the quickstart
+                        wires a first scenario end to end.
+                    </p>
+                    <p class="closing-links">
+                        <a href="/docs/quickstart">Quickstart</a>
+                        <a href="https://github.com/wezel-build" rel="noopener"
+                            >GitHub</a
+                        >
+                        <a href="mailto:hi@wezel.build">hi@wezel.build</a>
+                    </p>
+                </div>
+
+                <figure class="closing-install">
+                    <figcaption class="label">Install</figcaption>
+                    <div class="row">
+                        <span class="prompt" aria-hidden="true">$</span>
+                        <code
+                            >curl -fsSL https://wezel.build/install.sh | sh</code
+                        >
+                    </div>
+                    <div class="row">
+                        <span class="prompt" aria-hidden="true">$</span>
+                        <code>cargo install wezel</code>
+                    </div>
+                </figure>
+            </div>
+        </section>
+    </main>
+
+    <SiteFooter />
+
+    <style>
+        /* ======================================================================
+       GEOMETRY — lifted from docs.css so the two surfaces share a sheet
+       ====================================================================== */
+        :root {
+            --rail: 87rem;
+            --margin: 4.75rem;
+            --measure: 44.5rem;
+            --header-h: 3.75rem;
+        }
+
+        /* Nothing floats. Ink doesn't cast shadows. (DOCS-DESIGN.md §3.4) */
+        .sheet * {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .sheet {
+            max-width: var(--rail);
+            margin-inline: auto;
+            font-size: 1.08rem;
+        }
+
+        .band {
+            padding-inline: var(--margin);
+        }
+
+        /* ======================================================================
+       TYPE — apparatus is mono, uppercase, tracked. Data is mono, plain.
+       ====================================================================== */
+        .label {
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--color-ink-faint);
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+            text-wrap: balance;
+        }
+
+        /* Headings are the body face set heavy and tight, not a change of
+           typeface — same rule as the docs (DOCS-DESIGN.md §4, "Two faces").
+           Instrument Serif belongs to the brand, so it stays in the wordmark
+           and nowhere else. Metrics match docs.css so a section head on this
+           page and one in the docs are the same object. */
+        h1,
+        h2 {
+            font-family: var(--font-sans);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+        }
+
+        /* The one emphasised word in the tagline. Accent is a signal on this
+           site, so it gets spent once above the fold and nowhere else. */
+        .accent {
+            color: var(--color-accent);
+        }
+
+        h3 {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 1.05rem;
+            letter-spacing: -0.012em;
+        }
+
+        .standfirst {
+            margin: 1.3rem 0 0;
+            max-width: 44ch;
+            font-size: 1.22rem;
+            line-height: 1.5;
+            color: var(--color-ink-soft);
+        }
+
+        p {
+            margin: 0;
+        }
+
+        /* ======================================================================
+       THE FOLD
+
+       The artifact, not a symbol. Five earlier heroes are in the history of
+       landing-mockup.html: a line chart, a bar plate and a readout were
+       dashboards in disguise; an oversized wordmark was brand furniture; a
+       chronometer, a pendulum and a spirit level were symbolism. What the tool
+       prints when a summary has moved needs no dramatising.
+       ====================================================================== */
+        .fold {
+            padding-block: 2.25rem clamp(2.5rem, 6vh, 4rem);
+        }
+
+        .fold-masthead {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid var(--color-line);
+        }
+
+        .fold-body {
+            display: grid;
+            grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+            gap: clamp(2rem, 5vw, 4rem);
+            align-items: center;
+            padding-block: clamp(2.5rem, 7vh, 4.5rem);
+        }
+
+        /* Larger than a docs page head, which tops out at 3.85rem — this is the
+           one heading on the site that is a hero — but the same weight and the
+           same tightness, so the discipline holds. */
+        .fold-body h1 {
+            font-size: clamp(2.8rem, 5vw, 4.6rem);
+            line-height: 0.94;
+            letter-spacing: -0.042em;
+        }
+
+        .fold-sub {
+            margin: 1.5rem 0 0;
+            max-width: 34ch;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: var(--color-ink-soft);
+        }
+
+        .fold-actions {
+            margin-top: 1.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.62rem 1.25rem;
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .btn-primary {
+            background: var(--color-ink);
+            color: var(--color-paper);
+            border: 1px solid var(--color-ink);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-ink-deep);
+        }
+
+        .btn-quiet {
+            border: 1px solid var(--color-line-strong);
+            color: var(--color-ink);
+        }
+
+        .btn-quiet:hover {
+            border-color: var(--color-ink-faint);
+        }
+
+        /* A footing for this column, built from the devices the page already
+           has — a hairline and a mono label — rather than a fourth framed box
+           competing with the terminal figure alongside it. */
+        .install {
+            margin-top: 1.9rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--color-line);
+        }
+
+        .install-line {
+            margin-top: 0.45rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.7rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .install-line .prompt {
+            color: var(--color-ink-faint);
+        }
+
+        /* ---- the run -------------------------------------------------------- */
+        .run {
+            margin: 0;
+            border: 1px solid var(--color-line-strong);
+            background: var(--color-surface);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.75;
+        }
+
+        .run > figcaption {
+            padding: 0.5rem 1.2rem;
+            background: var(--color-veil);
+            border-bottom: 1px solid var(--color-line);
+        }
+
+        .run-body {
+            padding: 1.15rem 1.2rem 1.25rem;
+        }
+
+        .run .p {
+            color: var(--color-ink-faint);
+        }
+
+        .run .bin {
+            color: var(--color-warn);
+        }
+
+        .run-meta {
+            color: var(--color-ink-faint);
+        }
+
+        .run-step {
+            margin-top: 1.05rem;
+        }
+
+        .run-samples {
+            color: var(--color-ink-soft);
+        }
+
+        .run-table {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto auto;
+            margin-top: 1.15rem;
+        }
+
+        /* Columns are separated by padding rather than grid gap, so the header rule
+       below runs continuous instead of breaking into five segments. */
+        .run-table > * {
+            padding: 0.16rem 0 0.16rem 1.4rem;
+        }
+
+        .run-table > *:nth-child(5n + 1) {
+            padding-left: 0;
+        }
+
+        .run-table .rh {
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+            color: var(--color-ink-faint);
+            border-bottom: 1px solid var(--color-line-strong);
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .run-table .n {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .run-table .up {
+            color: var(--color-warn);
+            font-weight: 500;
+        }
+
+        .run-table .flat {
+            color: var(--color-ink-faint);
+        }
+
+        .run-verdict {
+            margin-top: 1.15rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--color-line-strong);
+            color: var(--color-ink-soft);
+        }
+
+        .run-verdict .up {
+            color: var(--color-warn);
+        }
+
+        .run-next {
+            margin-top: 0.5rem;
+        }
+
+        .run-next .sub {
+            color: var(--color-accent-deep);
+        }
+
+        /* ======================================================================
+       CHAPTERS — space, not lines. One rule where the page turns.
+       ====================================================================== */
+        .chapter {
+            padding-block: clamp(3.5rem, 8vh, 6rem);
+        }
+
+        .fold + .chapter,
+        .chapter + .chapter {
+            border-top: 1px solid var(--color-line);
+        }
+
+        .chapter-head {
+            max-width: var(--measure);
+        }
+
+        .chapter-head .label {
+            display: block;
+            margin-bottom: 1.1rem;
+        }
+
+        .chapter-body {
+            margin-top: 2.6rem;
+        }
+
+        /* An artifact and the prose that reads it, side by side. */
+        .with-margin-note {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+            gap: clamp(2rem, 4vw, 3.5rem);
+            align-items: start;
+        }
+
+        .margin-note {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--color-ink-soft);
+        }
+
+        .margin-note h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .margin-note > * + h3 {
+            margin-top: 1.7rem;
+        }
+
+        /* ---- figures: a bounded object with a ruled head, not a tinted
+       rectangle. The tint is demoted to the caption strip, where it marks the
+       head as apparatus; the body sits on surface and the frame contains. --- */
+        .code-figure {
+            margin: 0;
+            border: 1px solid var(--color-line-strong);
+            background: var(--color-surface);
+        }
+
+        .code-figure > figcaption {
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--color-ink-faint);
+            padding: 0.5rem 1.2rem;
+            background: var(--color-veil);
+            border-bottom: 1px solid var(--color-line);
+        }
+
+        .code-figure pre {
+            margin: 0;
+            padding: 1.15rem 1.2rem 1.25rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.86rem;
+            line-height: 1.75;
+        }
+
+        /* Hand-mapped to match Shiki's css-variables theme in docs.css, so a TOML
+       block reads the same on both surfaces. */
+        .t-comment {
+            color: var(--color-ink-faint);
+            font-style: italic;
+        }
+        .t-string {
+            color: var(--color-good);
+        }
+        .t-key {
+            color: var(--color-ink);
+        }
+        .t-table {
+            color: var(--color-warn);
+        }
+        .t-num {
+            color: var(--color-accent-deep);
+        }
+        .t-punct {
+            color: var(--color-ink-faint);
+        }
+
+        .terminal {
+            padding: 1.15rem 1.2rem 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.86rem;
+            line-height: 1.8;
+        }
+
+        .terminal .prompt {
+            color: var(--color-ink-faint);
+        }
+
+        .terminal .cmd {
+            color: var(--color-warn);
+        }
+
+        .terminal .out {
+            color: var(--color-ink-soft);
+        }
+
+        .terminal .gap {
+            height: 0.6rem;
+        }
+
+        /* ---- tables: rules here separate data, so they stay ----------------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+            color: var(--color-ink-faint);
+            text-align: left;
+            padding: 0.45rem 1.2rem 0.45rem 0;
+            border-bottom: 1px solid var(--color-line-strong);
+        }
+
+        td {
+            padding: 0.62rem 1.2rem 0.62rem 0;
+            border-bottom: 1px solid var(--color-line);
+            vertical-align: baseline;
+        }
+
+        td.num {
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* warn means regressed and nothing else. */
+        td.delta-warn {
+            color: var(--color-warn);
+        }
+
+        td.delta-flat {
+            color: var(--color-ink-faint);
+        }
+
+        code.tool {
+            font-family: var(--font-mono);
+            font-size: 0.86em;
+            color: var(--color-accent-deep);
+        }
+
+        /* ---- the commit strip ----------------------------------------------- */
+        .strip {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        .s-tick {
+            stroke: var(--color-line-strong);
+            stroke-width: 1.5;
+        }
+
+        .s-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            fill: var(--color-ink-faint);
+        }
+
+        .s-label-accent {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            fill: var(--color-accent-deep);
+        }
+
+        .s-label-warn {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            fill: var(--color-warn);
+        }
+
+        .s-caption {
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            fill: var(--color-ink-faint);
+        }
+
+        /* A key, not three cards: one row of swatch + word. */
+        .strip-key {
+            margin-top: 1.8rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--color-ink-faint);
+        }
+
+        .strip-key > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .swatch {
+            width: 0.55rem;
+            height: 0.55rem;
+        }
+
+        .swatch-ink {
+            background: var(--color-ink);
+        }
+
+        .swatch-warn {
+            background: var(--color-warn);
+        }
+
+        .swatch-accent {
+            background: var(--color-accent);
+        }
+
+        .strip-coda {
+            margin-top: 2.4rem;
+            max-width: 46ch;
+            font-size: 1.05rem;
+            line-height: 1.55;
+            color: var(--color-ink-faint);
+        }
+
+        /* ---- closing -------------------------------------------------------- */
+        .closing {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: clamp(2rem, 5vw, 4.5rem);
+            align-items: end;
+        }
+
+        .closing-install {
+            margin: 0;
+            border: 1px solid var(--color-line-strong);
+            background: var(--color-surface);
+        }
+
+        .closing-install figcaption {
+            padding: 0.5rem 1.2rem;
+            background: var(--color-veil);
+            border-bottom: 1px solid var(--color-line);
+        }
+
+        .closing-install .row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.7rem;
+            padding: 0.85rem 1.2rem;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+        }
+
+        .closing-install .row + .row {
+            border-top: 1px solid var(--color-line);
+        }
+
+        .closing-install .prompt {
+            color: var(--color-ink-faint);
+        }
+
+        .closing-links {
+            margin-top: 1.6rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.98rem;
+        }
+
+        .closing-links a {
+            color: var(--color-accent);
+            text-decoration-color: color-mix(
+                in srgb,
+                var(--color-accent) 35%,
+                transparent
+            );
+            text-underline-offset: 0.2em;
+        }
+
+        .closing-links a:hover {
+            color: var(--color-accent-deep);
+            text-decoration-color: currentColor;
+        }
+
+        /* ======================================================================
+       NARROW
+       ====================================================================== */
+        @media (max-width: 78rem) {
+            :root {
+                --margin: 3rem;
+            }
+
+            .fold-body,
+            .with-margin-note,
+            .closing {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 48rem) {
+            :root {
+                --margin: 1.4rem;
+            }
+
+            /* Same narrow steps the docs take. */
+            .fold-body h1 {
+                font-size: clamp(2.1rem, 10vw, 2.75rem);
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .install-line {
+                font-size: 0.78rem;
+            }
+
+            .run {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </Base>

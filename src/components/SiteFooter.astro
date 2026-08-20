@@ -1,0 +1,78 @@
+---
+import SocialLinks from "./SocialLinks.astro";
+
+// Shared by the landing and the blog. The header's destinations minus the
+// Install CLI call, plus the contact address — a footer is where you go when you
+// didn't find what you wanted, not where you get sold to.
+//
+// The {" "} between links is load-bearing: Astro trims the newline before a tag
+// to nothing, so flex `gap` would otherwise be the only thing separating these
+// words. Flex ignores whitespace-only text nodes, so it costs nothing here.
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>© 2026 Wezel · Open source under Apache-2.0</span>
+
+    <nav aria-label="Footer">
+      <a href="/docs">Docs</a>{" "}
+      <a href="/blog">Blog</a>{" "}
+      <a href="https://status.wezel.build" rel="noopener">Status</a>{" "}
+      <a href="mailto:hi@wezel.build">hi@wezel.build</a>{" "}
+      <SocialLinks />
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-line);
+    padding-block: 2.5rem 3.5rem;
+  }
+
+  .footer-inner {
+    max-width: 87rem;
+    margin-inline: auto;
+    padding-inline: 4.75rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+
+  .footer-inner nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .footer-inner a {
+    text-decoration: none;
+    color: var(--color-ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .footer-inner a:hover {
+    color: var(--color-ink);
+  }
+
+  .site-footer :global(*) {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  @media (max-width: 78rem) {
+    .footer-inner {
+      padding-inline: 3rem;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .footer-inner {
+      padding-inline: 1.4rem;
+    }
+  }
+</style>

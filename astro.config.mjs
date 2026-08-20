@@ -1,78 +1,67 @@
+// @ts-check
 import { defineConfig } from "astro/config";
-import starlight from "@astrojs/starlight";
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import pagefind from "astro-pagefind";
+import tailwindcss from "@tailwindcss/vite";
+import { remarkAlert } from "remark-github-blockquote-alert";
 
-export default defineConfig({
-  site: process.env.SITE_URL ?? "https://wezel.build",
-  base: process.env.SITE_BASE ?? "/",
+/**
+ * Lifts a code fence's `title="…"` / `frame="terminal"` into a `<figure>` with a
+ * caption, so the filename can be set as a caption rather than as chrome.
+ *
+ * This replaces the one Expressive Code feature the docs actually used. Plain
+ * Shiki is otherwise preferred, because `theme: "css-variables"` lets code
+ * inherit the Wezel palette instead of importing an editor theme.
+ *
+ * @type {() => import("shiki").ShikiTransformer}
+ */
+const codeFigure = () => ({
+  name: "wezel:code-figure",
+  root(root) {
+    const raw = String(this.options.meta?.__raw ?? "");
+    const title = /title="([^"]+)"/.exec(raw)?.[1];
+    const caption = title ?? (/frame="terminal"/.test(raw) ? "Terminal" : null);
+    if (caption === null) return;
 
-  // /docs has no landing page of its own — send it to the introduction.
-  redirects: {
-    "/docs": "/docs/introduction",
-  },
-
-  // Code blocks in the hand-authored landing body (src/home/index.mdx).
-  // Starlight manages its own theming for docs separately.
-  markdown: {
-    shikiConfig: { theme: "vitesse-dark", wrap: false },
-  },
-
-  integrations: [
-    starlight({
-      title: "Wezel Docs",
-      description:
-        "Build observability for teams that care about developer experience.",
-
-      social: [
+    return {
+      type: "root",
+      children: [
         {
-          icon: "github",
-          label: "GitHub",
-          href: "https://github.com/wezel-build/wezel",
-        },
-      ],
-      sidebar: [
-        {
-          label: "Getting Started",
-          items: [
-            { label: "Introduction", link: "/docs/introduction" },
-            { label: "Quick Start", link: "/docs/quickstart" },
+          type: "element",
+          tagName: "figure",
+          properties: { className: ["code-figure"] },
+          children: [
+            {
+              type: "element",
+              tagName: "figcaption",
+              properties: {},
+              children: [{ type: "text", value: caption }],
+            },
+            ...root.children,
           ],
         },
-        { label: "Concepts", autogenerate: { directory: "docs/concepts" } },
-        {
-          label: "Self-Hosting",
-          autogenerate: { directory: "docs/self-hosting" },
-        },
-        {
-          label: "Forager",
-          autogenerate: { directory: "docs/forager" },
-        },
-        {
-          label: "Developing Wezel",
-          autogenerate: { directory: "docs/developing" },
-        },
       ],
-      customCss: ["./src/styles/starlight.css"],
-      head: [
-        // Light-only: pin the theme so expressive-code and everything else
-        // render light, regardless of OS preference or any stored value.
-        {
-          tag: 'script',
-          content:
-            "try{localStorage.setItem('starlight-theme','light')}catch(e){}document.documentElement.dataset.theme='light';",
-        },
-        {
-          tag: 'script',
-          attrs: {
-            src: 'https://cloud.umami.is/script.js',
-            'data-website-id': '83b509e2-8cc4-430d-a0aa-876262ff4082',
-            defer: true,
-          },
-        },
-      ],
-    }),
-    // mdx() must come after starlight() — Starlight registers
-    // expressive-code, which has to be set up before MDX.
-    mdx(),
-  ],
+    };
+  },
+});
+
+// https://astro.build/config
+export default defineConfig({
+  site: "https://wezel.build",
+  // Pagefind indexes the built HTML after the build and serves /pagefind/ in
+  // dev from the last build output — so `astro dev` has no index until
+  // `astro build` has run at least once.
+  integrations: [mdx(), sitemap(), pagefind()],
+  markdown: {
+    remarkPlugins: [remarkAlert],
+    shikiConfig: {
+      // Inherits the palette from docs.css rather than shipping its own.
+      theme: "css-variables",
+      transformers: [codeFigure()],
+    },
+  },
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

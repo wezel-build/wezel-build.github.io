@@ -1,0 +1,161 @@
+---
+// Colour-scheme control. Three states, cycled: auto → light → dark → auto.
+//
+// `auto` is the absence of a `data-theme` attribute, so the media query in
+// global.css takes over; the two explicit states set the attribute and persist
+// under `wezel-theme`. The attribute is the one anthill switches on, so the two
+// codebases agree on mechanism as well as on palette.
+//
+// Icons, now that the header carries brand marks and iconography is no longer
+// foreign to the page. All three are drawn here rather than imported: they are
+// circles and straight lines on a 24 grid, and the sun's rays are placed on a
+// computed 45° ring rather than by eye. `auto` is a half-filled disc — the
+// design's own vocabulary — rather than a picture of a monitor, which would be
+// a bigger metaphor leap than "half one, half the other".
+//
+// Icon-only controls have to say what they are: the accessible name and the
+// native tooltip both carry the current state, and a visually hidden text node
+// keeps it announced. All three icons ship and CSS shows one, so switching state
+// touches an attribute rather than rebuilding DOM.
+//
+// Base.astro carries the inline script that applies the stored choice before
+// first paint. Without it this button still works, but every navigation would
+// flash the OS scheme first.
+---
+
+<button
+  class="theme-toggle"
+  type="button"
+  data-theme-toggle
+  data-mode="auto"
+  aria-label="Colour scheme: auto"
+  title="Colour scheme: auto"
+>
+  <span class="visually-hidden" data-theme-label>Auto</span>
+
+  <!-- auto: half light, half dark -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="auto" aria-hidden="true">
+    <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
+    <path d="M12 3.8 A8.2 8.2 0 0 0 12 20.2 Z" fill="currentColor"></path>
+  </svg>
+
+  <!-- light -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="light" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.4" fill="currentColor"></circle>
+    <g stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <line x1="18.60" y1="12.00" x2="21.40" y2="12.00"></line>
+      <line x1="16.67" y1="16.67" x2="18.65" y2="18.65"></line>
+      <line x1="12.00" y1="18.60" x2="12.00" y2="21.40"></line>
+      <line x1="7.33" y1="16.67" x2="5.35" y2="18.65"></line>
+      <line x1="5.40" y1="12.00" x2="2.60" y2="12.00"></line>
+      <line x1="7.33" y1="7.33" x2="5.35" y2="5.35"></line>
+      <line x1="12.00" y1="5.40" x2="12.00" y2="2.60"></line>
+      <line x1="16.67" y1="7.33" x2="18.65" y2="5.35"></line>
+    </g>
+  </svg>
+
+  <!-- dark -->
+  <svg viewBox="0 0 24 24" width="17" height="17" data-icon="dark" aria-hidden="true">
+    <path
+      d="M20.7 13.2A8.6 8.6 0 1 1 10.8 3.3 6.9 6.9 0 0 0 20.7 13.2Z"
+      fill="currentColor"
+    ></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--color-ink-soft);
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-ink);
+  }
+
+  .theme-toggle svg {
+    display: none;
+  }
+
+  /* One attribute selects the icon, so changing state never rebuilds DOM. */
+  .theme-toggle[data-mode="auto"] svg[data-icon="auto"],
+  .theme-toggle[data-mode="light"] svg[data-icon="light"],
+  .theme-toggle[data-mode="dark"] svg[data-icon="dark"] {
+    display: block;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const KEY = "wezel-theme";
+  const ORDER = ["auto", "light", "dark"] as const;
+  type Mode = (typeof ORDER)[number];
+
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const label = document.querySelector<HTMLElement>("[data-theme-label]");
+
+  if (button && label) {
+    function stored(): Mode {
+      try {
+        const v = localStorage.getItem(KEY);
+        return v === "light" || v === "dark" ? v : "auto";
+      } catch {
+        return "auto";
+      }
+    }
+
+    function apply(mode: Mode) {
+      // Auto is the absence of the attribute, which hands control back to the
+      // prefers-color-scheme block in global.css.
+      if (mode === "auto") {
+        delete document.documentElement.dataset.theme;
+      } else {
+        document.documentElement.dataset.theme = mode;
+      }
+
+      try {
+        if (mode === "auto") localStorage.removeItem(KEY);
+        else localStorage.setItem(KEY, mode);
+      } catch {
+        // Private browsing, or storage denied. The choice still applies for
+        // this page; it just won't survive a navigation.
+      }
+
+      const word = mode[0].toUpperCase() + mode.slice(1);
+      button.dataset.mode = mode;
+      label.textContent = word;
+      // An icon-only control has to name itself, and the tooltip is the only
+      // affordance a mouse user gets.
+      button.setAttribute("aria-label", `Colour scheme: ${mode}`);
+      button.setAttribute("title", `Colour scheme: ${mode}`);
+    }
+
+    apply(stored());
+
+    button.addEventListener("click", () => {
+      const next = ORDER[(ORDER.indexOf(stored()) + 1) % ORDER.length];
+      apply(next);
+    });
+
+    // Another tab changed the preference.
+    addEventListener("storage", (e) => {
+      if (e.key === KEY) apply(stored());
+    });
+  }
+</script>

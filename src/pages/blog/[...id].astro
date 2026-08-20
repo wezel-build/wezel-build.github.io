@@ -1,0 +1,244 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+
+import "../../styles/docs.css";
+import Base from "../../layouts/Base.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import { fetchAuthors, type Author } from "../../lib/authors";
+
+// A post.
+//
+// The body reuses `.docs-prose` from docs.css rather than growing a second
+// prose stylesheet. That class is 200 lines of settled decisions — measure,
+// leading, framed code figures, callouts, tables — and a blog post is the same
+// kind of object as a docs page: a column of text on a sheet. The name is a
+// docs name doing double duty, which is the one wart; the alternative is two
+// stylesheets that drift.
+//
+// Drafts are excluded from getStaticPaths, so they are not built at all.
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return Promise.all(
+    posts.map(async (post) => ({
+      params: { id: post.id },
+      props: { post, authors: await fetchAuthors(post.data.author) },
+    })),
+  );
+};
+
+interface Props {
+  post: Awaited<ReturnType<typeof getCollection<"blog">>>[number];
+  authors: Author[];
+}
+
+const { post, authors } = Astro.props as Props;
+const { Content } = await render(post);
+
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<Base
+  title={`${post.data.title} — Wezel`}
+  description={post.data.description}
+  ogType="article"
+  published={post.data.date.toISOString()}
+>
+  <SiteHeader />
+
+  <main class="post-sheet">
+    <article>
+      <header class="post-head">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/blog">Blog</a>
+        </nav>
+
+        <h1>{post.data.title}</h1>
+        <p class="standfirst">{post.data.description}</p>
+
+        <div class="byline">
+          <time datetime={post.data.date.toISOString()} class="label">
+            {dateFormat.format(post.data.date)}
+          </time>
+
+          <ul class="authors">
+            {
+              authors.map((author) => (
+                <li>
+                  <a href={author.htmlUrl} rel="noopener">
+                    {author.avatar && (
+                      <img
+                        src={author.avatar}
+                        alt=""
+                        width="22"
+                        height="22"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                    <span>{author.name}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </header>
+
+      <div class="docs-prose">
+        <Content />
+      </div>
+    </article>
+
+    <p class="back">
+      <a href="/blog">&larr; All posts</a>
+    </p>
+  </main>
+
+  <SiteFooter />
+
+  <style>
+    .post-sheet {
+      max-width: 87rem;
+      margin-inline: auto;
+    }
+
+    .post-sheet :global(*) {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .label,
+    .crumb {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-ink-faint);
+    }
+
+    .post-head {
+      max-width: 54rem;
+      padding: 3.4rem 4.75rem 0;
+    }
+
+    .crumb {
+      margin-bottom: 1.1rem;
+    }
+
+    .crumb a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .crumb a:hover {
+      color: var(--color-ink);
+    }
+
+    .post-head h1 {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: clamp(2.75rem, 4.5vw, 3.85rem);
+      letter-spacing: -0.035em;
+      line-height: 0.98;
+      text-wrap: balance;
+    }
+
+    .post-head .standfirst {
+      max-width: 44ch;
+      margin: 1.4rem 0 0;
+      font-size: 1.22rem;
+      line-height: 1.5;
+      color: var(--color-ink-soft);
+    }
+
+    /* The byline is data about the piece, so it gets a rule. */
+    .byline {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.9rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--color-line);
+    }
+
+    .authors {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .authors a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.92rem;
+      color: var(--color-ink-soft);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .authors a:hover {
+      color: var(--color-ink);
+    }
+
+    .authors img {
+      display: block;
+      /* A face is the one place on this site where a circle earns itself. */
+      border-radius: 50% !important;
+    }
+
+    .back {
+      max-width: 54rem;
+      padding: 0 4.75rem 4rem;
+      margin: 0;
+    }
+
+    .back a {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-accent);
+      text-decoration-color: color-mix(
+        in srgb,
+        var(--color-accent) 35%,
+        transparent
+      );
+      text-underline-offset: 0.2em;
+    }
+
+    .back a:hover {
+      color: var(--color-accent-deep);
+      text-decoration-color: currentColor;
+    }
+
+    @media (max-width: 78rem) {
+      .post-head,
+      .back {
+        padding-inline: 3rem;
+      }
+    }
+
+    @media (max-width: 48rem) {
+      .post-head,
+      .back {
+        padding-inline: 1.4rem;
+      }
+
+      .post-head h1 {
+        font-size: clamp(2.1rem, 10vw, 2.75rem);
+      }
+    }
+  </style>
+</Base>

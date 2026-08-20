@@ -1,0 +1,56 @@
+---
+// The Wezel wordmark. Shared by the landing header and the docs header so the
+// two chromes can't drift apart.
+//
+// The header mark is inline rather than an <img> so it can inherit the live
+// theme tokens. The favicon is maintained as a separate icon asset because it
+// must render without CSS variable access.
+interface Props {
+  href?: string;
+}
+
+const { href = "/" } = Astro.props;
+---
+
+<a href={href} class="brand" aria-label="Wezel home">
+  <svg
+    class="brand-mark"
+    width="28"
+    height="28"
+    viewBox="0 0 32 32"
+    aria-hidden="true"
+  >
+    <rect width="32" height="32" rx="7" fill="var(--color-accent)"></rect>
+    <g
+      fill="none"
+      stroke="var(--color-paper)"
+      stroke-width="3.35"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M8.3 10.1 13.8 21.9 19.2 10.1"></path>
+      <path d="M20.3 21.9 25.7 10.1"></path>
+    </g>
+  </svg>
+  <span class="brand-name">wezel</span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    flex: none;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    line-height: 1;
+    color: var(--color-ink);
+  }
+</style>
