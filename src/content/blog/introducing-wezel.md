@@ -40,14 +40,14 @@ summaries = [
 ```
 
 Wezel is supposed to run periodically - not on each commit. The assumption is that build regressions happen relatively rarely; it should be okay to check up on your build's health once a day or so. 
-When Wezel detects a regression in a summary marked `bisect = true`, it triggers a bisection: it runs the experiment on every commit in between the current and previous run, pinpointing which change introduced the regression. When a regression does happen, you don't need to do the spelunking yourself — the data is there, waiting for you to tackle.
+When Wezel detects a regression in a summary marked `bisect = true`, it triggers a bisection: it runs the experiment on every commit in between the current and previous run, pinpointing which change introduced the regression. When a regression does happen, you don't need to do the spelunking yourself - the data is there, waiting for you to tackle.
 
 ## Extensible by design
-Notice the tool field in every step above? Those tools — exec, filesize, all of them —
+Notice the tool field in every step above? Those tools - exec, filesize, all of them -
 are not part of Wezel. They are separate binaries that Wezel invokes on your behalf.
 [exec is one such binary](https://github.com/wezel-build/forager_exec). [So is filesize](https://github.com/wezel-build/forager_filesize/). Each one does what it says on the tin and hands the result back.
 
-This is deliberate. I'm mostly interested in Rust build times myself — but Wezel
+This is deliberate. I'm mostly interested in Rust build times myself - but Wezel
 shouldn't be. There is no central registry, no plugin marketplace, no forge to gatekeep
 what counts as a measurement. If you care about something I don't, ship a tool for it.
 You don't need anyone's permission, mine included.

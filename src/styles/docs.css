@@ -11,7 +11,7 @@
       callout's left edge, and the frame and caption rule of a code figure.
       Nothing else in the page furniture is ruled except the sidebar divider.
     - Nothing floats. Radius 0, no shadows.
-    - Two faces. Inter carries voice and body both — headings are the same face
+    - Two faces. Inter carries voice and body both - headings are the same face
       set heavy and tight, not a change of typeface. Mono is the apparatus and
       the data. Instrument Serif belongs to the brand, not to the docs.
 */
@@ -59,7 +59,7 @@
 }
 
 /* ==========================================================================
-   HEADER — full bleed, above the sheet, no bottom rule
+   HEADER - full bleed, above the sheet, no bottom rule
    ========================================================================== */
 .docs-header {
   position: sticky;
@@ -96,7 +96,7 @@
 }
 
 /* ==========================================================================
-   THE SHEET — bounded and centred. No outline: the centring is the edge.
+   THE SHEET - bounded and centred. No outline: the centring is the edge.
    ========================================================================== */
 .docs-sheet {
   max-width: var(--docs-rail);
@@ -126,7 +126,7 @@
 }
 
 /* ==========================================================================
-   SIDEBAR + TOC — apparatus, set in mono
+   SIDEBAR + TOC - apparatus, set in mono
    ========================================================================== */
 .nav-group + .nav-group {
   margin-top: 2.1rem;
@@ -245,7 +245,7 @@
 }
 
 /* ==========================================================================
-   PROSE — the text block, with margins you can see
+   PROSE - the text block, with margins you can see
    ========================================================================== */
 .docs-prose {
   max-width: var(--docs-measure);
@@ -501,7 +501,7 @@
 }
 
 /* ==========================================================================
-   PAGER — two cells divided by a rule, not two cards
+   PAGER - two cells divided by a rule, not two cards
    ========================================================================== */
 .docs-pager {
   display: grid;
@@ -547,7 +547,7 @@
 }
 
 /* ==========================================================================
-   NARROW — the TOC goes first, then the sidebar becomes a drawer
+   NARROW - the TOC goes first, then the sidebar becomes a drawer
    ========================================================================== */
 @media (max-width: 78rem) {
   .docs-sheet,

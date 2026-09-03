@@ -3,7 +3,7 @@ title: CLI
 description: Wezel command reference.
 ---
 
-<!-- COPY SLOT: standfirst — the shape of the CLI. -->
+<!-- COPY SLOT: standfirst - the shape of the CLI. -->
 
 ## Commands
 

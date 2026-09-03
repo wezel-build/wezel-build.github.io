@@ -3,7 +3,7 @@ title: Observations
 description: What a single recorded measurement contains.
 ---
 
-<!-- COPY SLOT: standfirst — what an observation is. -->
+<!-- COPY SLOT: standfirst - what an observation is. -->
 
 ## What gets recorded
 

@@ -8,7 +8,7 @@ import { getCollection } from "astro:content";
  * link, a date and a description per post, and a dependency for thirty lines of
  * XML is a dependency to keep updated. Same call as llms.txt.
  *
- * Descriptions only, not full post bodies — rendering Markdown to
+ * Descriptions only, not full post bodies - rendering Markdown to
  * feed-safe HTML is where this would stop being thirty lines.
  */
 

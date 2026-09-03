@@ -36,7 +36,7 @@ get() {
 
 # A token (exported by CI as GITHUB_TOKEN / GH_TOKEN) lifts the GitHub API limit
 # from 60 req/hr per IP. Shared CI runner IPs routinely exhaust the anonymous
-# quota — the usual cause of an intermittent HTTP 403 on the release lookup.
+# quota - the usual cause of an intermittent HTTP 403 on the release lookup.
 TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
 
 releases() {

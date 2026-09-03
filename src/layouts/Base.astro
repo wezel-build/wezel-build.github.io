@@ -22,7 +22,7 @@ const {
 // twitter:card entirely and falls back to og:image, hence one card definition
 // rather than two.
 //
-// Astro.site comes from `site` in astro.config.mjs, so these are absolute — a
+// Astro.site comes from `site` in astro.config.mjs, so these are absolute - a
 // relative og:image is silently dropped by most unfurlers.
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL("/og.png", Astro.site);
@@ -61,7 +61,7 @@ const ogImage = new URL("/og.png", Astro.site);
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Wezel — your build, always at its best"
+      content="Wezel - your build, always at its best"
     />
 
     {/*

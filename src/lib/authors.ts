@@ -11,7 +11,7 @@ export type Author = {
  * This is a network call during `astro build`, which means the build can fail
  * for reasons that have nothing to do with the site: an unauthenticated GitHub
  * API is rate-limited to 60 requests an hour per IP, and CI shares egress. So a
- * failure degrades instead of throwing — the post keeps its byline and profile
+ * failure degrades instead of throwing - the post keeps its byline and profile
  * link, both of which are derivable from the login, and loses only the avatar.
  *
  * Results are cached per login for the lifetime of the build, so N posts by the

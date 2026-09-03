@@ -11,8 +11,8 @@ import manifestSource from "../content/docs/navigation.yml?raw";
  * structure. This module parses it, validates it against the pages that
  * actually exist, and resolves it into a tree with hrefs.
  *
- * Validation runs during the static build — every page calls `getNavigation()`
- * — so a sidebar that disagrees with the content is a build failure rather than
+ * Validation runs during the static build - every page calls `getNavigation()`
+ * - so a sidebar that disagrees with the content is a build failure rather than
  * a page nobody can reach.
  */
 
@@ -97,8 +97,8 @@ export const DOCS_BASE = "/docs";
 /**
  * The one place that maps a page id onto a URL.
  *
- * Ids are collection entry ids — paths under `src/content/docs/` without the
- * extension — so `index` is the docs landing and `concepts/regressions` is a
+ * Ids are collection entry ids - paths under `src/content/docs/` without the
+ * extension - so `index` is the docs landing and `concepts/regressions` is a
  * page beneath it.
  */
 export function hrefForId(id: string): string {
@@ -109,7 +109,7 @@ export function hrefForId(id: string): string {
 /**
  * Resolves the manifest against the pages that exist.
  *
- * Throws — failing the build — when the manifest references a page that does
+ * Throws - failing the build - when the manifest references a page that does
  * not exist, lists a page more than once, or omits a page entirely. The
  * sidebar therefore cannot silently drift from the content: adding a Markdown
  * file and forgetting to link it is a build error, not an invisible page.

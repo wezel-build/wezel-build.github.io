@@ -50,7 +50,7 @@ const codeFigure = () => ({
 export default defineConfig({
   site: "https://wezel.build",
   // Pagefind indexes the built HTML after the build and serves /pagefind/ in
-  // dev from the last build output — so `astro dev` has no index until
+  // dev from the last build output - so `astro dev` has no index until
   // `astro build` has run at least once.
   integrations: [mdx(), sitemap(), pagefind()],
   markdown: {
