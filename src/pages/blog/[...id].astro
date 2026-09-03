@@ -11,8 +11,8 @@ import { fetchAuthors, type Author } from "../../lib/authors";
 // A post.
 //
 // The body reuses `.docs-prose` from docs.css rather than growing a second
-// prose stylesheet. That class is 200 lines of settled decisions — measure,
-// leading, framed code figures, callouts, tables — and a blog post is the same
+// prose stylesheet. That class is 200 lines of settled decisions - measure,
+// leading, framed code figures, callouts, tables - and a blog post is the same
 // kind of object as a docs page: a column of text on a sheet. The name is a
 // docs name doing double duty, which is the one wart; the alternative is two
 // stylesheets that drift.
@@ -45,7 +45,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 ---
 
 <Base
-  title={`${post.data.title} — Wezel`}
+  title={`${post.data.title} - Wezel`}
   description={post.data.description}
   ogType="article"
   published={post.data.date.toISOString()}

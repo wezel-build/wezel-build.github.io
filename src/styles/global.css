@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 /*
-  Wezel design tokens — warm, confident, two schemes.
+  Wezel design tokens - warm, confident, two schemes.
 
   Aesthetic direction (swappable): humanist serif display + clean grotesk body.
   The mood we're after: relief + agency. Calm paper, generous space, one warm
   accent.
 
   Light values are floored at 4.5:1 against both the page and the caption strip
-  the colour can land on — the caption strip is the binding case, being darker
+  the colour can land on - the caption strip is the binding case, being darker
   than the page. ink-faint and accent were previously 3.14:1 and 4.31:1, which
   is too thin for a 0.66rem tracked label and for body links.
 
@@ -20,31 +20,31 @@
   accent / warn / good below). Change a value here and change it there.
 
   Dark is not an inversion. Warm paper inverted is mud, so the dark scheme is a
-  warm near-black with its own neutrals; only the relationships are preserved —
+  warm near-black with its own neutrals; only the relationships are preserved -
   surface is a step off paper, veil is a step further, and both stay warm.
 */
 @theme {
   /* surfaces */
-  --color-paper: #fbfaf6; /* page background — warm off-white */
+  --color-paper: #fbfaf6; /* page background - warm off-white */
   --color-surface: #ffffff; /* cards / raised panels */
   --color-veil: #f4f1ea; /* subtle fills, code wells */
 
   /* ink */
   --color-ink: #1c1b18; /* primary text */
   --color-ink-soft: #57544c; /* secondary text */
-  --color-ink-faint: #716e65; /* tertiary / captions — 4.5:1 on veil */
+  --color-ink-faint: #716e65; /* tertiary / captions - 4.5:1 on veil */
   --color-ink-deep: #000000; /* pressed/hover past ink; inverts in dark */
 
   /* lines */
   --color-line: #e7e3d8; /* hairline borders */
   --color-line-strong: #d8d3c5;
 
-  /* accent — warm terracotta, used sparingly */
+  /* accent - warm terracotta, used sparingly */
   --color-accent: #b85229;
   --color-accent-deep: #a8431d;
   --color-accent-wash: #f6e7df;
 
-  /* receipt signal colors — regression vs recovery */
+  /* receipt signal colors - regression vs recovery */
   --color-warn: #c2410c; /* the regression (slower) */
   --color-warn-wash: #f7e3d8;
   --color-good: #2f7d57; /* the recovery (faster) */
@@ -73,7 +73,7 @@
   the stored choice before first paint, so there is no flash of the wrong theme.
 
   The values live once, in --d-*. Only the mapping is written twice: for an
-  explicit choice, and — for readers with no JavaScript — for an OS preference.
+  explicit choice, and - for readers with no JavaScript - for an OS preference.
   Colours cannot drift between the two; at worst a mapping line goes missing.
 
   Every value clears 4.5:1 against both the page and the caption strip it can

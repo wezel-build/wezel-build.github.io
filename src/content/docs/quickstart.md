@@ -3,7 +3,7 @@ title: Quickstart
 description: A first tracked scenario, from config file to first reported run.
 ---
 
-<!-- COPY SLOT: standfirst — what the reader has at the end of this page. -->
+<!-- COPY SLOT: standfirst - what the reader has at the end of this page. -->
 
 ## Define an experiment
 
@@ -43,5 +43,5 @@ One run produces one outcome, which can be summarised more than one way:
 
 ## Next
 
-- [Scenarios](/docs/tracking/scenarios) — choosing what to measure.
-- [Continuous integration](/docs/tracking/continuous-integration) — running this on every push.
+- [Scenarios](/docs/tracking/scenarios) - choosing what to measure.
+- [Continuous integration](/docs/tracking/continuous-integration) - running this on every push.

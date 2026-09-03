@@ -5,7 +5,7 @@
 #
 # Every page under this directory must be listed exactly once. The build fails
 # if a page is missing from this file, listed twice, or listed here without a
-# matching file — see src/lib/docs-navigation.ts.
+# matching file - see src/lib/docs-navigation.ts.
 #
 # `id` is the collection entry id: the path relative to src/content/docs/
 # without the .md extension. `index` is the /docs landing page.

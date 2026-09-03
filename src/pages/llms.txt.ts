@@ -4,7 +4,7 @@ import { getCollection } from "astro:content";
 import { getNavigation, flattenNavigation } from "../lib/docs-navigation.ts";
 
 /*
- * /llms.txt — https://llmstxt.org
+ * /llms.txt - https://llmstxt.org
  *
  * Generated from `navigation.yml` rather than hand-written, for the same reason
  * the sidebar is: the manifest is the single source of truth for docs structure,
@@ -40,7 +40,7 @@ export const GET: APIRoute = async ({ site }) => {
     "does not attribute a cause.",
     "",
     "Runs are stored in SQLite and served by the same binary that records them.",
-    "Apache-2.0. Early development — not yet ready for production.",
+    "Apache-2.0. Early development - not yet ready for production.",
     "",
     "## Docs",
     "",

@@ -4,7 +4,7 @@ import { z } from "astro/zod";
 
 /*
  * Two fields, deliberately. Structure lives in navigation.yml, not in
- * frontmatter, so the Markdown stays portable — see DOCS-DESIGN.md.
+ * frontmatter, so the Markdown stays portable - see DOCS-DESIGN.md.
  */
 const docs = defineCollection({
   loader: glob({ base: "./src/content/docs", pattern: "**/*.md" }),

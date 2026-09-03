@@ -1,9 +1,9 @@
 ---
 title: Experiments
-description: The unit Wezel measures — steps, tools, and outcomes.
+description: The unit Wezel measures - steps, tools, and outcomes.
 ---
 
-<!-- COPY SLOT: standfirst — define an experiment in one or two sentences. -->
+<!-- COPY SLOT: standfirst - define an experiment in one or two sentences. -->
 
 ## Steps and tools
 
@@ -23,4 +23,4 @@ the name is how the step is referred to afterwards.
 
 ## Outcomes and summaries
 
-<!-- COPY SLOT: one outcome, multiple summaries — why that separation exists. -->
+<!-- COPY SLOT: one outcome, multiple summaries - why that separation exists. -->

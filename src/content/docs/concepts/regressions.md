@@ -3,7 +3,7 @@ title: Regressions
 description: How Wezel separates drift worth reading from ordinary noise.
 ---
 
-<!-- COPY SLOT: standfirst — what makes a change a regression rather than noise. -->
+<!-- COPY SLOT: standfirst - what makes a change a regression rather than noise. -->
 
 ## Baselines
 

@@ -3,7 +3,7 @@ title: Installation
 description: Getting the Wezel CLI onto a development machine or CI runner.
 ---
 
-<!-- COPY SLOT: standfirst — what the install produces (single binary, etc.). -->
+<!-- COPY SLOT: standfirst - what the install produces (single binary, etc.). -->
 
 The install script fetches a single binary and places it on `PATH`.
 
