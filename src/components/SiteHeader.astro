@@ -1,24 +1,23 @@
 ---
 import Brand from "./Brand.astro";
-import SiteNav from "./SiteNav.astro";
-
-// The blog shares site destinations with docs, but follows the homepage entry path.
 ---
 
 <header class="site-header">
   <div class="header-inner">
     <Brand href="/" />
-    <SiteNav action={{ href: "/docs/quickstart", label: "Get started" }} />
+    <nav aria-label="Site">
+      <a href="/docs">Docs</a>{" "}
+      <a href="/blog" aria-current="page">Blog</a>
+    </nav>
   </div>
 </header>
 
 <style>
   .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--color-paper);
     flex-shrink: 0;
+    width: min(100%, var(--site-width));
+    margin-inline: auto;
+    padding-inline: var(--site-gutter);
   }
 
   .header-inner {
@@ -26,10 +25,9 @@ import SiteNav from "./SiteNav.astro";
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    min-height: 4.5rem;
-    max-width: var(--blog-width);
-    margin-inline: auto;
-    padding-inline: var(--blog-gutter);
+    min-height: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-line);
   }
 
   .site-header :global(*) {
@@ -37,46 +35,29 @@ import SiteNav from "./SiteNav.astro";
     box-shadow: none;
   }
 
-  .site-header :global(.header-nav) {
-    gap: 1rem;
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
     font-size: 0.875rem;
   }
 
-  .site-header :global(.header-nav .nav-links) {
-    display: inline-flex;
-    gap: 1rem;
+  nav a {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    padding-block: 0.25rem;
   }
 
-  .site-header :global(.header-nav a[aria-current="page"]) {
+  nav a:hover,
+  nav a[aria-current="page"] {
     color: var(--color-ink);
     text-decoration: underline;
     text-decoration-color: var(--color-line-strong);
     text-underline-offset: 0.3em;
   }
 
-  .site-header :global(.theme-toggle) {
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-  }
-
   .site-header :global(:is(a, button):focus-visible) {
     outline: 2px solid var(--color-ink);
     outline-offset: 4px;
-  }
-
-  @media (max-width: 40rem) {
-    .header-inner {
-      min-height: 3.75rem;
-    }
-
-    .site-header :global(.header-nav),
-    .site-header :global(.header-nav .nav-links) {
-      gap: 0.75rem;
-    }
-
-    .site-header :global(.nav-links a[href="https://status.wezel.build"]) {
-      display: none;
-    }
   }
 </style>

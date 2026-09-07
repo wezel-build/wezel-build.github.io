@@ -87,6 +87,9 @@
   labels rather than on decorative text.
 */
 :root {
+  --site-width: 81rem;
+  --site-gutter: 3rem;
+
   --d-paper: #121513;
   --d-surface: #171b18;
   --d-veil: #202621;
@@ -117,6 +120,19 @@
   --d-mark-line: #465449;
 
   --d-scrim: rgb(18 21 19 / 62%);
+}
+
+@media (max-width: 65rem) {
+  :root {
+    --site-width: 42rem;
+    --site-gutter: 2rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  :root {
+    --site-gutter: 1.25rem;
+  }
 }
 
 :root[data-theme="dark"] {
