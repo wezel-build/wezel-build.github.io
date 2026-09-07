@@ -3,28 +3,26 @@ import Brand from "../Brand.astro";
 import SiteNav from "../SiteNav.astro";
 import DocsSearch from "./DocsSearch.astro";
 
-// The docs chrome. Same frame as SiteHeader - height, translucency, no bottom
-// rule - but it carries two things the other surfaces don't: search, and the
-// sidebar drawer toggle. The nav itself is <SiteNav />, so the link list lives
-// in one place rather than being mirrored here; it had already drifted once.
-// See DOCS-DESIGN.md §4.
+// Keep site destinations shared; search and the narrow-screen menu are docs-only.
 ---
 
 <header class="docs-header">
-  <Brand href="/" />
+  <div class="docs-header-inner">
+    <Brand href="/" />
 
-  <div class="header-right">
-    <DocsSearch />
-    <SiteNav />
+    <div class="header-right">
+      <DocsSearch />
+      <SiteNav />
 
-    <button
-      class="sidebar-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="docs-sidebar"
-    >
-      Contents
-    </button>
+      <button
+        class="sidebar-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="docs-sidebar"
+      >
+        Contents
+      </button>
+    </div>
   </div>
 </header>
 
@@ -32,9 +30,26 @@ import DocsSearch from "./DocsSearch.astro";
   const toggle = document.querySelector<HTMLButtonElement>(".sidebar-toggle");
   const sidebar = document.getElementById("docs-sidebar");
 
-  toggle?.addEventListener("click", () => {
-    const open = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!open));
-    sidebar?.toggleAttribute("data-open", !open);
-  });
+  if (toggle && sidebar) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      sidebar.toggleAttribute("data-open", open);
+    };
+
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !sidebar.hasAttribute("data-open")) return;
+      // Let the search dialog handle Escape while it is on top of navigation.
+      if (document.querySelector("dialog[open]")) return;
+      setOpen(false);
+      toggle.focus();
+    });
+
+    matchMedia("(max-width: 54rem)").addEventListener("change", () => {
+      setOpen(false);
+    });
+  }
 </script>

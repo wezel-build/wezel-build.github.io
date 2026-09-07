@@ -1,5 +1,4 @@
 ---
-import SocialLinks from "./SocialLinks.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
 // The site nav, shared by the landing header, the blog header and the docs
@@ -45,7 +44,6 @@ const path = Astro.url.pathname;
   </span>
 
   <span class="nav-chrome">
-    <SocialLinks />{" "}
     <ThemeToggle />
   </span>
 
@@ -92,12 +90,13 @@ const path = Astro.url.pathname;
 
   .header-cta {
     border: 1px solid var(--color-line-strong);
+    background: var(--color-chrome);
     padding: 0.35rem 0.85rem;
     color: var(--color-ink) !important;
   }
 
   .header-cta:hover {
-    border-color: var(--color-ink-faint);
+    border-color: var(--color-chrome-strong);
   }
 
   @media (max-width: 64rem) {

@@ -1,60 +1,65 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /*
-  Wezel design tokens - warm, confident, two schemes.
+  Wezel design tokens - mineral paper, gray chrome, semantic signals.
 
-  Aesthetic direction (swappable): humanist serif display + clean grotesk body.
-  The mood we're after: relief + agency. Calm paper, generous space, one warm
-  accent.
+  Aesthetic direction: plain sans text, condensed wordmark, mono apparatus.
+  The mood: calm evidence surface for build work. Gray is the site material;
+  rust and green are reserved for measured movement.
 
   Light values are floored at 4.5:1 against both the page and the caption strip
   the colour can land on - the caption strip is the binding case, being darker
   than the page. ink-faint and accent were previously 3.14:1 and 4.31:1, which
   is too thin for a 0.66rem tracked label and for body links.
 
-  This palette is the source of truth for the Wezel look, and anthill's
-  `anthill/src/index.css` + `anthill/src/lib/theme.ts` mirror it token for token
-  (anthill's --c-bg / --c-surface / --c-surface2 / --c-border / --c-text /
-  --c-text-mid / --c-text-dim / --c-accent / --c-red / --c-green are the same
-  values as paper / surface / veil / line-strong / ink / ink-soft / ink-faint /
-  accent / warn / good below). Change a value here and change it there.
-
-  Dark is not an inversion. Warm paper inverted is mud, so the dark scheme is a
-  warm near-black with its own neutrals; only the relationships are preserved -
-  surface is a step off paper, veil is a step further, and both stay warm.
+  Dark is not an inversion. It keeps the same mineral relationships: surface is
+  a step off paper, chrome is the control material, and signal colors keep their
+  meaning.
 */
 @theme {
   /* surfaces */
-  --color-paper: #fbfaf6; /* page background - warm off-white */
-  --color-surface: #ffffff; /* cards / raised panels */
-  --color-veil: #f4f1ea; /* subtle fills, code wells */
+  --color-paper: #f6f7f4;
+  --color-surface: #fcfcf9;
+  --color-veil: #eef0eb;
+  --color-chrome: #e4e8e2;
+  --color-progress: #d3dad1;
 
   /* ink */
-  --color-ink: #1c1b18; /* primary text */
-  --color-ink-soft: #57544c; /* secondary text */
-  --color-ink-faint: #716e65; /* tertiary / captions - 4.5:1 on veil */
-  --color-ink-deep: #000000; /* pressed/hover past ink; inverts in dark */
+  --color-ink: #1c201e;
+  --color-ink-soft: #535a56;
+  --color-ink-faint: #707873;
+  --color-ink-deep: #111513;
 
   /* lines */
-  --color-line: #e7e3d8; /* hairline borders */
-  --color-line-strong: #d8d3c5;
+  --color-line: #dfe4dc;
+  --color-line-strong: #cbd3ca;
+  --color-chrome-strong: #cbd4ca;
 
-  /* accent - warm terracotta, used sparingly */
-  --color-accent: #b85229;
-  --color-accent-deep: #a8431d;
-  --color-accent-wash: #f6e7df;
+  /* accent - used sparingly for product emphasis */
+  --color-accent: #b84f32;
+  --color-accent-deep: #913c28;
+  --color-accent-wash: #f1ddd6;
 
   /* receipt signal colors - regression vs recovery */
-  --color-warn: #c2410c; /* the regression (slower) */
-  --color-warn-wash: #f7e3d8;
-  --color-good: #2f7d57; /* the recovery (faster) */
-  --color-good-wash: #e2efe7;
+  --color-warn: #b84f32;
+  --color-warn-wash: #f1ddd6;
+  --color-good: #2e8058;
+  --color-good-wash: #dfeee5;
+
+  /* grid and mark chrome */
+  --color-grid: rgb(80 98 87 / 9%);
+  --color-mark-bg: #d9e0d8;
+  --color-mark-ink: #222824;
+  --color-mark-line: #bfc9bf;
 
   /* the desk behind a modal. Not derived from ink: in dark, ink is light. */
   --color-scrim: rgb(28 27 24 / 22%);
 
   /* type */
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-display:
+    "Barlow Semi Condensed", "Source Sans 3", ui-sans-serif, system-ui,
+    -apple-system, sans-serif;
   --font-sans:
     "Source Sans 3", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -82,28 +87,36 @@
   labels rather than on decorative text.
 */
 :root {
-  --d-paper: #0f0c0a;
-  --d-surface: #1e1916;
-  --d-veil: #2a231f;
+  --d-paper: #121513;
+  --d-surface: #171b18;
+  --d-veil: #202621;
+  --d-chrome: #202821;
+  --d-progress: #2c3b31;
 
-  --d-ink: #ece5d8;
-  --d-ink-soft: #a89c87;
-  --d-ink-faint: #988a73;
-  --d-ink-deep: #fffdf8;
+  --d-ink: #edf3ed;
+  --d-ink-soft: #b4bdb6;
+  --d-ink-faint: #818b84;
+  --d-ink-deep: #f7fbf5;
 
-  --d-line: #443a32;
-  --d-line-strong: #5c5045;
+  --d-line: #2c352f;
+  --d-line-strong: #3c483f;
+  --d-chrome-strong: #344038;
 
-  --d-accent: #e2764a;
-  --d-accent-deep: #ec8b62;
-  --d-accent-wash: #3a221a;
+  --d-accent: #d16f4f;
+  --d-accent-deep: #e99673;
+  --d-accent-wash: #31231d;
 
-  --d-warn: #df6a4a;
-  --d-warn-wash: #3a1d15;
-  --d-good: #8aae7e;
-  --d-good-wash: #1e2a1f;
+  --d-warn: #d16f4f;
+  --d-warn-wash: #31231d;
+  --d-good: #78bf8c;
+  --d-good-wash: #1f3024;
 
-  --d-scrim: rgb(0 0 0 / 62%);
+  --d-grid: rgb(111 132 118 / 13%);
+  --d-mark-bg: #2a342d;
+  --d-mark-ink: #e1e9e1;
+  --d-mark-line: #465449;
+
+  --d-scrim: rgb(18 21 19 / 62%);
 }
 
 :root[data-theme="dark"] {
@@ -112,12 +125,15 @@
   --color-paper: var(--d-paper);
   --color-surface: var(--d-surface);
   --color-veil: var(--d-veil);
+  --color-chrome: var(--d-chrome);
+  --color-progress: var(--d-progress);
   --color-ink: var(--d-ink);
   --color-ink-soft: var(--d-ink-soft);
   --color-ink-faint: var(--d-ink-faint);
   --color-ink-deep: var(--d-ink-deep);
   --color-line: var(--d-line);
   --color-line-strong: var(--d-line-strong);
+  --color-chrome-strong: var(--d-chrome-strong);
   --color-accent: var(--d-accent);
   --color-accent-deep: var(--d-accent-deep);
   --color-accent-wash: var(--d-accent-wash);
@@ -125,6 +141,10 @@
   --color-warn-wash: var(--d-warn-wash);
   --color-good: var(--d-good);
   --color-good-wash: var(--d-good-wash);
+  --color-grid: var(--d-grid);
+  --color-mark-bg: var(--d-mark-bg);
+  --color-mark-ink: var(--d-mark-ink);
+  --color-mark-line: var(--d-mark-line);
   --color-scrim: var(--d-scrim);
 }
 
@@ -137,12 +157,15 @@
     --color-paper: var(--d-paper);
     --color-surface: var(--d-surface);
     --color-veil: var(--d-veil);
+    --color-chrome: var(--d-chrome);
+    --color-progress: var(--d-progress);
     --color-ink: var(--d-ink);
     --color-ink-soft: var(--d-ink-soft);
     --color-ink-faint: var(--d-ink-faint);
     --color-ink-deep: var(--d-ink-deep);
     --color-line: var(--d-line);
     --color-line-strong: var(--d-line-strong);
+    --color-chrome-strong: var(--d-chrome-strong);
     --color-accent: var(--d-accent);
     --color-accent-deep: var(--d-accent-deep);
     --color-accent-wash: var(--d-accent-wash);
@@ -150,6 +173,10 @@
     --color-warn-wash: var(--d-warn-wash);
     --color-good: var(--d-good);
     --color-good-wash: var(--d-good-wash);
+    --color-grid: var(--d-grid);
+    --color-mark-bg: var(--d-mark-bg);
+    --color-mark-ink: var(--d-mark-ink);
+    --color-mark-line: var(--d-mark-line);
     --color-scrim: var(--d-scrim);
   }
 }

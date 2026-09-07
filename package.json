@@ -6,7 +6,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "brand:render": "node scripts/render-brand-assets.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.5",
