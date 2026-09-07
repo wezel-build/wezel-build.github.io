@@ -1,6 +1,12 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
 
+interface Props {
+  action?: { href: string; label: string };
+}
+
+const { action = { href: "/docs/installation", label: "Install CLI" } } = Astro.props;
+
 // The site nav, shared by the landing header, the blog header and the docs
 // header. It used to be duplicated in two places with a comment asking whoever
 // touched one to remember the other, which is exactly the smell that says
@@ -47,7 +53,7 @@ const path = Astro.url.pathname;
     <ThemeToggle />
   </span>
 
-  <a href="/docs/installation" class="header-cta">Install CLI</a>
+  <a href={action.href} class="header-cta">{action.label}</a>
 </nav>
 
 <style>

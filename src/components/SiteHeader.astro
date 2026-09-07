@@ -2,17 +2,14 @@
 import Brand from "./Brand.astro";
 import SiteNav from "./SiteNav.astro";
 
-// The header for every page that isn't docs: the landing and the blog. Docs has
-// its own frame because it carries search and the sidebar drawer toggle, but it
-// uses the same <SiteNav />, so the link list exists once.
-//
-// Full bleed, 3.75rem, no bottom rule - the geometry is docs.css's, so the two
-// chromes are the same object.
+// The blog shares site destinations with docs, but follows the homepage entry path.
 ---
 
 <header class="site-header">
-  <Brand href="/" />
-  <SiteNav />
+  <div class="header-inner">
+    <Brand href="/" />
+    <SiteNav action={{ href: "/docs/quickstart", label: "Get started" }} />
+  </div>
 </header>
 
 <style>
@@ -20,19 +17,66 @@ import SiteNav from "./SiteNav.astro";
     position: sticky;
     top: 0;
     z-index: 20;
+    background: var(--color-paper);
+    flex-shrink: 0;
+  }
+
+  .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    height: 3.75rem;
-    padding-inline: 1.75rem;
-    background: color-mix(in srgb, var(--color-paper) 90%, transparent);
-    backdrop-filter: saturate(140%) blur(8px);
+    gap: 1rem;
+    min-height: 4.5rem;
+    max-width: var(--blog-width);
+    margin-inline: auto;
+    padding-inline: var(--blog-gutter);
   }
 
-  /* Nothing floats. Ink doesn't cast shadows. (DOCS-DESIGN.md §3.4) */
   .site-header :global(*) {
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .site-header :global(.header-nav) {
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .site-header :global(.header-nav .nav-links) {
+    display: inline-flex;
+    gap: 1rem;
+  }
+
+  .site-header :global(.header-nav a[aria-current="page"]) {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-underline-offset: 0.3em;
+  }
+
+  .site-header :global(.theme-toggle) {
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .site-header :global(:is(a, button):focus-visible) {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 40rem) {
+    .header-inner {
+      min-height: 3.75rem;
+    }
+
+    .site-header :global(.header-nav),
+    .site-header :global(.header-nav .nav-links) {
+      gap: 0.75rem;
+    }
+
+    .site-header :global(.nav-links a[href="https://status.wezel.build"]) {
+      display: none;
+    }
   }
 </style>
