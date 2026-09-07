@@ -8,6 +8,7 @@ interface Props {
   ogType?: "website" | "article";
   /** ISO date, for og:type="article". */
   published?: string;
+  bodyClass?: string;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   description = "",
   ogType = "website",
   published,
+  bodyClass,
 } = Astro.props;
 
 // Bluesky, Slack, Discord, iMessage and Mastodon all read Open Graph; none of
@@ -78,17 +80,11 @@ const ogImage = new URL("/og.png", Astro.site);
       } catch {}
     </script>
 
-    <!-- fonts: humanist serif display + humanist sans text.
-         Source Sans 3 is served as a variable face over 400–700, which covers
-         body 400, nav-active 500 and headings 600. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" href="/fonts/source-sans-3-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/barlow-semi-condensed-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
   </head>
-  <body>
+  <body class={bodyClass}>
     <slot />
   </body>
 </html>

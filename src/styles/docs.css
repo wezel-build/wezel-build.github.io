@@ -1,33 +1,17 @@
-/*
-  Wezel docs.
-
-  Implements DOCS-DESIGN.md §4. The load-bearing ideas, so that cases not
-  covered here can be derived rather than guessed:
-
-    - The sheet has edges. Bounded, centred rail; the space outside it is desk.
-    - Space, not lines. Rules and whitespace are substitutes and this design
-      spends whitespace. A rule has to earn its place.
-    - Rules survive only where they separate data: table head, table rows, the
-      callout's left edge, and the frame and caption rule of a code figure.
-      Nothing else in the page furniture is ruled except the sidebar divider.
-    - Nothing floats. Radius 0, no shadows.
-    - Two faces. Inter carries voice and body both - headings are the same face
-      set heavy and tight, not a change of typeface. Mono is the apparatus and
-      the data. Instrument Serif belongs to the brand, not to the docs.
-*/
+/* Compact reading layout, using the site's existing type and mineral palette. */
 
 :root {
-  --docs-rail: 87rem;
-  --docs-sidebar: 16rem;
-  --docs-toc: 14rem;
-  --docs-measure: 54rem;
-  --docs-margin: 4.75rem;
+  --docs-rail: 76rem;
+  --docs-sidebar: 13.5rem;
+  --docs-toc: 12.5rem;
+  --docs-measure: 50rem;
+  --docs-margin: 3rem;
   --docs-header-h: 3.75rem;
 
-  --docs-leading: 1.8;
-  --docs-block-gap: 1.885rem;
-  --docs-h2-lead: 4.16rem;
-  --docs-h3-lead: 2.6rem;
+  --docs-leading: 1.65;
+  --docs-block-gap: 1rem;
+  --docs-h2-lead: 2.25rem;
+  --docs-h3-lead: 1.75rem;
 }
 
 /* Nothing floats, anywhere in the docs. */
@@ -35,6 +19,7 @@
 .docs-sheet * {
   border-radius: 0;
   box-shadow: none;
+  letter-spacing: 0;
 }
 
 .skip-link {
@@ -59,40 +44,70 @@
 }
 
 /* ==========================================================================
-   HEADER - full bleed, above the sheet, no bottom rule
+   HEADER - controls aligned with the docs columns
    ========================================================================== */
 .docs-header {
   position: sticky;
   top: 0;
   z-index: 20;
+  height: var(--docs-header-h);
+  background: var(--color-paper);
+  border-block-end: 1px solid var(--color-line);
+}
+
+.docs-header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  height: var(--docs-header-h);
-  padding-inline: 1.75rem;
-  background: color-mix(in srgb, var(--color-paper) 90%, transparent);
-  backdrop-filter: saturate(140%) blur(8px);
+  height: 100%;
+  max-width: var(--docs-rail);
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
 
 .docs-header .header-right {
   display: flex;
   align-items: center;
-  gap: 1.6rem;
+  gap: 1.25rem;
   min-width: 0;
+}
+
+.docs-header .header-nav {
+  gap: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.docs-header .nav-links {
+  gap: 1.25rem;
+}
+
+.docs-header .theme-toggle {
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
 }
 
 .sidebar-toggle {
   display: none;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
   color: var(--color-ink-soft);
   background: var(--color-surface);
   border: 1px solid var(--color-line-strong);
   padding: 0.35rem 0.7rem;
   cursor: pointer;
+}
+
+.sidebar-toggle[aria-expanded="true"] {
+  background: var(--color-chrome);
+  color: var(--color-ink);
+}
+
+.docs-header :is(a, button):focus-visible,
+.docs-sheet :is(a, button, pre):focus-visible {
+  outline: 2px solid var(--color-ink-soft);
+  outline-offset: 3px;
 }
 
 /* ==========================================================================
@@ -101,9 +116,13 @@
 .docs-sheet {
   max-width: var(--docs-rail);
   margin-inline: auto;
-  min-height: calc(100vh - var(--docs-header-h));
+  min-height: calc(100dvh - var(--docs-header-h));
   display: grid;
   grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+}
+
+.docs-sheet > main {
+  min-width: 0;
 }
 
 .docs-sheet[data-toc] {
@@ -120,27 +139,25 @@
 .rail-inner {
   position: sticky;
   top: var(--docs-header-h);
-  max-height: calc(100vh - var(--docs-header-h));
+  max-height: calc(100dvh - var(--docs-header-h));
   overflow-y: auto;
-  padding: 2.9rem 1.5rem;
+  padding: 2rem 1rem;
+  scrollbar-width: thin;
 }
 
 /* ==========================================================================
-   SIDEBAR + TOC - apparatus, set in mono
+   SIDEBAR + TOC
    ========================================================================== */
 .nav-group + .nav-group {
-  margin-top: 2.1rem;
+  margin-top: 1.25rem;
 }
 
 .nav-group > h2,
 .docs-toc > h2 {
-  margin: 0 0 0.6rem;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-ink);
 }
 
 .nav-group ul,
@@ -162,16 +179,33 @@
   transition: color 0.15s ease;
 }
 
+.nav-group a,
+.nav-label {
+  padding: 0.35rem 0.65rem;
+  border-inline-start: 2px solid transparent;
+  margin-inline: -0.65rem 0;
+}
+
+.nav-group a:hover {
+  background: var(--color-veil);
+}
+
 .nav-group a:hover,
 .docs-toc a:hover {
   color: var(--color-ink);
 }
 
-/* Accent is a signal: it marks where you are, nothing else. */
-.nav-group a[aria-current="page"],
+.nav-group a[aria-current="page"] {
+  color: var(--color-ink);
+  background: var(--color-chrome);
+  border-inline-start-color: var(--color-ink-soft);
+  font-weight: 600;
+}
+
 .docs-toc a[aria-current="true"] {
-  color: var(--color-accent);
-  font-weight: 500;
+  color: var(--color-ink);
+  border-inline-start-color: var(--color-ink-soft);
+  font-weight: 600;
 }
 
 .nav-label {
@@ -191,23 +225,24 @@
 
 .docs-toc a {
   font-size: 0.85rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid var(--color-line);
 }
 
 /* ==========================================================================
    PAGE HEAD
    ========================================================================== */
 .docs-page-header {
-  padding: 3.4rem var(--docs-margin) 0;
+  padding: 2rem var(--docs-margin) 0;
   max-width: var(--docs-measure);
 }
 
 .breadcrumb {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.72rem;
   color: var(--color-ink-faint);
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.65rem;
+  overflow-wrap: anywhere;
 }
 
 .breadcrumb a {
@@ -229,29 +264,27 @@
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: clamp(2.75rem, 4.5vw, 3.85rem);
-  letter-spacing: -0.035em;
-  line-height: 0.98;
+  font-size: 2.5rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
   color: var(--color-ink);
   text-wrap: balance;
 }
 
 .standfirst {
-  max-width: 44ch;
-  margin: 1.4rem 0 0;
-  font-size: 1.22rem;
+  max-width: 60ch;
+  margin: 0.75rem 0 0;
+  font-size: 1.125rem;
   line-height: 1.5;
   color: var(--color-ink-soft);
 }
 
 /* ==========================================================================
-   PROSE - the text block, with margins you can see
+   PROSE - consistent rhythm for paragraphs, steps and examples
    ========================================================================== */
 .docs-prose {
   max-width: var(--docs-measure);
-  padding: 3.25rem var(--docs-margin) 4.55rem;
-  /* Source Sans 3 has a smaller x-height than Inter, so it needs the extra
-     0.03rem to read at the same apparent size across the 54rem measure. */
+  padding: 1.75rem var(--docs-margin) 2.5rem;
   font-size: 1.08rem;
   line-height: var(--docs-leading);
   color: var(--color-ink);
@@ -282,8 +315,8 @@
 .docs-prose :is(h2, h3, h4) {
   font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.028em;
-  line-height: 1.2;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
   color: var(--color-ink);
   text-wrap: balance;
   scroll-margin-top: calc(var(--docs-header-h) + 1.75rem);
@@ -291,7 +324,7 @@
 
 /* No rule above the section: the lead carries the break on its own. */
 .docs-prose > h2 {
-  font-size: 1.9rem;
+  font-size: 1.6rem;
   margin-block-start: var(--docs-h2-lead);
 }
 
@@ -301,18 +334,22 @@
 
 .docs-prose > h3 {
   font-size: 1.2rem;
-  letter-spacing: -0.015em;
   margin-block-start: var(--docs-h3-lead);
 }
 
 .docs-prose > h4 {
   font-size: 1.05rem;
-  letter-spacing: -0.01em;
-  margin-block-start: 2rem;
+  margin-block-start: 1.5rem;
+}
+
+.docs-prose > :is(h2, h3, h4) + * {
+  margin-block-start: 0.65rem;
 }
 
 .docs-prose a {
   color: var(--color-accent);
+  text-decoration-line: underline;
+  overflow-wrap: anywhere;
   text-decoration-color: color-mix(
     in srgb,
     var(--color-accent) 35%,
@@ -335,6 +372,14 @@
   padding-inline-start: 1.3rem;
 }
 
+.docs-prose ul {
+  list-style-type: disc;
+}
+
+.docs-prose ol {
+  list-style-type: decimal;
+}
+
 .docs-prose li + li {
   margin-top: 0.5rem;
 }
@@ -350,7 +395,6 @@
 }
 
 .docs-prose blockquote:not(.markdown-alert) {
-  margin: 0;
   padding-inline-start: 1.1rem;
   border-inline-start: 2px solid var(--color-line-strong);
   color: var(--color-ink-soft);
@@ -369,6 +413,7 @@
 
 .docs-prose :not(pre) > code {
   color: var(--color-accent-deep);
+  overflow-wrap: anywhere;
 }
 
 .docs-prose :is(h2, h3, h4) code {
@@ -383,8 +428,8 @@
 
    A radius-0, shadowless frame still doesn't float, so §3.4 holds. */
 .docs-prose pre {
-  margin: 0;
-  padding: 1.15rem 1.2rem 1.25rem;
+  padding: 0.9rem 1rem;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--color-line-strong);
   /* beats the inline background-color Shiki emits on the <pre> */
@@ -393,26 +438,30 @@
   line-height: 1.7;
 }
 
+.docs-prose pre code {
+  font-size: inherit;
+}
+
 .docs-prose .code-figure {
-  margin: 0;
+  min-width: 0;
   border: 1px solid var(--color-line-strong);
   background: var(--color-surface);
 }
 
 .docs-prose .code-figure > figcaption {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--color-ink-faint);
-  padding: 0.5rem 1.2rem;
+  padding: 0.4rem 1rem;
+  overflow-wrap: anywhere;
   background: var(--color-veil);
   border-block-end: 1px solid var(--color-line);
 }
 
 /* The figure already provides the frame; the pre inside it must not add a second. */
 .docs-prose .code-figure pre {
+  margin: 0;
   border: 0;
   background: transparent !important;
 }
@@ -425,11 +474,8 @@
 }
 
 .docs-prose th {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--color-ink-faint);
   text-align: left;
   padding: 0.45rem 0.9rem 0.45rem 0;
@@ -444,7 +490,6 @@
 
 /* ---- callouts: a left rule and a label, no box ----------------------- */
 .docs-prose .markdown-alert {
-  margin: 0;
   padding: 0 0 0 1.1rem;
   border-inline-start: 2px solid var(--color-line-strong);
   color: var(--color-ink-soft);
@@ -461,10 +506,8 @@
 
 .docs-prose .markdown-alert-title {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--color-ink-faint);
   margin-block-end: 0.35rem !important;
 }
@@ -501,20 +544,23 @@
 }
 
 /* ==========================================================================
-   PAGER - two cells divided by a rule, not two cards
+   PAGER
    ========================================================================== */
 .docs-pager {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   max-width: var(--docs-measure);
   padding-inline: var(--docs-margin);
-  padding-block-end: 3.5rem;
+  padding-block-end: 2.5rem;
   gap: 2rem;
 }
 
 .docs-pager a {
   text-decoration: none;
   display: block;
+  padding-block: 0.75rem;
+  border-block-start: 1px solid var(--color-line);
+  overflow-wrap: anywhere;
 }
 
 .docs-pager .pager-next {
@@ -525,9 +571,7 @@
 .docs-pager .kicker {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.72rem;
   color: var(--color-ink-faint);
 }
 
@@ -536,8 +580,7 @@
   margin-top: 0.25rem;
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
   line-height: 1.2;
   color: var(--color-ink);
 }
@@ -547,9 +590,14 @@
 }
 
 /* ==========================================================================
-   NARROW - the TOC goes first, then the sidebar becomes a drawer
+   NARROW - the TOC goes first, then navigation becomes a disclosure
    ========================================================================== */
-@media (max-width: 78rem) {
+@media (max-width: 72rem) {
+  :root {
+    --docs-rail: 63.5rem;
+    --docs-margin: 2.5rem;
+  }
+
   .docs-sheet,
   .docs-sheet[data-toc] {
     grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
@@ -560,9 +608,10 @@
   }
 }
 
-@media (max-width: 64rem) {
+@media (max-width: 54rem) {
   :root {
     --docs-margin: 2rem;
+    --docs-rail: 50rem;
   }
 
   .docs-sheet,
@@ -587,22 +636,77 @@
 
   .docs-sidebar-column .rail-inner {
     position: static;
-    max-height: none;
-    padding-block: 1.75rem;
+    max-height: calc(100dvh - var(--docs-header-h));
+    padding: 1.25rem var(--docs-margin);
+    overscroll-behavior: contain;
+  }
+
+  .docs-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 2rem;
+  }
+
+  .nav-group + .nav-group {
+    margin-top: 0;
+  }
+
+  .docs-sheet > main {
+    grid-column: 1;
   }
 }
 
 @media (max-width: 40rem) {
   :root {
-    --docs-margin: 1.4rem;
+    --docs-margin: 1.25rem;
+    --docs-header-h: 3.5rem;
   }
 
+  .docs-header-inner {
+    gap: 0.75rem;
+    padding-inline: 1rem;
+  }
+
+  .docs-header .header-right {
+    gap: 0.5rem;
+  }
+
+  .docs-header .header-nav {
+    gap: 0;
+  }
+
+  .docs-header .theme-toggle,
+  .sidebar-toggle {
+    min-height: 2.25rem;
+  }
+
+  .sidebar-toggle {
+    padding-inline: 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  .docs-page-header {
+    padding-top: 1.5rem;
+  }
 
   .docs-page-header h1 {
-    font-size: clamp(2.1rem, 10vw, 2.75rem);
+    font-size: 2rem;
+  }
+
+  .docs-prose {
+    padding-top: 1.5rem;
+    font-size: 1.05rem;
   }
 
   .docs-prose > h2 {
-    font-size: 1.6rem;
+    font-size: 1.45rem;
+  }
+
+  .docs-prose pre {
+    font-size: 0.8rem;
+  }
+
+  .docs-sidebar {
+    gap: 1rem;
   }
 }

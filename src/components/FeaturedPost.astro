@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+
+const [post] = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+---
+
+{
+  post && (
+    <article class="featured-post" aria-labelledby="featured-post-title">
+      <div class="post-meta">
+        <a href="/blog">Blog</a>
+        <time datetime={post.data.date.toISOString()}>
+          {dateFormat.format(post.data.date)}
+        </time>
+      </div>
+      <h2 id="featured-post-title">
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+      </h2>
+      <p>{post.data.description}</p>
+    </article>
+  )
+}
+
+<style>
+  .featured-post {
+    min-width: 0;
+    border-top: 1px solid var(--color-line-strong);
+    padding-top: 1rem;
+  }
+
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--color-ink-faint);
+  }
+
+  a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
+  h2 {
+    margin: 0.5rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  p {
+    margin: 0.4rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+    overflow-wrap: anywhere;
+  }
+</style>

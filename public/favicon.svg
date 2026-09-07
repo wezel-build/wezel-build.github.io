@@ -1,8 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#b85229" />
+  <style>
+    rect { fill: #d9e0d8; stroke: #bfc9bf; }
+    g { stroke: #222824; }
+    @media (prefers-color-scheme: dark) {
+      rect { fill: #2a342d; stroke: #465449; }
+      g { stroke: #e1e9e1; }
+    }
+  </style>
+  <rect width="32" height="32" rx="4" />
   <g
     fill="none"
-    stroke="#fbfaf6"
     stroke-width="3.35"
     stroke-linecap="round"
     stroke-linejoin="round"

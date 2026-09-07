@@ -1,6 +1,11 @@
 ---
-import SocialLinks from "./SocialLinks.astro";
 import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  action?: { href: string; label: string };
+}
+
+const { action = { href: "/docs/installation", label: "Install CLI" } } = Astro.props;
 
 // The site nav, shared by the landing header, the blog header and the docs
 // header. It used to be duplicated in two places with a comment asking whoever
@@ -45,11 +50,10 @@ const path = Astro.url.pathname;
   </span>
 
   <span class="nav-chrome">
-    <SocialLinks />{" "}
     <ThemeToggle />
   </span>
 
-  <a href="/docs/installation" class="header-cta">Install CLI</a>
+  <a href={action.href} class="header-cta">{action.label}</a>
 </nav>
 
 <style>
@@ -92,12 +96,13 @@ const path = Astro.url.pathname;
 
   .header-cta {
     border: 1px solid var(--color-line-strong);
+    background: var(--color-chrome);
     padding: 0.35rem 0.85rem;
     color: var(--color-ink) !important;
   }
 
   .header-cta:hover {
-    border-color: var(--color-ink-faint);
+    border-color: var(--color-chrome-strong);
   }
 
   @media (max-width: 64rem) {

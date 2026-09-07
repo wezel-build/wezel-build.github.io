@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title">
   <title id="title">Wezel cut W mark</title>
-  <rect width="32" height="32" rx="7" fill="#b85229" />
+  <rect width="32" height="32" rx="4" fill="#d9e0d8" stroke="#bfc9bf" />
   <g
     fill="none"
-    stroke="#fbfaf6"
+    stroke="#222824"
     stroke-width="3.35"
     stroke-linecap="round"
     stroke-linejoin="round"

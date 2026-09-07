@@ -3,21 +3,10 @@ import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
 import "../../styles/docs.css";
-import Base from "../../layouts/Base.astro";
-import SiteHeader from "../../components/SiteHeader.astro";
-import SiteFooter from "../../components/SiteFooter.astro";
+import BlogLayout from "../../layouts/BlogLayout.astro";
 import { fetchAuthors, type Author } from "../../lib/authors";
 
-// A post.
-//
-// The body reuses `.docs-prose` from docs.css rather than growing a second
-// prose stylesheet. That class is 200 lines of settled decisions - measure,
-// leading, framed code figures, callouts, tables - and a blog post is the same
-// kind of object as a docs page: a column of text on a sheet. The name is a
-// docs name doing double duty, which is the one wart; the alternative is two
-// stylesheets that drift.
-//
-// Drafts are excluded from getStaticPaths, so they are not built at all.
+// Share the docs' prose styles while keeping the blog's reading width and chrome.
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -44,15 +33,13 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 });
 ---
 
-<Base
+<BlogLayout
   title={`${post.data.title} - Wezel`}
   description={post.data.description}
   ogType="article"
   published={post.data.date.toISOString()}
 >
-  <SiteHeader />
-
-  <main class="post-sheet">
+  <div class="post-sheet">
     <article>
       <header class="post-head">
         <nav class="crumb" aria-label="Breadcrumb">
@@ -91,7 +78,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
         </div>
       </header>
 
-      <div class="docs-prose">
+      <div class="docs-prose post-body">
         <Content />
       </div>
     </article>
@@ -99,13 +86,11 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
     <p class="back">
       <a href="/blog">&larr; All posts</a>
     </p>
-  </main>
-
-  <SiteFooter />
+  </div>
 
   <style>
     .post-sheet {
-      max-width: 87rem;
+      max-width: 44rem;
       margin-inline: auto;
     }
 
@@ -117,20 +102,18 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
     .label,
     .crumb {
       font-family: var(--font-mono);
-      font-size: 0.66rem;
+      font-size: 0.75rem;
       font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      letter-spacing: 0;
       color: var(--color-ink-faint);
     }
 
     .post-head {
-      max-width: 54rem;
-      padding: 3.4rem 4.75rem 0;
+      margin-bottom: 1.75rem;
     }
 
     .crumb {
-      margin-bottom: 1.1rem;
+      margin-bottom: 0.75rem;
     }
 
     .crumb a {
@@ -145,35 +128,33 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
     .post-head h1 {
       margin: 0;
       font-family: var(--font-sans);
-      font-weight: 600;
-      font-size: clamp(2.75rem, 4.5vw, 3.85rem);
-      letter-spacing: -0.035em;
-      line-height: 0.98;
+      font-weight: 700;
+      font-size: 2.5rem;
+      line-height: 1.15;
       text-wrap: balance;
+      overflow-wrap: anywhere;
     }
 
     .post-head .standfirst {
-      max-width: 44ch;
-      margin: 1.4rem 0 0;
-      font-size: 1.22rem;
+      max-width: 60ch;
+      margin: 0.875rem 0 0;
+      font-size: 1.125rem;
       line-height: 1.5;
       color: var(--color-ink-soft);
     }
 
-    /* The byline is data about the piece, so it gets a rule. */
     .byline {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      gap: 0.75rem 1.25rem;
       flex-wrap: wrap;
-      margin-top: 1.9rem;
-      padding-top: 0.85rem;
-      border-top: 1px solid var(--color-line);
+      margin-top: 1rem;
     }
 
     .authors {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 1.1rem;
       list-style: none;
       margin: 0;
@@ -192,6 +173,8 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 
     .authors a:hover {
       color: var(--color-ink);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
 
     .authors img {
@@ -200,45 +183,63 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
       border-radius: 50% !important;
     }
 
-    .back {
-      max-width: 54rem;
-      padding: 0 4.75rem 4rem;
+    .post-body {
+      max-width: none;
+      padding: 0;
+      font-size: 1.125rem;
+      line-height: 1.7;
+    }
+
+    .post-body :global(:is(p, li)) {
+      overflow-wrap: anywhere;
+    }
+
+    .post-body :global(p > img) {
+      display: block;
+      margin: 1.5rem auto;
+    }
+
+    .post-body :global([id]) {
+      scroll-margin-top: 6rem;
+    }
+
+    .post-body :global(.footnotes) {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-line);
+      color: var(--color-ink-soft);
+      font-size: 0.9375rem;
+    }
+
+    .post-body :global(.footnotes p) {
       margin: 0;
     }
 
+    .back {
+      margin: 2rem 0 0;
+    }
+
     .back a {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--color-accent);
-      text-decoration-color: color-mix(
-        in srgb,
-        var(--color-accent) 35%,
-        transparent
-      );
+      font-size: 0.9375rem;
+      color: var(--color-ink-soft);
+      text-decoration: underline;
+      text-decoration-color: var(--color-line-strong);
       text-underline-offset: 0.2em;
     }
 
     .back a:hover {
-      color: var(--color-accent-deep);
+      color: var(--color-ink);
       text-decoration-color: currentColor;
     }
 
-    @media (max-width: 78rem) {
-      .post-head,
-      .back {
-        padding-inline: 3rem;
-      }
-    }
-
     @media (max-width: 48rem) {
-      .post-head,
-      .back {
-        padding-inline: 1.4rem;
+      .post-head h1 {
+        font-size: 2rem;
       }
 
-      .post-head h1 {
-        font-size: clamp(2.1rem, 10vw, 2.75rem);
+      .post-body {
+        font-size: 1.05rem;
       }
     }
   </style>
-</Base>
+</BlogLayout>

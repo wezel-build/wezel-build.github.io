@@ -1,28 +1,27 @@
 ---
 title: Introduction
-description: What Wezel is, and what it does to a repository.
+description: Measure your builds locally and track regressions and improvements in the Wezel app.
 ---
 
-<!-- COPY SLOT: standfirst - one or two sentences on what Wezel is. Descriptive
-     voice ("Wezel watches…"), not tutorial voice. -->
+Wezel measures builds and their outputs as your code changes. It surfaces
+regressions and improvements and traces them to the commits that introduced them.
 
-Wezel watches the build scenarios a team waits on, records how long they take, and
-reports when that number moves for a reason worth reading.
+## The CLI and the app
 
-## What it measures
+Use the CLI to define and test a measurement in your repository. A definition
+can include several steps: build from scratch, apply a patch and rebuild, or
+measure the size of a generated file.
 
-<!-- COPY SLOT: the scope of a measurement - scenarios, what a run captures. -->
+The app uses those committed definitions to schedule measurements on configured
+runners and track their results across commits. A runner is the machine or CI
+workflow that performs the measurements.
 
-## What it reports
+You can use the CLI on its own. To keep watching a repository as it changes,
+connect it to the app and assign a runner.
 
-<!-- COPY SLOT: observations vs. regressions, and what lands in front of a human. -->
+## Get started
 
-> [!NOTE]
-> Slow shouldn't get slower; fast should stay fast. Wezel reports drift against a
-> baseline - it does not attribute a cause.
+The [quickstart](/docs/quickstart) walks through one measurement, from a local
+run to adding the project in the app.
 
-## Where to go next
-
-- [Installation](/docs/installation) - getting the CLI onto a machine.
-- [Quickstart](/docs/quickstart) - a first tracked scenario, end to end.
-- [Experiments](/docs/concepts/experiments) - the unit Wezel measures.
+Already have a project set up? [Open the app](https://app.wezel.build).
