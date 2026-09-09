@@ -2,7 +2,6 @@
 import Base from "./Base.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title: string;
@@ -14,9 +13,6 @@ interface Props {
 
 <Base {...Astro.props} bodyClass="blog-page">
   <a class="blog-skip-link" href="#main-content">Skip to content</a>
-  <div class="page-tools">
-    <ThemeToggle />
-  </div>
   <SiteHeader />
   <main class="blog-shell" id="main-content" tabindex="-1">
     <slot />
@@ -38,23 +34,6 @@ interface Props {
     min-width: 0;
     margin-inline: auto;
     padding: 2.5rem var(--site-gutter) 3rem;
-  }
-
-  .page-tools {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-
-  .page-tools :global(.theme-toggle) {
-    width: 2.5rem;
-    height: 2.5rem;
-    justify-content: center;
-  }
-
-  .page-tools :global(.theme-toggle:focus-visible) {
-    outline: 2px solid var(--color-ink);
-    outline-offset: 2px;
   }
 
   .blog-shell:focus {

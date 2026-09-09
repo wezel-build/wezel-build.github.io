@@ -1,17 +1,20 @@
 ---
-// Match the homepage footer without repeating its contacts or primary action.
+import ThemeToggle from "./ThemeToggle.astro";
 ---
 
 <footer class="site-footer">
   <div class="footer-inner">
     <span>&copy; {new Date().getFullYear()} Wezel</span>
 
-    <nav aria-label="Footer">
-      <a href="/docs">Docs</a>{" "}
-      <a href="/blog">Blog</a>{" "}
-      <a href="https://status.wezel.build" rel="noopener">Status</a>{" "}
-      <a href="https://app.wezel.build">Open app</a>
-    </nav>
+    <div class="footer-actions">
+      <nav aria-label="Footer">
+        <a href="/docs">Docs</a>{" "}
+        <a href="/blog">Blog</a>{" "}
+        <a href="https://status.wezel.build" rel="noopener">Status</a>{" "}
+        <a href="https://app.wezel.build">Open app</a>
+      </nav>
+      <ThemeToggle />
+    </div>
   </div>
 </footer>
 
@@ -24,7 +27,7 @@
 
   .footer-inner {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 0.75rem 1.5rem;
     flex-wrap: wrap;
@@ -32,6 +35,13 @@
     padding-top: 1.25rem;
     font-size: 0.8125rem;
     color: var(--color-ink-faint);
+  }
+
+  .footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 100%;
   }
 
   .footer-inner nav {

@@ -8,6 +8,7 @@ import DocsPager from "../components/docs/DocsPager.astro";
 import DocsSidebar from "../components/docs/DocsSidebar.astro";
 import DocsTableOfContents from "../components/docs/DocsTableOfContents.astro";
 import Base from "./Base.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 import {
   getBreadcrumbs,
   getNavigation,
@@ -74,4 +75,5 @@ const hasToc = tableOfContents.length > 0;
       )
     }
   </div>
+  <SiteFooter />
 </Base>

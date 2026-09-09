@@ -1,21 +1,11 @@
 ---
-import ThemeToggle from "./ThemeToggle.astro";
-
 interface Props {
   action?: { href: string; label: string };
 }
 
 const { action = { href: "/docs/installation", label: "Install CLI" } } = Astro.props;
 
-// The site nav, shared by the landing header, the blog header and the docs
-// header. It used to be duplicated in two places with a comment asking whoever
-// touched one to remember the other, which is exactly the smell that says
-// extract - the list had already drifted once (GitHub was dropped from the
-// landing and left in the docs).
-//
-// Three clusters - destinations, chrome, action - separated by space rather
-// than by a rule, per DOCS-DESIGN.md §2. Without the grouping the theme control
-// and the brand marks read as nav items.
+// Site destinations and the primary action share one navigation row.
 //
 // The {" "} between links is load-bearing. Astro trims the newline before a tag
 // to nothing, so `gap` would otherwise be the only thing separating these words
@@ -49,10 +39,6 @@ const path = Astro.url.pathname;
     }
   </span>
 
-  <span class="nav-chrome">
-    <ThemeToggle />
-  </span>
-
   <a href={action.href} class="header-cta">{action.label}</a>
 </nav>
 
@@ -64,18 +50,13 @@ const path = Astro.url.pathname;
     font-size: 0.95rem;
   }
 
-  .nav-links,
-  .nav-chrome {
+  .nav-links {
     display: inline-flex;
     align-items: center;
   }
 
   .nav-links {
     gap: 1.6rem;
-  }
-
-  .nav-chrome {
-    gap: 1.25rem;
   }
 
   .header-nav a {
@@ -112,7 +93,7 @@ const path = Astro.url.pathname;
   }
 
   @media (max-width: 40rem) {
-    .header-cta {
+    .header-nav {
       display: none;
     }
   }

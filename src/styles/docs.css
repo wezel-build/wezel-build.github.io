@@ -82,12 +82,6 @@
   gap: 1.25rem;
 }
 
-.docs-header .theme-toggle {
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-}
-
 .sidebar-toggle {
   display: none;
   font-family: var(--font-mono);
