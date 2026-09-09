@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Brand from "../components/Brand.astro";
 import ContactLinks from "../components/ContactLinks.astro";
 import FeaturedPost from "../components/FeaturedPost.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 ---
 
 <Base
@@ -11,10 +11,6 @@ import ThemeToggle from "../components/ThemeToggle.astro";
   title="Wezel - build regression observability"
   description="Wezel keeps watch over build performance as your code changes, tracing regressions and improvements to the commits that introduced them."
 >
-  <div class="page-tools">
-    <ThemeToggle />
-  </div>
-
   <main class="home">
     <section class="fold" aria-label="Wezel">
       <section class="pain" aria-label="Overview">
@@ -230,17 +226,7 @@ summary.size.outcome = "dist/app.wasm"</code></pre>
 
   </main>
 
-  <footer class="home-footer">
-    <div class="footer-inner">
-      <span>&copy; {new Date().getFullYear()} Wezel</span>
-      <nav aria-label="Footer">
-        <a href="/docs">Docs</a>
-        <a href="/blog">Blog</a>
-        <a href="https://status.wezel.build">Status</a>
-        <a href="https://app.wezel.build">Open app</a>
-      </nav>
-    </div>
-  </footer>
+  <SiteFooter />
 
   <style>
     :global(body.homepage) {
@@ -249,7 +235,7 @@ summary.size.outcome = "dist/app.wasm"</code></pre>
       grid-template-rows: 1fr auto;
       align-items: start;
       row-gap: 3rem;
-      padding-block: 4rem 1.5rem;
+      padding-block: 4rem 0;
     }
 
     .home {
@@ -383,23 +369,6 @@ summary.size.outcome = "dist/app.wasm"</code></pre>
 
     .extension :global(.contact-links) {
       margin-top: 1.25rem;
-    }
-
-    .page-tools {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-    }
-
-    .page-tools :global(.theme-toggle) {
-      width: 2.5rem;
-      height: 2.5rem;
-      justify-content: center;
-    }
-
-    .page-tools :global(.theme-toggle:focus-visible) {
-      outline: 2px solid var(--color-ink);
-      outline-offset: 2px;
     }
 
     .home-aside {
@@ -719,49 +688,9 @@ summary.size.outcome = "dist/app.wasm"</code></pre>
       color: var(--color-ink);
     }
 
-    .home-footer {
-      width: min(100%, var(--site-width));
-      margin-inline: auto;
-      padding-inline: var(--site-gutter);
-      color: var(--color-ink-faint);
-      font-size: 0.8125rem;
-    }
-
-    .footer-inner {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-      border-top: 1px solid var(--color-line);
-      padding-top: 1.25rem;
-    }
-
-    .home-footer nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-    }
-
-    .home-footer a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .home-footer a:hover {
-      color: var(--color-ink);
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
-    }
-
-    .home-footer a:focus-visible {
-      outline: 2px solid var(--color-ink);
-      outline-offset: 4px;
-    }
-
     @media (max-width: 65rem) {
       :global(body.homepage) {
-        padding-block: 3.75rem 1.5rem;
+        padding-block: 3.75rem 0;
       }
 
       .fold {
