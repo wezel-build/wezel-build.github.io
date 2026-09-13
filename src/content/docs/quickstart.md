@@ -45,10 +45,10 @@ project fields and `[tools]` table:
 
 ```toml title=".wezel/config.toml"
 [tools.foragers.exec]
-github = "wezel-build/executor_exec"
+github = "wezel-build/wezel_exec"
 
 [tools.foragers.filesize]
-github = "wezel-build/executor_filesize"
+github = "wezel-build/wezel_filesize"
 ```
 
 These are the two measurement tools, called *foragers*, used below: `exec` runs
