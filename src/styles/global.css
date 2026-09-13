@@ -71,7 +71,7 @@
 /*
   Dark scheme.
 
-  Selectable, on the same `data-theme` attribute anthill switches on, so the two
+  Selectable, on the same `data-theme` attribute farfocel switches on, so the two
   agree structurally and not only in hex values. Three states: `auto` follows the
   OS and is the default (no attribute), `light` and `dark` are explicit and are
   persisted under the `wezel-theme` key. An inline script in Base.astro applies
@@ -82,7 +82,7 @@
   Colours cannot drift between the two; at worst a mapping line goes missing.
 
   Every value clears 4.5:1 against both the page and the caption strip it can
-  sit on. The dim tone is lighter than a straight port of anthill's --c-text-dim
+  sit on. The dim tone is lighter than a straight port of farfocel's --c-text-dim
   (#6a604f, 3.16:1 here) because this site spends that colour on 0.66rem mono
   labels rather than on decorative text.
 */

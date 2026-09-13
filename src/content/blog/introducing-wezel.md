@@ -45,7 +45,7 @@ When Wezel detects a regression in a summary marked `bisect = true`, it triggers
 ## Extensible by design
 Notice the tool field in every step above? Those tools - exec, filesize, all of them -
 are not part of Wezel. They are separate binaries that Wezel invokes on your behalf.
-[exec is one such binary](https://github.com/wezel-build/forager_exec). [So is filesize](https://github.com/wezel-build/forager_filesize/). Each one does what it says on the tin and hands the result back.
+[exec is one such binary](https://github.com/wezel-build/wezel_exec). [So is filesize](https://github.com/wezel-build/wezel_filesize/). Each one does what it says on the tin and hands the result back.
 
 This is deliberate. I'm mostly interested in Rust build times myself - but Wezel
 shouldn't be. There is no central registry, no plugin marketplace, no forge to gatekeep
