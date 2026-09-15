@@ -86,5 +86,98 @@ const ogImage = new URL("/og.png", Astro.site);
   </head>
   <body class={bodyClass}>
     <slot />
+
+    <script>
+      const activateCodeAnnotation = (
+        group: HTMLElement,
+        annotation: string,
+      ) => {
+        if (group.dataset.activeAnnotation === annotation) return;
+        group.dataset.activeAnnotation = annotation;
+
+        group.querySelectorAll<HTMLElement>("[data-code-annotation]").forEach((line) => {
+          line.classList.toggle(
+            "is-active",
+            line.dataset.codeAnnotation === annotation,
+          );
+        });
+
+        group.querySelectorAll<HTMLButtonElement>("[data-annotation-target]").forEach((tab) => {
+          const active = tab.dataset.annotationTarget === annotation;
+          tab.setAttribute("aria-selected", String(active));
+          tab.tabIndex = active ? 0 : -1;
+        });
+
+        group.querySelectorAll<HTMLElement>("[role='tabpanel']").forEach((panel) => {
+          panel.hidden = !panel.id.endsWith(`-${annotation}`);
+        });
+
+        const selected = group.querySelector<HTMLButtonElement>(
+          `[data-annotation-target="${annotation}"]`,
+        );
+        const source = group.querySelector<HTMLElement>(".annotated-code__source");
+        if (selected && source) {
+          source.setAttribute("aria-describedby", selected.getAttribute("aria-controls") ?? "");
+        }
+      };
+
+      document.querySelectorAll<HTMLElement>(".annotated-code").forEach((group) => {
+        group.addEventListener("pointerover", (event) => {
+          const target = (event.target as Element).closest<HTMLElement>(
+            "[data-code-annotation], [data-annotation-target]",
+          );
+          const annotation =
+            target?.dataset.codeAnnotation ?? target?.dataset.annotationTarget;
+          if (annotation) activateCodeAnnotation(group, annotation);
+        });
+
+        group.addEventListener("click", (event) => {
+          const target = (event.target as Element).closest<HTMLElement>(
+            "[data-code-annotation], [data-annotation-target]",
+          );
+          const annotation =
+            target?.dataset.codeAnnotation ?? target?.dataset.annotationTarget;
+          if (annotation) activateCodeAnnotation(group, annotation);
+          if (target?.dataset.codeAnnotation) {
+            group
+              .querySelector<HTMLElement>(".annotated-code__source")
+              ?.focus({ preventScroll: true });
+          }
+        });
+
+        group.addEventListener("keydown", (event) => {
+          const tab = (event.target as Element).closest<HTMLButtonElement>(
+            "[data-annotation-target]",
+          );
+          const source = (event.target as Element).closest(".annotated-code__source");
+          if (event.key === "Escape" && (tab !== null || source !== null)) {
+            (event.target as HTMLElement).blur();
+            return;
+          }
+          if (
+            (tab === null && source === null) ||
+            !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+          const tabs = Array.from(
+            group.querySelectorAll<HTMLButtonElement>("[data-annotation-target]"),
+          );
+          const current = Number(group.dataset.activeAnnotation) - 1;
+          const nextIndex =
+            event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? tabs.length - 1
+                : (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) %
+                  tabs.length;
+          const next = tabs[nextIndex];
+          activateCodeAnnotation(group, next.dataset.annotationTarget ?? "1");
+          if (tab !== null) next.focus();
+        });
+      });
+    </script>
   </body>
 </html>

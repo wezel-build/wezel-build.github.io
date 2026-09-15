@@ -460,6 +460,95 @@
   background: transparent !important;
 }
 
+/* Annotation directives live only in Markdown source. The rendered code stays
+   intact and copyable; hovering, focusing or selecting a step changes the one
+   highlighted range and the explanation beneath it. */
+.docs-prose .annotated-code {
+  min-width: 0;
+}
+
+.docs-prose .annotated-code__source [data-code-annotation] {
+  cursor: help;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.docs-prose .annotated-code__source [data-code-annotation].is-active {
+  background: color-mix(in srgb, var(--color-accent-wash) 55%, transparent);
+  box-shadow: inset 0 -1px var(--color-accent);
+}
+
+.docs-prose .annotated-code__explanation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.4rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  border-block-start: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.docs-prose .code-figure .annotated-code__explanation {
+  border-inline: 0;
+  border-block-end: 0;
+}
+
+.docs-prose .annotated-code__steps {
+  display: flex;
+  flex: none;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-prose .annotated-code__steps > li {
+  margin: 0;
+}
+
+.docs-prose .annotated-code__step {
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink-faint);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.docs-prose .annotated-code__step:is(:hover, [aria-selected="true"]) {
+  border-color: var(--color-accent);
+  color: var(--color-accent-deep);
+  background: var(--color-accent-wash);
+}
+
+.docs-prose .annotated-code__step:focus-visible {
+  outline: 2px solid var(--color-ink-soft);
+  outline-offset: 2px;
+}
+
+.docs-prose .annotated-code__panels {
+  min-width: 0;
+}
+
+.docs-prose .annotated-code__panels > p {
+  margin: 0;
+}
+
+.docs-prose .annotated-code__panels > [hidden] {
+  display: none;
+}
+
 /* ---- tables: rules here separate data, so they stay ------------------ */
 .docs-prose table {
   width: 100%;
