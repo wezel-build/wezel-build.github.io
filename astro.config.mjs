@@ -279,6 +279,33 @@ const codeFigure = () => ({
 // https://astro.build/config
 export default defineConfig({
   site: "https://wezel.build",
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "connect-src 'self'",
+        "font-src 'self'",
+        "form-action 'self'",
+        "frame-src 'none'",
+        "img-src 'self' https://avatars.githubusercontent.com https://imgs.xkcd.com",
+        "media-src 'self'",
+        "object-src 'none'",
+        "worker-src 'self'",
+        "upgrade-insecure-requests",
+      ],
+      // Shiki renders syntax-token colours as style attributes. Keep those
+      // working without allowing unverified inline scripts or style elements.
+      styleDirective: {
+        resources: [{ resource: "'unsafe-inline'", kind: "attribute" }],
+      },
+      // Base.astro keeps this script inline so the saved theme is applied
+      // before first paint; `is:inline` scripts are not hashed by Astro.
+      scriptDirective: {
+        hashes: ["sha256-w38XcF729e+4BS7kZrGD3b+ztpNxwO5EiH4jwPrOgGs="],
+      },
+    },
+  },
   // Pagefind indexes the built HTML after the build and serves /pagefind/ in
   // dev from the last build output - so `astro dev` has no index until
   // `astro build` has run at least once.

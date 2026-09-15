@@ -27,7 +27,7 @@
 </button>
 
 <dialog class="search-dialog" aria-label="Search the docs">
-  <form class="search-field" role="search" onsubmit="return false">
+  <form class="search-field" role="search">
     <label class="search-label" for="docs-search-input">Search</label>
     <input
       id="docs-search-input"
@@ -293,6 +293,7 @@
     }
 
     trigger.addEventListener("click", open);
+    input.form?.addEventListener("submit", (event) => event.preventDefault());
 
     addEventListener("keydown", (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
