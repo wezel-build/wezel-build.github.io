@@ -1,9 +1,8 @@
 ---
 import Brand from "../Brand.astro";
-import SiteNav from "../SiteNav.astro";
 import DocsSearch from "./DocsSearch.astro";
 
-// Keep site destinations shared; search and the narrow-screen menu are docs-only.
+// Search and the narrow-screen contents menu are the only docs-specific chrome.
 ---
 
 <header class="docs-header">
@@ -12,7 +11,6 @@ import DocsSearch from "./DocsSearch.astro";
 
     <div class="header-right">
       <DocsSearch />
-      <SiteNav />
 
       <button
         class="sidebar-toggle"
