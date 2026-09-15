@@ -43,12 +43,20 @@ with the ones your project uses.
 Add these tables to the generated `.wezel/config.toml`, keeping its existing
 project fields and `[tools]` table:
 
-```toml title=".wezel/config.toml"
+```toml annotate title=".wezel/config.toml"
+# @annotation Declares a forager named exec under the tools configuration.
 [tools.foragers.exec]
+# @endannotation
+# @annotation select="wezel-build/wezel_exec" Tells Wezel which GitHub repository provides the forager.
 github = "wezel-build/wezel_exec"
+# @endannotation
 
+# @annotation Declares the filesize forager used to inspect build artifacts.
 [tools.foragers.filesize]
+# @endannotation
+# @annotation Each forager has its own source repository.
 github = "wezel-build/wezel_filesize"
+# @endannotation
 ```
 
 These are the two measurement tools, called *foragers*, used below: `exec` runs
