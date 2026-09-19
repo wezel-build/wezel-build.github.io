@@ -27,19 +27,3 @@ open a new terminal after following the installer's shell setup instructions.
 
 Release downloads and their installers are also available on the
 [GitHub releases page](https://github.com/wezel-build/wezel/releases).
-
-## Measurement tools
-
-Measurement tools are installed separately for each project's declared
-configuration. After initializing a project and declaring its tools, run:
-
-```sh frame="terminal"
-wezel project tool sync
-```
-
-This downloads the declared tools and records their versions and hashes in
-`.wezel/wezel.lock`. It doesn't install your project's compiler or build system;
-those need to be available on the machine running the measurements.
-
-Continue with the [quickstart](/docs/quickstart) to define a measurement and
-connect the project to the app.
