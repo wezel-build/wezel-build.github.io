@@ -19,6 +19,17 @@ body.docs-page {
   padding-top: var(--docs-top-space);
 }
 
+.docs-header,
+.docs-header *,
+.docs-header *::before,
+.docs-header *::after,
+.docs-sheet,
+.docs-sheet *,
+.docs-sheet *::before,
+.docs-sheet *::after {
+  box-sizing: border-box;
+}
+
 /* Nothing floats, anywhere in the docs. */
 .docs-header *,
 .docs-sheet * {

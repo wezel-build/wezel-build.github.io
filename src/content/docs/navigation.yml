@@ -14,33 +14,28 @@
 
 - label: Wezel CLI
   items:
+    - label: Introduction
+      id: index
     - label: Install Wezel
       id: installation
     - label: Your first measurement
-      id: index
-    - label: Build a multi-step scenario
-      id: cli/multi-step-scenario
+      id: cli/first-measurement
+    - label: Build a multi-step experiment
+      id: cli/multi-step-experiment
     - label: Measure non-deterministic processes
       id: cli/non-deterministic-processes
-    - label: How scenarios produce outcomes
-      id: cli/scenario-outcomes
+    - label: How experiments produce outcomes
+      id: cli/experiment-outcomes
 
 - label: Wezel Dashboard
   items:
     - label: Connect a project
       id: dashboard/connect-project
+    - label: Set up a runner
+      id: dashboard/runners
     - label: Track performance over time
       id: dashboard/track-performance
     - label: Investigate regressions
       id: dashboard/investigate-regressions
-    - label: Runners
-      id: dashboard/runners
     - label: Notifications
       id: dashboard/notifications
-
-- label: Reference
-  items:
-    - label: Scenario configuration
-      id: reference/scenario-configuration
-    - label: Wezel CLI
-      id: reference/cli

@@ -30,10 +30,10 @@ export const GET: APIRoute = async ({ site }) => {
   const lines: string[] = [
     "# Wezel",
     "",
-    "> Wezel watches the build scenarios a team waits on, records how long they",
+    "> Wezel watches the build experiments a team waits on, records how long they",
     "> take, and reports when that number moves.",
     "",
-    "Wezel measures build scenarios declared in a file committed next to the code",
+    "Wezel measures build experiments declared in a file committed next to the code",
     "it measures. It samples on a schedule rather than on every commit, and when a",
     "summary moves beyond noise it measures the commits it skipped to locate where",
     "the change happened. It reports that a number moved and at which commit; it",
