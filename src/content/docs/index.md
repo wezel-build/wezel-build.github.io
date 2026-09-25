@@ -1,27 +1,27 @@
 ---
 title: Introduction
-description: Measure your builds locally and track regressions and improvements in the Wezel app.
+description: Understand how the Wezel CLI and Wezel Dashboard work together.
 ---
 
-Wezel measures builds and their outputs as your code changes. It surfaces
-regressions and improvements and traces them to the commits that introduced them.
+Wezel tracks build time, artifact size, and other signals produced by your
+project. When a measurement changes, Wezel shows whether it improved or
+regressed and which commit introduced the change.
 
-## The CLI and the app
+You describe each repeatable measurement as an **experiment**.
 
-Use the CLI to define and test a measurement in your repository. A definition
-can include several steps: build from scratch, apply a patch and rebuild, or
-measure the size of a generated file.
+## Wezel CLI
 
-The app uses those committed definitions to schedule measurements on configured
-runners and track their results across commits. A runner is the machine or CI
-workflow that performs the measurements.
+Use the Wezel CLI to define, validate, and run experiments in your local
+repository. This local workflow lets you confirm that an experiment produces the
+intended measurements before tracking it over time.
 
-You can use the CLI on its own. To keep watching a repository as it changes,
-connect it to the app and assign a runner.
+## Wezel Dashboard
 
-## Get started
+Once an experiment is committed, the Wezel Dashboard runs it as the repository
+changes and records its results across commits. This turns individual
+measurements into a history you can follow and investigate.
 
-The [quickstart](/docs/quickstart) walks through one measurement, from a local
-run to adding the project in the app.
+## Start with the CLI
 
-Already have a project set up? [Open the app](https://app.wezel.build).
+[Install Wezel](/docs/installation), then [create your first
+measurement](/docs/cli/first-measurement).

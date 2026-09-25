@@ -12,43 +12,30 @@
 # An item may carry `id`, nested `items`, or both; an item with only `items` is
 # a pure category label.
 
-- label: Get started
+- label: Wezel CLI
   items:
     - label: Introduction
       id: index
-    - label: Installation
+    - label: Install Wezel
       id: installation
-    - label: Quickstart
-      id: quickstart
+    - label: Your first measurement
+      id: cli/first-measurement
+    - label: Build a multi-step experiment
+      id: cli/multi-step-experiment
+    - label: Measure non-deterministic processes
+      id: cli/non-deterministic-processes
+    - label: How experiments produce outcomes
+      id: cli/experiment-outcomes
 
-- label: Concepts
+- label: Wezel Dashboard
   items:
-    - label: Experiments
-      id: concepts/experiments
-    - label: Observations
-      id: concepts/observations
-    - label: Regressions
-      id: concepts/regressions
-
-# Server before tracking: you stand somewhere up to send results to before you
-# start sending them.
-- label: Server
-  items:
-    - label: Overview
-      id: server/overview
-    - label: Self-hosting
-      id: server/self-hosting
-
-- label: Tracking
-  items:
-    - label: Scenarios
-      id: tracking/scenarios
-    - label: Continuous integration
-      id: tracking/continuous-integration
-
-- label: Reference
-  items:
-    - label: CLI
-      id: reference/cli
-    - label: Configuration
-      id: reference/configuration
+    - label: Connect a project
+      id: dashboard/connect-project
+    - label: Set up a runner
+      id: dashboard/runners
+    - label: Track performance over time
+      id: dashboard/track-performance
+    - label: Investigate regressions
+      id: dashboard/investigate-regressions
+    - label: Notifications
+      id: dashboard/notifications

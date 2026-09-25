@@ -393,7 +393,7 @@
       return li;
     }
 
-    // "/docs/concepts/experiments/" -> "concepts"
+    // "/docs/dashboard/runners/" -> "dashboard"
     function crumbOf(url: string) {
       const parts = url.replace(/^\/|\/$/g, "").split("/");
       return parts.length > 2 ? parts.slice(1, -1).join(" / ") : null;

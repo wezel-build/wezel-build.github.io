@@ -1,45 +1,43 @@
 ---
-title: Installation
+title: Install Wezel
 description: Install the Wezel CLI on macOS or Linux.
 ---
 
-Wezel provides CLI binaries for macOS and Linux on Intel/AMD 64-bit and ARM64
-machines. You don't need Rust installed to use a prebuilt binary.
+The Wezel CLI supports macOS and Linux on ARM64 and x86-64 systems. The installer
+requires `curl`.
 
-## Install the CLI
+## Install the Wezel CLI
+
+Run:
 
 ```sh frame="terminal"
 curl -fsSL https://wezel.build/install.sh | sh
 ```
 
-The script downloads the installer from the newest GitHub release, including
-prereleases. It installs the `wezel` binary in `~/.wezel/bin`.
+The installer places the `wezel` binary in `~/.wezel/bin` and updates your shell
+configuration if that directory is not already on your `PATH`.
 
-Follow the installer's instructions to make that directory available on your
-`PATH`, then verify the installation:
+## Verify the installation
+
+Open a new terminal, then run:
 
 ```sh frame="terminal"
 wezel --version
 ```
 
-This prints the CLI version and build identifier. If the command isn't found,
-open a new terminal after following the installer's shell setup instructions.
+This prints the installed CLI version and build identifier:
 
-Release downloads and their installers are also available on the
-[GitHub releases page](https://github.com/wezel-build/wezel/releases).
-
-## Measurement tools
-
-Measurement tools are installed separately for each project's declared
-configuration. After initializing a project and declaring its tools, run:
-
-```sh frame="terminal"
-wezel project tool sync
+```text title="Output"
+wezel 0.1.5-pre (726baac)
 ```
 
-This downloads the declared tools and records their versions and hashes in
-`.wezel/wezel.lock`. It doesn't install your project's compiler or build system;
-those need to be available on the machine running the measurements.
+If your shell cannot find `wezel`, load the environment file created by the
+installer:
 
-Continue with the [quickstart](/docs/quickstart) to define a measurement and
-connect the project to the app.
+```sh frame="terminal"
+source "$HOME/.wezel/bin/env"
+```
+
+Then run `wezel --version` again.
+
+Next, [create your first measurement](/docs/cli/first-measurement).
